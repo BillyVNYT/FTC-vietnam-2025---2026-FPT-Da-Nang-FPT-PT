@@ -31,8 +31,8 @@ public class Auto extends OpMode {
 
     private Timer pathTimer;
     public PathChain pickup1, lowScore, pickup2, highScore;
-    public Pose lowZonePose = new Pose(80, 16);
-    public Pose pickup1Pose = new Pose(123.312, 59.812);
+    public Pose lowZonePose = new Pose(81.115, 5.735);
+    public Pose pickup1Pose = new Pose(121.468, 36.871);
     public Pose pickup2Pose = new Pose(119.215, 82.959);
     public Pose highZonePose = new Pose(77.838, 77.838);
 
@@ -68,7 +68,7 @@ public class Auto extends OpMode {
         pickup1 = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierCurve(lowZonePose, new Pose(90, 60), pickup1Pose)
+                        new BezierCurve(new Pose(81.115, 5.735), new Pose(90.000, 35.000), new Pose(121.468, 36.871))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(0))
                 .build();
@@ -76,7 +76,7 @@ public class Auto extends OpMode {
         lowScore = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierCurve(pickup1Pose, new Pose(90, 60), lowZonePose)
+                        new BezierLine(new Pose(121.468, 36.871), new Pose(81.115, 5.735))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(120))
                 .build();
@@ -84,7 +84,7 @@ public class Auto extends OpMode {
         pickup2 = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierCurve(lowZonePose, new Pose(90.000, 90.000), pickup2Pose)
+                        new BezierCurve(new Pose(81.115, 5.735),new Pose(90.000, 60.000),new Pose(121.468, 60.427))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(120), Math.toRadians(0))
                 .build();
@@ -92,10 +92,11 @@ public class Auto extends OpMode {
         highScore = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(pickup2Pose, highZonePose)
+                        new BezierLine(new Pose(121.468, 60.427), new Pose(80.706, 5.735))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(135))
                 .build();
+
     }
 
     boolean paused = false;
