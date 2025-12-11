@@ -123,33 +123,32 @@ public class stemdayassitcountry_tankdrive extends LinearOpMode{
                     break;
             }
 
-            if(gamepad1.left_bumper && CoTayPos >0){
-                CoTayPos-=0.005;
+            if(gamepad1.a && CoTayPos >0){
+                CoTayPos-=0.0005;
                 ServoCoTay.setPosition(CoTayPos);
             }
-            if(gamepad1.right_bumper && CoTayPos < 1){
-                CoTayPos+=0.005;
+            if(gamepad1.y && CoTayPos < 1){
+                CoTayPos+=0.0005;
                 ServoCoTay.setPosition(CoTayPos);
             }
-//
 //
 //            if(gamepad1.right_bumper && KhuyuTayPos<1){
-//                KhuyuTayPos +=0.005;
+//                KhuyuTayPos +=0.0005;
 //                ServoKhuyuTay.setPosition(KhuyuTayPos);
 //            }
 //            if(gamepad1.left_bumper && KhuyuTayPos>0){
-//                KhuyuTayPos -=0.005;
+//                KhuyuTayPos -=0.0005;
 //                ServoKhuyuTay.setPosition(KhuyuTayPos);
 //            }
 //
 //
 //            if(gamepad1.b && TayKepPos<1){
-//                TayKepPos+=0.005;
+//                TayKepPos+=0.0005;
 //                ServoTayKep.setPosition(TayKepPos);
 //            }
 //
 //            if(gamepad1.x && TayKepPos>0){
-//                TayKepPos-=0.005;
+//                TayKepPos-=0.0005;
 //                ServoTayKep.setPosition(TayKepPos);
 //            }
 
