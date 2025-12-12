@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.pedroPathing;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp
@@ -14,38 +13,42 @@ public class ganhTem_assistCountry extends LinearOpMode{
     Servo ServoKepIntakeLeft, ServoKepIntakeRight;
     Servo ServoOuttake, ServoKepOuttake;
 
-    double KepIntakeClosePos = 0.3;
-    double KepIntakeOpenPos = 1;
-    double KepOuttakeClosePos = 0;
-    double KepOuttakeOpenPos = 0.5;
+    double KepIntakeLeftClosePos = 0.74;
 
-    double OuttakeInitPos = 0.2;
+    double KepIntakeRightClosePos = 0.25;
+    double KepIntakeLeftOpenPos = 0.54;
+    double KepIntakeRightOpenPos = 0.16;
+    double KepOuttakeClosePos = 0.38;
+    double KepOuttakeOpenPos = 0.03;
+
+    double OuttakeInitPos = 0.79;
     double IntakeInitPos = 0;
+
     double ServoIntakePos = IntakeInitPos;
     double ServoOuttakePos = OuttakeInitPos;
 
-    double OuttakeRaisePos = 0.1;
+    double OuttakeGrabPos = 0.84;
+    double OuttakeHighPos = 0.55;
 
-    double IntakeLowPos = 0.1;
-    double IntakeMidPos = 0.2;
+    double IntakeLowPos = 0.22;
+    double IntakeMidPos = 0.36;
     final double speed = 1.0;
 
     boolean intakeBusy = false;
     boolean outtakeBusy = false;
 
-
     void grabIntake() {
         if(!intakeBusy) {
-            ServoKepIntakeLeft.setPosition(KepIntakeClosePos);
-            ServoKepIntakeRight.setPosition(KepIntakeClosePos);
+            ServoKepIntakeLeft.setPosition(KepIntakeLeftClosePos);
+            ServoKepIntakeRight.setPosition(KepIntakeRightClosePos);
             intakeBusy = true;
         }
     }
 
     void releaseIntake() {
         if(intakeBusy) {
-            ServoKepIntakeLeft.setPosition(KepIntakeOpenPos);
-            ServoKepIntakeRight.setPosition(KepIntakeOpenPos);
+            ServoKepIntakeLeft.setPosition(KepIntakeLeftOpenPos);
+            ServoKepIntakeRight.setPosition(KepIntakeRightOpenPos);
             intakeBusy = false;
         }
     }
@@ -53,7 +56,9 @@ public class ganhTem_assistCountry extends LinearOpMode{
     void grabOuttake() {
         if(!outtakeBusy) {
             ServoKepOuttake.setPosition(KepOuttakeClosePos);
-            ServoOuttake.setPosition(OuttakeRaisePos);
+            sleep(400);
+            ServoOuttakePos = OuttakeInitPos;
+            ServoOuttake.setPosition(ServoOuttakePos);
             outtakeBusy = true;
         }
     }
@@ -61,32 +66,31 @@ public class ganhTem_assistCountry extends LinearOpMode{
     void releaseOuttake() {
         if(outtakeBusy) {
             ServoKepOuttake.setPosition(KepOuttakeOpenPos);
-            ServoOuttake.setPosition(OuttakeInitPos);
             outtakeBusy = false;
         }
     }
 
     void controlIntakeServos() {
         if(gamepad1.right_trigger > 0 && ServoIntakePos < 1) {
-            ServoIntakePos += 0.0005;
+            ServoIntakePos += 0.002;
             ServoIntakeLeft.setPosition(ServoIntakePos);
             ServoIntakeRight.setPosition(ServoIntakePos);
         }
 
         if (gamepad1.left_trigger > 0 && ServoIntakePos > 0) {
-            ServoIntakePos -= 0.0005;
+            ServoIntakePos -= 0.002;
             ServoIntakeLeft.setPosition(ServoIntakePos);
             ServoIntakeRight.setPosition(ServoIntakePos);
         }
     }
 
     void controlOuttakeServo () {
-        if(gamepad1.dpad_up && ServoOuttakePos < 1) {
+        if(gamepad1.dpad_down && ServoOuttakePos < OuttakeGrabPos) {
             ServoOuttakePos += 0.0005;
             ServoOuttake.setPosition(ServoOuttakePos);
         }
 
-        if (gamepad1.dpad_down && ServoOuttakePos > 0) {
+        if (gamepad1.dpad_up && ServoOuttakePos > OuttakeHighPos) {
             ServoOuttakePos -= 0.0005;
             ServoOuttake.setPosition(ServoOuttakePos);
         }
@@ -94,9 +98,17 @@ public class ganhTem_assistCountry extends LinearOpMode{
 
     void resetIntake() {
         if(!intakeBusy) {
-            ServoIntakeLeft.setPosition(IntakeInitPos);
-            ServoIntakeRight.setPosition(IntakeInitPos);
+            ServoIntakePos = IntakeInitPos;
+            ServoIntakeLeft.setPosition(ServoIntakePos);
+            ServoIntakeRight.setPosition(ServoIntakePos);
         }
+    }
+
+    void resetOuttake() {
+      if(!outtakeBusy) {
+          ServoOuttakePos = OuttakeInitPos;
+          ServoOuttake.setPosition(ServoOuttakePos);
+      }
     }
 
     @Override
@@ -106,7 +118,6 @@ public class ganhTem_assistCountry extends LinearOpMode{
         frontRightMotor = hardwareMap.dcMotor.get("rightFront");
         backRightMotor = hardwareMap.dcMotor.get("rightBack");
 
-
         ServoIntakeLeft = hardwareMap.servo.get("ServoIntakeLeft");
         ServoIntakeRight = hardwareMap.servo.get("ServoIntakeRight");
         ServoOuttake = hardwareMap.servo.get("ServoOuttake");
@@ -114,17 +125,16 @@ public class ganhTem_assistCountry extends LinearOpMode{
         ServoKepIntakeLeft = hardwareMap.servo.get("ServoKepIntakeLeft");
         ServoKepIntakeRight = hardwareMap.servo.get("ServoKepIntakeRight");
 
-        ServoKepOuttake.setDirection(Servo.Direction.REVERSE);
         ServoIntakeRight.setDirection(Servo.Direction.REVERSE);
-        ServoKepIntakeLeft.setDirection(Servo.Direction.REVERSE);
+        ServoKepIntakeRight.setDirection(Servo.Direction.REVERSE);
+        ServoKepOuttake.setDirection(Servo.Direction.REVERSE);
+        ServoKepIntakeLeft.setDirection(Servo.Direction.FORWARD);
 
-        ServoKepIntakeLeft.setPosition(KepIntakeOpenPos);
-        ServoKepIntakeRight.setPosition(KepIntakeOpenPos);
-        resetIntake();
-        ServoOuttake.setPosition(ServoOuttakePos);
+        ServoKepIntakeLeft.setPosition(KepIntakeLeftOpenPos);
+        ServoKepIntakeRight.setPosition(KepIntakeRightOpenPos);
         ServoKepOuttake.setPosition(KepOuttakeOpenPos);
-
-        frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        resetIntake();
+        resetOuttake();
 
         telemetry.addData(">", "Init Successfully");
         telemetry.update();
@@ -157,15 +167,23 @@ public class ganhTem_assistCountry extends LinearOpMode{
 
             if(gamepad1.a && !intakeBusy) {
                 grabIntake();
-                ServoIntakeLeft.setPosition(IntakeLowPos);
-                ServoIntakeRight.setPosition(IntakeLowPos);
+                sleep(200);
+                ServoIntakePos = IntakeLowPos;
+                ServoIntakeLeft.setPosition(ServoIntakePos);
+                ServoIntakeRight.setPosition(ServoIntakePos);
             } else if (gamepad1.b && !intakeBusy) {
                 grabIntake();
-                ServoIntakeLeft.setPosition(IntakeMidPos);
-                ServoIntakeRight.setPosition(IntakeMidPos);
+                sleep(200);
+                ServoIntakePos = IntakeMidPos;
+                ServoIntakeLeft.setPosition(ServoIntakePos);
+                ServoIntakeRight.setPosition(ServoIntakePos);
             }
-            if(gamepad1.x && !intakeBusy) {
+
+            if(gamepad1.x) {
                 resetIntake();
+            }
+            if(gamepad1.y){
+                resetOuttake();
             }
             controlIntakeServos();
 
@@ -180,8 +198,10 @@ public class ganhTem_assistCountry extends LinearOpMode{
             telemetry.addData("Servo outtake pos: ", ServoOuttakePos);
 
             telemetry.addData("Servo kep intake pos: ", ServoKepIntakeLeft.getPosition());
-            telemetry.addData("Servo kep intake pos: ", ServoKepIntakeRight.getPosition());
-//            telemetry.addData("Servo kep outtake pos: ", ServoKepOuttake.getPosition());
+            telemetry.addData("Servo kep outtake pos: ", ServoKepOuttake.getPosition());
+
+            telemetry.addData("Intake busy: ", intakeBusy);
+            telemetry.addData("Outtake busy: ", outtakeBusy);
             telemetry.update();
         }
     }

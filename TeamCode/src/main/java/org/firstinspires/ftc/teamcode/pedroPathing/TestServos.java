@@ -15,7 +15,14 @@ public class TestServos extends LinearOpMode {
     boolean isChangingServo = false;
 
     void resetServoValues() {
-        servoPos = 0;
+        if(testingServo == 2) {
+            servoPos = 0.8;
+        } else if(testingServo ==3) {
+            servoPos = 0.3;
+        } else {
+            servoPos = 0;
+        }
+
         servoDirection = Servo.Direction.FORWARD;
     }
 
@@ -36,16 +43,22 @@ public class TestServos extends LinearOpMode {
         switch (testingServo) {
             case 0:
                 ServoIntakeRight.setPosition(servoPos);
+                break;
             case 1:
                 ServoIntakeLeft.setPosition(servoPos);
+                break;
             case 2:
                 ServoOuttake.setPosition(servoPos);
+                break;
             case 3:
                 ServoKepOuttake.setPosition(servoPos);
+                break;
             case 4:
                 ServoKepIntakeLeft.setPosition(servoPos);
+                break;
             case 5:
                 ServoKepIntakeRight.setPosition(servoPos);
+                break;
 
         }
     }
@@ -54,16 +67,22 @@ public class TestServos extends LinearOpMode {
         switch (testingServo) {
             case 0:
                 ServoIntakeRight.setDirection(servoDirection);
+                break;
             case 1:
                 ServoIntakeLeft.setDirection(servoDirection);
+                break;
             case 2:
                 ServoOuttake.setDirection(servoDirection);
+                break;
             case 3:
                 ServoKepOuttake.setDirection(servoDirection);
+                break;
             case 4:
                 ServoKepIntakeLeft.setDirection(servoDirection);
+                break;
             case 5:
                 ServoKepIntakeRight.setDirection(servoDirection);
+                break;
 
         }
     }
