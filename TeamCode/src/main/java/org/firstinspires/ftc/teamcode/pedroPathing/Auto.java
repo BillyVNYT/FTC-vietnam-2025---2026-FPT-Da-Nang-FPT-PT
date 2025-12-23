@@ -32,7 +32,7 @@ public class Auto extends OpMode {
     private Timer pathTimer;
     public PathChain pickup1, lowScore, pickup2, highScore;
     public Pose lowZonePose = new Pose(80, 16);
-    public Pose pickup1Pose = new Pose(123.312, 1);
+    public Pose pickup1Pose = new Pose(123.312, 59.812);
     public Pose pickup2Pose = new Pose(119.215, 82.959);
     public Pose highZonePose = new Pose(77.838, 77.838);
 
