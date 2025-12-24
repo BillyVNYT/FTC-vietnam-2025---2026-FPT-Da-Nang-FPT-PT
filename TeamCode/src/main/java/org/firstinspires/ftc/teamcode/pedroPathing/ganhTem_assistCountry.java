@@ -32,7 +32,7 @@ public class ganhTem_assistCountry extends LinearOpMode{
 
     double IntakeLowPos = 0.22;
     double IntakeMidPos = 0.36;
-    final double speed = 1.0;
+    final double speed = 0.6;
 
     boolean intakeBusy = false;
     boolean outtakeBusy = false;

@@ -34,7 +34,7 @@ public class TestServos extends LinearOpMode {
         resetServoValues();
         updateServoPos();
         updateServoDirection();
-        sleep(1000);
+        sleep(1500);
         isChangingServo = false;
     }
 

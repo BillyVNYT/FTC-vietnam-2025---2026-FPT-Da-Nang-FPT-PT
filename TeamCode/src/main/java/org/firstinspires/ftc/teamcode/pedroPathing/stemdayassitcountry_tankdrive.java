@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.pedroPathing;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
@@ -27,6 +28,7 @@ public class stemdayassitcountry_tankdrive extends LinearOpMode{
     public void runOpMode() throws InterruptedException {
         left = hardwareMap.get(DcMotor.class, "leftmotor");
         right = hardwareMap.get(DcMotor.class, "rightmotor");
+        right.setDirection(DcMotorSimple.Direction.REVERSE);
         ServoKhuyuTay = hardwareMap.servo.get("ServoKhuyuTay");
         ServoTayKep = hardwareMap.servo.get("ServoTayKep");
 
@@ -48,21 +50,21 @@ public class stemdayassitcountry_tankdrive extends LinearOpMode{
             leftPower = Range.clip(drive-turn,-1,1);
 
             if(gamepad1.right_bumper && KhuyuTayPos<1){
-                KhuyuTayPos +=0.0005;
+                KhuyuTayPos +=0.002;
                 ServoKhuyuTay.setPosition(KhuyuTayPos);
             }
             if(gamepad1.left_bumper && KhuyuTayPos>0){
-                KhuyuTayPos -=0.0005;
+                KhuyuTayPos -=0.0018;
                 ServoKhuyuTay.setPosition(KhuyuTayPos);
             }
 
             if(gamepad1.b && TayKepPos<1){
-                TayKepPos+=0.0005;
+                TayKepPos=0.5;
                 ServoTayKep.setPosition(TayKepPos);
             }
 
             if(gamepad1.x && TayKepPos>0){
-                TayKepPos-=0.0005;
+                TayKepPos=0;
                 ServoTayKep.setPosition(TayKepPos);
             }
 
