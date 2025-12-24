@@ -9,23 +9,28 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 @TeleOp
 public class Shooter extends LinearOpMode {
-    public DcMotorEx Mshooter;
-    double maxTPS = Mshooter.getMotorType().getAchieveableMaxTicksPerSecond();
-    double highVelocity = 1000;
-    double lowVelocity = 500;
+    public DcMotorEx Mshooter1;
+    public DcMotorEx Mshooter2;
+    double maxTPS;
+    double highVelocity = 2000;
+    double lowVelocity = 1000;
     double curTargetVelocity = highVelocity;
-    double P = 0;
-    double F = 1/maxTPS;
-    double[] steps = {10.0, 1.0, 0.1, 0.01, 0.001, 0.0001};
-    int stepIdx = 0;
+    double P = 15.1;
+    double F = 0.0112;
+    double[] steps = {1000, 500, 200, 100, 50, 25};
+    int stepIdx = 3;
 
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Mshooter = hardwareMap.get(DcMotorEx.class, "0");
-        Mshooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        Mshooter.setDirection(DcMotorSimple.Direction.REVERSE);
+        Mshooter1 = hardwareMap.get(DcMotorEx.class, "0");
+        Mshooter2 = hardwareMap.get(DcMotorEx.class, "1");
+        Mshooter1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Mshooter2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        Mshooter1.setDirection(DcMotorSimple.Direction.REVERSE);
+        Mshooter2.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        waitForStart();
         while (opModeIsActive()){
             if(gamepad1.aWasPressed()) {
                 if(curTargetVelocity == highVelocity) {
@@ -38,22 +43,17 @@ public class Shooter extends LinearOpMode {
             }
 
             if(gamepad1.dpadUpWasPressed()) {
-                P += steps[stepIdx];
+                curTargetVelocity+= steps[stepIdx];
             } else if(gamepad1.dpadDownWasPressed()) {
-                P -= steps[stepIdx];
+                curTargetVelocity -= steps[stepIdx];
             }
 
-            if(gamepad1.dpadLeftWasPressed()) {
-                F -= steps[stepIdx];
-            } else if(gamepad1.dpadRightWasPressed()) {
-                F += steps[stepIdx];
-            }
+            PIDFCoefficients pidf = new PIDFCoefficients(P, 0, 0, F);
+            Mshooter1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
+            Mshooter1.setVelocity(curTargetVelocity);
+            Mshooter2.setVelocity(curTargetVelocity);
 
-            PIDFCoefficients pidf = new PIDFCoefficients(P, 0, 0.00001, F);
-            Mshooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
-            Mshooter.setVelocity(curTargetVelocity);
-
-            double curVelocity = Mshooter.getVelocity();
+            double curVelocity = Mshooter1.getVelocity();
             double error = curTargetVelocity - curVelocity;
 
             telemetry.addData("curTargetVelocity", curTargetVelocity);
@@ -63,11 +63,12 @@ public class Shooter extends LinearOpMode {
             telemetry.addData("F", "%.4f (dpad L/R)", F);
             telemetry.addData("P", "%.4f (dpad U/D)", P);
             telemetry.addData("Step size", "%.4f (B button)", steps[stepIdx]);
+            telemetry.update();
         }
     }
 
     public void setMshooter(int rpm){
         double velocity = rpm*28/60;
-        Mshooter.setVelocity(velocity);
+        Mshooter1.setVelocity(velocity);
     }
 }
