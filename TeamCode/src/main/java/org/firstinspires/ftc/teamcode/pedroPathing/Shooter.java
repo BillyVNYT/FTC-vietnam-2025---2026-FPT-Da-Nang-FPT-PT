@@ -1,11 +1,7 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
-import android.icu.text.UnicodeSet;
-
-import com.bylazar.panels.Panels;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -28,6 +24,10 @@ public class Shooter extends LinearOpMode {
     int tprShot = 0;
     private PanelsTelemetry panelsTelemetry;
     private LimelightHardware limelightHardware;
+    int WINDOW = 10;
+    double[] buffer = new double[WINDOW];
+    int index = 0;
+    int count = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -48,17 +48,24 @@ public class Shooter extends LinearOpMode {
         Sdegree.setPosition(0.8492);
         timer.reset();
         while (opModeIsActive()){
-            if(limelightHardware.getDistance() <= 85){
+            if(limelightHardware.getDistance() <= 95){
+                Sdegree.setPosition(stepsServo[2]);
                 tprShot = (int) (1435.084*Math.pow(limelightHardware.getDistance(), 0.06423677));
-            } else if (limelightHardware.getDistance() <= 180){
+            } else if (limelightHardware.getDistance() <= 200){
+                Sdegree.setPosition(stepsServo[1]);
                 tprShot = (int) (1027.532*Math.pow(limelightHardware.getDistance(), 0.1454576));
             } else {
+                Sdegree.setPosition(stepsServo[0]);
                 tprShot = (int) (22.15773*Math.pow(limelightHardware.getDistance(), 0.8496951));
             }
+            setMshooter(getAverage(tprShot));
+            double sum = 0;
+            for (int i = 0; i < count; i++) sum += buffer[i];
             telemetry.addData("s0", Sdegree.getPosition());
             telemetry.addData("dis", limelightHardware.getDistance());
             telemetry.addData("obj", limelightHardware.getAprilTagData().area);
-            telemetry.addData("tpr shot", tprShot);
+            telemetry.addData("tpr shot", sum / count);
+            telemetry.addData("tx", limelightHardware.getAprilTagData().x);
 //            panelsTelemetry.getTelemetry().addData("s0", Sdegree.getPosition());
 //            panelsTelemetry.getTelemetry().addData("dis", limelightHardware.getDistance());
 //            panelsTelemetry.getTelemetry().addData("tpr shot", tprShot);
@@ -66,9 +73,7 @@ public class Shooter extends LinearOpMode {
 //            panelsTelemetry.getTelemetry().update();
         }
     }
-
-    public void setMshooter(int rpm){
-        double velocity = rpm*28/60;
+    public void setMshooter(int velocity){
         Mshooter1.setVelocity(velocity);
         Mshooter2.setVelocity(velocity);
 
@@ -90,5 +95,14 @@ public class Shooter extends LinearOpMode {
 //        panelsTelemetry.getFtcTelemetry().addData("F", "%.4f (dpad L/R)", F);
 //        panelsTelemetry.getFtcTelemetry().addData("P", "%.4f (dpad U/D)", P);
 //        panelsTelemetry.getFtcTelemetry().addData("Step size", "%.4f (B button)", stepsServo[stepIdx]);
+    }
+    int getAverage(double newValue) {
+        buffer[index] = newValue;
+        index = (index + 1) % WINDOW;
+        count = Math.min(count + 1, WINDOW);
+
+        double sum = 0;
+        for (int i = 0; i < count; i++) sum += buffer[i];
+        return (int) (sum / count);
     }
 }

@@ -42,9 +42,7 @@ public class LimelightHardware {
         if(result != null && result.isValid()){
             List<FiducialResult> fiducials = result.getFiducialResults();
             for (FiducialResult fiducial : fiducials){
-                if(fiducial.getFiducialId() == 20 || fiducial.getFiducialId() == 24){
-                    return new ApriltagData(result.getTx(), result.getTy(), result.getTa(), fiducial.getFiducialId());
-                }
+                return new ApriltagData(result.getTx(), result.getTy(), result.getTa(), fiducial.getFiducialId());
             }
         }
         return new ApriltagData(0, 0, 0, 0);
@@ -55,9 +53,7 @@ public class LimelightHardware {
         if(result != null && result.isValid()){
             List<FiducialResult> fiducials = result.getFiducialResults();
             for (FiducialResult fiducial : fiducials){
-                if(fiducial.getFiducialId() == 20 || fiducial.getFiducialId() == 24){
-                    return 153.3*Math.pow(result.getTa(), 0.629);
-                }
+                return 179.5511*Math.pow(result.getTa(),-0.6507074);
             }
         }
         return 0;
