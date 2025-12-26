@@ -32,7 +32,7 @@ public class Auto extends OpMode {
     public PathChain pickup1, lowScore, pickup2, highScore;
     public Pose lowZonePose = new Pose(81.115, 5.735);
     public Pose pickup1Pose = new Pose(121.468, 36.871);
-    public Pose pickup2Pose = new Pose(119.215, 82.959);
+    public Pose pickup2Pose = new Pose(121.468, 82.959);
     public Pose highZonePose = new Pose(77.838, 77.838);
 
 
@@ -54,7 +54,6 @@ public class Auto extends OpMode {
     public void loop() {
         follower.update(); // Update Pedro Pathing
         shooter.update(); // Update shooter logic
-
         pathState = autonomousPathUpdate(); // Update autonomous state machine
 
         panelsTelemetry.debug("Path State", pathState);
@@ -64,33 +63,27 @@ public class Auto extends OpMode {
     public void buildPath(Follower follower) {
         pickup1 = follower
                 .pathBuilder()
-                .addPath(
-                        new BezierCurve(new Pose(81.115, 5.735), new Pose(90.000, 35.000), new Pose(121.468, 36.871))
-                )
+                .addPath(new BezierCurve(lowZonePose, new Pose(90.000, 35.000), pickup1Pose))
                 .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(0))
                 .build();
 
         lowScore = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(121.468, 36.871), new Pose(81.115, 5.735))
+                        new BezierLine(pickup1Pose, lowZonePose)
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(120))
                 .build();
 
         pickup2 = follower
                 .pathBuilder()
-                .addPath(
-                        new BezierCurve(new Pose(81.115, 5.735),new Pose(90.000, 60.000),new Pose(121.468, 60.427))
-                )
+                .addPath(new BezierCurve(lowZonePose,new Pose(90.000, 60.000),pickup2Pose)                )
                 .setLinearHeadingInterpolation(Math.toRadians(120), Math.toRadians(0))
                 .build();
 
         highScore = follower
                 .pathBuilder()
-                .addPath(
-                        new BezierLine(new Pose(121.468, 60.427), new Pose(80.706, 5.735))
-                )
+                .addPath(new BezierLine(pickup2Pose, highZonePose)                )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(135))
                 .build();
 
