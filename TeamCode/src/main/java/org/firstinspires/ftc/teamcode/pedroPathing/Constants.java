@@ -15,8 +15,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
-            .mass(5.8)
-            .forwardZeroPowerAcceleration(-34.976553116239685)
+            .mass(18)
+            .forwardZeroPowerAcceleration(-25.440491430103922)
             .lateralZeroPowerAcceleration(-51.19052649930167)
             .translationalPIDFCoefficients(new PIDFCoefficients(0.035, 0, 0.0000345, 0.00125))
             .headingPIDFCoefficients(new PIDFCoefficients(0.65, 0, 0.03275, 0.025))
@@ -30,28 +30,28 @@ public class Constants {
 
     public static MecanumConstants driveConstants = new MecanumConstants()
             .maxPower(1)
-            .rightFrontMotorName("right_front_drive")
-            .rightRearMotorName("right_back_drive")
-            .leftFrontMotorName("left_front_drive")
-            .leftRearMotorName("left_back_drive")
+            .rightFrontMotorName("m1")
+            .rightRearMotorName("m2")
+            .leftFrontMotorName("m5")
+            .leftRearMotorName("m6")
             .leftFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
             .leftRearMotorDirection(DcMotorSimple.Direction.REVERSE)
-            .rightFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
-            .xVelocity(63.48085756259026)
-            .yVelocity(55.450629737646384);
+            .xVelocity(63.181464660517726);
+//            .yVelocity(55.450629737646384);
 
     public static TwoWheelConstants localizerConstants = new TwoWheelConstants()
-            .forwardEncoder_HardwareMapName("right_front_drive")
-            .strafeEncoder_HardwareMapName("right_back_drive")
-            .forwardEncoderDirection(Encoder.REVERSE)
-            .strafeEncoderDirection(Encoder.FORWARD)
+            .forwardEncoder_HardwareMapName("m1")
+            .strafeEncoder_HardwareMapName("m5")
+            .forwardPodY(-4.601).strafePodX(4.3535)
             .IMU_HardwareMapName("imu")
             .IMU_Orientation(
                     new RevHubOrientationOnRobot(
-                            RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                            RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
+                            RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
+                            RevHubOrientationOnRobot.UsbFacingDirection.UP
                     )
-            );
+            )
+            .forwardEncoderDirection(Encoder.FORWARD)
+            .strafeEncoderDirection(Encoder.FORWARD);
 
     public static Follower createFollower(HardwareMap hardwareMap) {
         return new FollowerBuilder(followerConstants, hardwareMap)
