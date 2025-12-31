@@ -12,6 +12,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class GenericAuto {
     public enum PathState {
         PICK_UP,
@@ -23,84 +26,100 @@ public class GenericAuto {
     public Follower follower; // Pedro Pathing follower instance
     private ShooterLogic shooter;
 
-    private PathChain[] paths;
-    private PathState[] states;
-    private PathState pathState;
-    private PathPoses[] pathPoses;
-    int curPathIdx = 0;
-    
+    private List<PathChain> paths;
+    private List<PathState> states;
+    private PathState currentState;
+    private int curPathIdx = 0;
+    boolean  shotTriggered = false;
+
     public void init(Telemetry telemetry, HardwareMap hardwareMap, Pose startPose, PathPoses[] pathPoses) {
         panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
         panelsTelemetry.debug("Status", "Initialized");
-        panelsTelemetry.update(telemetry);
+
         follower = Constants.createFollower(hardwareMap);
-        
-        shooter.init(hardwareMap);
         follower.setStartingPose(startPose);
 
-        this.pathPoses = pathPoses;
-        buildPath(follower);
+        shooter = new ShooterLogic();
+        shooter.init(hardwareMap);
+
+        buildPaths(follower, pathPoses);
+
+        if (!states.isEmpty()) {
+            currentState = states.get(0);
+            follower.followPath(paths.get(0));
+        } else currentState = PathState.LEAVE;
+
+
+        panelsTelemetry.update(telemetry);
     }
     
-    private void buildPath(Follower follower) {
-        for (int i = 0; i < pathPoses.length; i++) {
+    private void buildPaths(Follower follower, PathPoses[] pathPoses) {
+        paths = new ArrayList<>();
+        states = new ArrayList<>();
+
+        for (PathPoses pathSegment : pathPoses) {
             Curve curve;
-            Pose[] poses = pathPoses[i].poses;
-            PathPoses pathPose = pathPoses[i];
+            if (pathSegment.poses.length == 2) {
+                curve = new BezierLine(pathSegment.poses[0], pathSegment.poses[1]);
+            } else {
+                curve = new BezierCurve(pathSegment.poses[0], pathSegment.poses[1], pathSegment.poses[2]);
+            }
 
-            if (pathPose.poses.length == 2) curve = new BezierLine(poses[0],poses[1]);
-            else curve = new BezierCurve(poses[0],poses[1],poses[2]);
-
-            states[i] = pathPose.type;
-            paths[i] = follower
-                    .pathBuilder()
+            states.add(pathSegment.type);
+            paths.add(follower.pathBuilder()
                     .addPath(curve)
-                    .setLinearHeadingInterpolation(pathPose.startHeading, pathPose.endHeading)
-                    .build();
+                    .setLinearHeadingInterpolation(pathSegment.startHeading, pathSegment.endHeading)
+                    .build());
         }
-
-        states[pathPoses.length] = PathState.LEAVE;
-        pathState = states[0];
     }
 
-    boolean  shotTriggered = false;
-    private PathState autonomousPathUpdate() {
-        switch (pathState) {
+    private void autonomousPathUpdate() {
+        if (follower.isBusy()) {
+            return; // Wait for the current path to complete
+        }
+
+        switch (currentState) {
             case SHOOT:
-                if(follower.isBusy()) break;
-//                if(!shotTriggered) {
-//                    shooter.fireShots(3, true);
-//                    shotTriggered = true;
-//                } else if(!shooter.isBusy()) {
-//                    shotTriggered = false;
-                curPathIdx++;
-                pathState = states[curPathIdx];
-//                }
+                if (!shotTriggered) {
+                    // shooter.fireShots(3, true); // Example
+                    shotTriggered = true;
+                }
+
+                // if (!shooter.isBusy()) { // Uncomment when shooter logic is ready
+                shotTriggered = false;
+                goToNextPath();
+                // }
                 break;
+
             case PICK_UP:
-                follower.followPath(paths[curPathIdx]);
-                curPathIdx++;
-                pathState = states[curPathIdx];
+                goToNextPath();
                 break;
             case LAUNCH_ZONE:
-                if(!follower.isBusy()) {
-                    follower.followPath(paths[curPathIdx]);
-                    pathState = PathState.SHOOT;
-                }
+                currentState = PathState.SHOOT;
+                goToNextPath();
                 break;
             case LEAVE:
                 panelsTelemetry.addData("done", "leave");
                 break;
         }
-        return pathState;
+    }
+
+    private void goToNextPath() {
+        curPathIdx++;
+        if (curPathIdx < paths.size()) {
+            currentState = states.get(curPathIdx);
+            PathChain currentPath = paths.get(curPathIdx);
+            follower.followPath(currentPath);
+        } else currentState = PathState.LEAVE;
     }
 
     public void updateFollower(Telemetry telemetry) {
         follower.update();
         shooter.update();
-        pathState = autonomousPathUpdate(); 
+        autonomousPathUpdate();
 
-        panelsTelemetry.debug("Path State", pathState);
+        panelsTelemetry.debug("Path State", currentState);
+        panelsTelemetry.debug("Path Index", curPathIdx);
         panelsTelemetry.update(telemetry);
     }
     

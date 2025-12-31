@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 @Autonomous
 @Configurable // Panels
 public class LowRed extends OpMode {
-    GenericAuto auto;
+    GenericAuto auto = new GenericAuto();
     Pose startPose = new Pose(80, 16, Math.toRadians(90));
     Pose lowZonePose = new Pose(81.115, 5.735);
     Pose pickup1Pose = new Pose(121.468, 36.871);
