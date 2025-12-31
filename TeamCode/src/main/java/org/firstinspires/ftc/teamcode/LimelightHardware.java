@@ -61,8 +61,7 @@ public class LimelightHardware {
     public double getDistanceByTargetPose(){
         List<FiducialResult> result = limelight.getLatestResult().getFiducialResults();
         for (FiducialResult fiducial : result) {
-            double z = fiducial.getTargetPoseCameraSpace().getPosition().z;
-            return 162 * Math.pow(z, 0.92);
+            return 162 * Math.pow(fiducial.getTargetPoseCameraSpace().getPosition().z, 0.92);
         }
         return 0;
     }
