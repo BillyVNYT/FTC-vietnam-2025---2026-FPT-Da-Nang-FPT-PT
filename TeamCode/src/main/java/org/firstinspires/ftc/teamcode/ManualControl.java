@@ -13,10 +13,10 @@ public class ManualControl {
     }
 
     public void ControlTurnOutTake(){
-        if(gamepad1.right_trigger >= 0.1){
-            MturnOuttake.setPower(gamepad1.right_trigger);
-        } else if(gamepad1.left_trigger >= 0.1){
-            MturnOuttake.setPower(-gamepad1.left_trigger);
+        if(gamepad2.right_trigger >= 0.1){
+            MturnOuttake.setPower(gamepad2.right_trigger);
+        } else if(gamepad2.left_trigger >= 0.1){
+            MturnOuttake.setPower(-gamepad2.left_trigger);
         } else {
             MturnOuttake.setPower(0);
         }

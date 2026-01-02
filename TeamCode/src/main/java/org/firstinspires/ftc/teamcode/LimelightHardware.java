@@ -14,7 +14,7 @@ class ApriltagData{
     double x;
     double y;
     double area;
-    double id;
+    int id;
     ApriltagData(double x, double y, double area, int id){
         this.x = x;
         this.y = y;
