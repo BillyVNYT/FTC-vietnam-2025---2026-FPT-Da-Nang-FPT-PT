@@ -10,6 +10,29 @@ import org.firstinspires.ftc.teamcode.Intake;
 import org.firstinspires.ftc.teamcode.ManualControl;
 import org.firstinspires.ftc.teamcode.Outtake;
 
+//
+//                       _oo0oo_
+//                      o8888888o
+//                      88" . "88
+//                      (| -_- |)
+//                      0\  =  /0
+//                    ___/`---'\___
+//                  .' \\|     |// '.
+//                 / \\|||  :  |||// \
+//                / _||||| -:- |||||- \
+//               |   | \\\  -  /// |   |
+//               | \_|  ''\---/''  |_/ |
+//               \  .-\__  '-'  ___/-. /
+//             ___'. .'  /--.--\  `. .'___
+//          ."" '<  `.___\_<|>_/___.' >' "".
+//         | | :  `- \`.;`\ _ /`;.`/ - ` : | |
+//         \  \ `_.   \_ __\ /__ _/   .-` /  /
+//     =====`-.____`.___ \_____/___.-`___.-'=====
+//                       `=---='
+//
+//
+//     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//
 public class MainRed extends LinearOpMode {
     private DriveTrain driveTrain = new DriveTrain(hardwareMap);
     private Outtake outtake = new Outtake(hardwareMap, telemetry);
@@ -34,6 +57,8 @@ public class MainRed extends LinearOpMode {
             } else {
                 manualControl.ControlTurnOutTake();
             }
+            manualControl.ControlIntakeShaft();
+            intake.CheckCommandControl();
         }
     }
 }
