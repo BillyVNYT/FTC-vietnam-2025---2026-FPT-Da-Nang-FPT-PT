@@ -8,6 +8,7 @@ public class ManualControl {
     DcMotor MturnOuttake;
     Gamepad gamepad1;
     Gamepad gamepad2;
+    boolean TakeBall = true;
     public ManualControl(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2){
         MturnOuttake = hardwareMap.get(DcMotor.class, "m6");
     }
@@ -19,6 +20,11 @@ public class ManualControl {
             MturnOuttake.setPower(-gamepad2.left_trigger);
         } else {
             MturnOuttake.setPower(0);
+        }
+    }
+    public void ControlIntakeShaft(){
+        if(gamepad1.dpad_up){
+            TakeBall = !TakeBall;
         }
     }
 }
