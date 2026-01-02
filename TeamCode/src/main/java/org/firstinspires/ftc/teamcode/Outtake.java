@@ -18,6 +18,7 @@ public class Outtake {
     public DcMotorEx Mshooter1;
     public DcMotorEx Mshooter2;
     public DcMotorEx Mpreshoot;
+    public DcMotor MturnOuttake;
     public Servo Sdegree;
     public Servo Spreshoot;
     double P = 15.1;
@@ -33,11 +34,14 @@ public class Outtake {
     double[] buffer = new double[WINDOW];
     int index = 0;
     int count = 0;
+    double Kp = 1;
 
     public Outtake(HardwareMap hardwareMap, Telemetry telemetry) {
         Mshooter1 = hardwareMap.get(DcMotorEx.class, "m3");
         Mshooter2 = hardwareMap.get(DcMotorEx.class, "m4");
         Mpreshoot = hardwareMap.get(DcMotorEx.class, "m7");
+        MturnOuttake = hardwareMap.get(DcMotor.class, "m6");
+
         Sdegree = hardwareMap.get(Servo.class, "s1");
         Spreshoot = hardwareMap.get(Servo.class, "s2");
 
@@ -53,10 +57,10 @@ public class Outtake {
     }
 
     public void Shoot() throws InterruptedException {
-        if (limelightHardware.getDistanceByTargetPose() <= 95) {
+        if (limelightHardware.getDistance() <= 95) {
             Sdegree.setPosition(stepsServo[2]);
             tprShot = (int) (1435.084 * Math.pow(limelightHardware.getDistance(), 0.06423677));
-        } else if (limelightHardware.getDistanceByTargetPose() <= 200) {
+        } else if (limelightHardware.getDistance() <= 200) {
             Sdegree.setPosition(stepsServo[1]);
             tprShot = (int) (1027.532 * Math.pow(limelightHardware.getDistance(), 0.1454576));
         } else {
@@ -73,18 +77,16 @@ public class Outtake {
         Mpreshoot.setPower(0);
         wait(1000);
     }
-    public void setMshooter(int velocity){
+    public void holdOutTake() throws InterruptedException {
+        if(limelightHardware.getAprilTagData().x >= 5 && limelightHardware.getAprilTagData().x <= -5){
+            MturnOuttake.setPower(limelightHardware.getDistance()*Kp);
+        } else {
+            MturnOuttake.setPower(0);
+        }
+    }
+    private void setMshooter(int velocity){
         Mshooter1.setVelocity(velocity);
         Mshooter2.setVelocity(velocity);
         Mpreshoot.setVelocity(300);
-    }
-    int getAverage(double newValue) {
-        buffer[index] = newValue;
-        index = (index + 1) % WINDOW;
-        count = Math.min(count + 1, WINDOW);
-
-        double sum = 0;
-        for (int i = 0; i < count; i++) sum += buffer[i];
-        return (int) (sum / count);
     }
 }
