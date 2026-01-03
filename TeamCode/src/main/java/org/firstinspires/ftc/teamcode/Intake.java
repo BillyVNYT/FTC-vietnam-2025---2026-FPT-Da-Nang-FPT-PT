@@ -14,8 +14,8 @@ public class Intake {
     public void Start(){
         CaiCucXoayXoay.setPower(1);
     }
-    public void CheckCommandControl(){
-        if(manualControl.TakeBall){
+    public void CheckCommandControl() {
+        if (manualControl.TakeBall) {
             CaiCucXoayXoay.setPower(1);
         } else {
             CaiCucXoayXoay.setPower(0);
