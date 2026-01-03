@@ -12,12 +12,13 @@ public class SortBall {
     ColorSensor slot2;
     ColorSensor slot3;
     private AutoTrackStartMatch autoTrackStartMatch;
+    private ObeliskData obeliskData;
     public SortBall(HardwareMap hardwareMap){
         autoTrackStartMatch = new AutoTrackStartMatch(hardwareMap);
         SortBall = hardwareMap.get(Servo.class, "s3");
     }
     public void checkSlot(){
-        if(checkBall(slot1) == 0){
+        if(checkBall(slot1) == obeliskData(autoTrackStartMatch.ObeliskNum)){
 
         }
     }

@@ -10,7 +10,6 @@ import org.firstinspires.ftc.teamcode.Intake;
 import org.firstinspires.ftc.teamcode.ManualControl;
 import org.firstinspires.ftc.teamcode.Outtake;
 
-//
 //                       _oo0oo_
 //                      o8888888o
 //                      88" . "88
@@ -32,7 +31,6 @@ import org.firstinspires.ftc.teamcode.Outtake;
 //
 //
 //     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-//
 public class MainRed extends LinearOpMode {
     private DriveTrain driveTrain = new DriveTrain(hardwareMap);
     private Outtake outtake = new Outtake(hardwareMap, telemetry);
