@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.pedroPathing;
+package org.firstinspires.ftc.teamcode.utils;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -15,14 +15,7 @@ public class TestServos extends LinearOpMode {
     boolean isChangingServo = false;
 
     void resetServoValues() {
-        if(testingServo == 2) {
-            servoPos = 0.8;
-        } else if(testingServo ==3) {
-            servoPos = 0.3;
-        } else {
-            servoPos = 0;
-        }
-
+        servoPos = 0;
         servoDirection = Servo.Direction.FORWARD;
     }
 
