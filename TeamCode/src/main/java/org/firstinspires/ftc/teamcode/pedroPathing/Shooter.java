@@ -1,8 +1,5 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
-import com.bylazar.telemetry.PanelsTelemetry;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -14,12 +11,14 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Shooter {
-    private DcMotorEx MShooter1, MShooter2;
-    private Servo SAngle;
-    private LimelightHardware limelight;
+    private final DcMotorEx MShooter1, MShooter2, MLoader;
+    private final DcMotor MTurnOuttake;
+    private final Servo SAngle, SLoader;
+    private final LimelightHardware limelight;
     public ElapsedTime timer = new ElapsedTime();
     double P = 15.1;
     double F = 0.0112;
+    double Kp = 1;
     double[] servoPositions = {0.8492, 0.6389, 0};
     int stepIdx = 0;
 
@@ -29,18 +28,24 @@ public class Shooter {
     int index = 0;
     int count = 0;
 
-    public void initShooter(HardwareMap hardwareMap) {
-        MShooter1 = hardwareMap.get(DcMotorEx.class, "0");
-        MShooter2 = hardwareMap.get(DcMotorEx.class, "1");
+    public Shooter(HardwareMap hardwareMap) {
+        MShooter1 = hardwareMap.get(DcMotorEx.class, "m3");
+        MShooter2 = hardwareMap.get(DcMotorEx.class, "m4");
         MShooter1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MShooter2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MShooter2.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        MLoader = hardwareMap.get(DcMotorEx.class, "m5");
+        MTurnOuttake = hardwareMap.get(DcMotor.class, "m6");
+
         PIDFCoefficients pidf = new PIDFCoefficients(P, 0, 0, F);
         MShooter1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
+        MLoader.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
 
-        SAngle = hardwareMap.get(Servo.class, "s0");
+        SAngle = hardwareMap.get(Servo.class, "s1");
         SAngle.setPosition(0.8492);
+        SLoader = hardwareMap.get(Servo.class, "s2");
+        SLoader.setPosition(0.5);
 
         limelight = new LimelightHardware(hardwareMap);
         timer.reset();
@@ -57,7 +62,7 @@ public class Shooter {
         return (int) sum / count;
     }
 
-    public void shoot(Telemetry telemetry) {
+    public void shoot(Telemetry telemetry) throws InterruptedException{
         double distance = limelight.getAprilTagData().z;
         if(distance <= 95){
             SAngle.setPosition(servoPositions[2]);
@@ -70,22 +75,28 @@ public class Shooter {
             tprShot = (int) (22.15773*Math.pow(distance, 0.8496951));
         }
 
+        setMotorVelocity(tprShot, telemetry);
+        wait(1000);
 
-        int avgTPR = getAverage(tprShot);
-        setVelocity(avgTPR, telemetry);
+        // load balls
+        SLoader.setPosition(0.5);
+        wait(1000);
 
-        telemetry.addData("tpr shot", avgTPR);
+        // reset shooter
+        MLoader.setPower(0);
+        SLoader.setPosition(0);
+        MShooter1.setPower(0);
+        MShooter2.setPower(0);
+        wait(1000);
+
         telemetry.addData("Servo angle", SAngle.getPosition());
-        telemetry.addData("Distance", limelight.getAprilTagData().z);
-        telemetry.addData("Distance by Target pose", limelight.getDistanceByTargetPose());
-        telemetry.addData("Fiducial distance", limelight.getAprilTagData().z);
-        telemetry.addData("tx", limelight.getAprilTagData().x);
-        telemetry.update();
+        telemetry.addLine("---------------------------");
     }
 
-    public void setVelocity(int velocity, Telemetry telemetry){
+    public void setMotorVelocity(int velocity, Telemetry telemetry){
         MShooter1.setVelocity(velocity);
         MShooter2.setVelocity(velocity);
+        MLoader.setVelocity(300);
 
         double curVelocity = MShooter1.getVelocity();
         double error = velocity - curVelocity;
@@ -93,6 +104,19 @@ public class Shooter {
         telemetry.addData("curTargetVelocity", velocity);
         telemetry.addData("curVelocity", curVelocity);
         telemetry.addData("error", error);
+        telemetry.addLine("---------------------------");
+    }
+
+    public void trackAprilTag(Telemetry telemetry){
+        double error = limelight.getAprilTagData().x;
+        double distance = limelight.getAprilTagData().z;
+
+        if(error >= 5 || error <= -5){
+            MTurnOuttake.setPower(distance*Kp);
+        } else MTurnOuttake.setPower(0);
+
+        telemetry.addData("Distance", distance);
+        telemetry.addData("Tx", error);
         telemetry.addLine("---------------------------");
     }
 }

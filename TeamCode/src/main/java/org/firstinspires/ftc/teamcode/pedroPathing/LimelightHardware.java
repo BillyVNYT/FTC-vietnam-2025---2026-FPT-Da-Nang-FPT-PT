@@ -45,23 +45,13 @@ public class LimelightHardware {
         if(result != null && result.isValid()) {
             List<FiducialResult> fiducials = result.getFiducialResults();
             for (FiducialResult fiducial : fiducials) {
-                double distance = 179.5511*Math.pow(fiducial.getTargetArea(), -0.6507074);
-                apriltagData = new ApriltagData(fiducial.getTargetXDegrees(), fiducial.getTargetYDegrees(),
-                        distance, fiducial.getTargetArea(), fiducial.getFiducialId());
+                double distance = 62 * Math.pow(fiducial.getTargetPoseCameraSpace().getPosition().z, 0.92);
+
+                apriltagData = new ApriltagData(result.getTx(), result.getTy(),
+                        distance, result.getTa(), fiducial.getFiducialId());
             }
         }
+
         return apriltagData;
-    }
-
-    public double getDistanceByTargetPose(){
-        List<FiducialResult> result = limelight.getLatestResult().getFiducialResults();
-
-        for (FiducialResult fiducial : result) {
-            double x = fiducial.getTargetPoseCameraSpace().getPosition().x;
-            double y = fiducial.getTargetPoseCameraSpace().getPosition().y;
-            double z = fiducial.getTargetPoseCameraSpace().getPosition().z;
-            return Math.sqrt(x*x + y*y + z*z);
-        }
-        return 0;
     }
 }
