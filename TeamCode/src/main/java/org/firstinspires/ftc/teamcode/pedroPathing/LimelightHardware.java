@@ -13,11 +13,13 @@ import java.util.List;
 class ApriltagData{
     double x;
     double y;
+    double z;
     double area;
     double id;
-    ApriltagData(double x, double y, double area, int id){
+    ApriltagData(double x, double y, double z, double area, int id){
         this.x = x;
         this.y = y;
+        this.z = z;
         this.area = area;
         this.id = id;
     }
@@ -32,32 +34,25 @@ public class LimelightHardware {
         limelight.start();
     }
 
-    public void changePileline(int tab){
+    public void changePipeline(int tab){
         limelight.pipelineSwitch(tab);
         limelight.reloadPipeline();
     }
     public ApriltagData getAprilTagData(){
         LLResult result = limelight.getLatestResult();
+        ApriltagData apriltagData = new ApriltagData(0, 0, 0,0, 0);
 
-        if(result != null && result.isValid()){
+        if(result != null && result.isValid()) {
             List<FiducialResult> fiducials = result.getFiducialResults();
-            for (FiducialResult fiducial : fiducials){
-                return new ApriltagData(result.getTx(), result.getTy(), result.getTa(), fiducial.getFiducialId());
+            for (FiducialResult fiducial : fiducials) {
+                double distance = 179.5511*Math.pow(fiducial.getTargetArea(), -0.6507074);
+                apriltagData = new ApriltagData(fiducial.getTargetXDegrees(), fiducial.getTargetYDegrees(),
+                        distance, fiducial.getTargetArea(), fiducial.getFiducialId());
             }
         }
-        return new ApriltagData(0, 0, 0, 0);
+        return apriltagData;
     }
-    public double getDistance(){
-        LLResult result = limelight.getLatestResult();
 
-        if(result != null && result.isValid()){
-            List<FiducialResult> fiducials = result.getFiducialResults();
-            for (FiducialResult fiducial : fiducials){
-                return 179.5511*Math.pow(result.getTa(),-0.6507074);
-            }
-        }
-        return 0;
-    }
     public double getDistanceByTargetPose(){
         List<FiducialResult> result = limelight.getLatestResult().getFiducialResults();
 
