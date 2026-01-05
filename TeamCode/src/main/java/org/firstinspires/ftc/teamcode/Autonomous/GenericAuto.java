@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.utils.Shooter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,7 @@ public class GenericAuto {
     }
     private final TelemetryManager panelsTelemetry;
     public Follower follower;
+    public Shooter shooter;
     private final List<PathChain> paths = new ArrayList<>();
     private final List<PathState> states = new ArrayList<>();;
     private PathState currentState ;
@@ -68,7 +70,7 @@ public class GenericAuto {
         }
     }
 
-    private void autonomousPathUpdate() {
+    private void autonomousPathUpdate() throws InterruptedException {
         if (follower.isBusy()) {
             return; // Wait for the current path to complete
         }
@@ -76,7 +78,7 @@ public class GenericAuto {
         switch (currentState) {
             case SHOOT:
                 if (!shotTriggered) {
-                    // shooter.shoot();
+//                     shooter.shoot(panelsTelemetry);
                     shotTriggered = true;
                 }
 
@@ -109,7 +111,7 @@ public class GenericAuto {
         follower.followPath(currentPath);
     }
 
-    public void updateFollower(Telemetry telemetry) {
+    public void updateFollower(Telemetry telemetry) throws InterruptedException {
         follower.update();
         autonomousPathUpdate();
 
