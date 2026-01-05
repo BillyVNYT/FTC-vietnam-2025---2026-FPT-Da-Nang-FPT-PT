@@ -3,12 +3,12 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 
 @Autonomous
 @Configurable // Panels
-public class LowRed extends OpMode {
+public class LowRed extends LinearOpMode {
     Pose startPose = new Pose(80, 16, Math.toRadians(90));
     Pose lowZonePose = new Pose(81.115, 5.735);
     Pose pickup1Pose = new Pose(121.468, 36.871);
@@ -27,15 +27,15 @@ public class LowRed extends OpMode {
 
     GenericAuto auto;
 
+
     @Override
-    public void init() {
+    public void runOpMode() throws InterruptedException {
         auto = new GenericAuto(telemetry, hardwareMap, startPose, pathPoses);
-    }
+        waitForStart();
 
-
-    @Override
-    public void loop() {
-        auto.updateFollower(telemetry);
+        while (opModeIsActive()) {
+            auto.updateFollower(telemetry);
+        }
     }
 
 }

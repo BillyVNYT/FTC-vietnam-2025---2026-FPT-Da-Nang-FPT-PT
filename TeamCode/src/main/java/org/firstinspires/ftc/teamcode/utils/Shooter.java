@@ -1,5 +1,6 @@
-package org.firstinspires.ftc.teamcode.pedroPathing;
+package org.firstinspires.ftc.teamcode.utils;
 
+import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -20,13 +21,14 @@ public class Shooter {
     double F = 0.0112;
     double Kp = 1;
     double[] servoPositions = {0.8492, 0.6389, 0};
-    int stepIdx = 0;
+    boolean isBusy = false;
 
     int tprShot = 0;
     int WINDOW = 10;
     double[] buffer = new double[WINDOW];
     int index = 0;
     int count = 0;
+
 
     public Shooter(HardwareMap hardwareMap) {
         MShooter1 = hardwareMap.get(DcMotorEx.class, "m3");
@@ -62,7 +64,9 @@ public class Shooter {
         return (int) sum / count;
     }
 
-    public void shoot(Telemetry telemetry) throws InterruptedException{
+    public void shoot(TelemetryManager telemetry) throws InterruptedException{
+        isBusy = true;
+
         double distance = limelight.getAprilTagData().z;
         if(distance <= 95){
             SAngle.setPosition(servoPositions[2]);
@@ -89,11 +93,12 @@ public class Shooter {
         MShooter2.setPower(0);
         wait(1000);
 
+        isBusy = false;
         telemetry.addData("Servo angle", SAngle.getPosition());
         telemetry.addLine("---------------------------");
     }
 
-    public void setMotorVelocity(int velocity, Telemetry telemetry){
+    public void setMotorVelocity(int velocity, TelemetryManager telemetry){
         MShooter1.setVelocity(velocity);
         MShooter2.setVelocity(velocity);
         MLoader.setVelocity(300);
@@ -118,5 +123,9 @@ public class Shooter {
         telemetry.addData("Distance", distance);
         telemetry.addData("Tx", error);
         telemetry.addLine("---------------------------");
+    }
+
+    public boolean isBusy(){
+        return isBusy;
     }
 }
