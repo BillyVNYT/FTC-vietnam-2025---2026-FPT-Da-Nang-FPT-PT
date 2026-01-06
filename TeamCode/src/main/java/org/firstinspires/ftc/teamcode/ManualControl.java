@@ -92,6 +92,7 @@ public class ManualControl {
             }
         }
 
+
         if (Gamepad1.right_bumper && hasGreenBall) {
             MShooter1.setPower(1);
             MShooter2.setPower(1);
