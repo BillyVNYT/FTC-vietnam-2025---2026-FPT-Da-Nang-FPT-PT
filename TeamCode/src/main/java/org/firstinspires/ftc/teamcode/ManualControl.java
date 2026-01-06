@@ -1,30 +1,64 @@
 package org.firstinspires.ftc.teamcode;
-
+import org.firstinspires.ftc.teamcode.SortBall;
+import static org.firstinspires.ftc.teamcode.SortBall.IsFull;
+import static org.firstinspires.ftc.teamcode.SortBall.BallColor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import org.firstinspires.ftc.teamcode.SortBall;
 
 public class ManualControl {
-    DcMotor MturnOuttake;
-    Gamepad gamepad1;
-    Gamepad gamepad2;
-    boolean TakeBall = true;
+    DcMotor MTurnOuttake;
+    DcMotor MOuttakeShooter;
+    DcMotor MIntakeShaft;
+    Gamepad Gamepad1;
+    Gamepad Gamepad2;
+    SortBall.BallColor[] load = {
+            SortBall.BallColor.GREEN,
+            SortBall.BallColor.PURPLE,
+            SortBall.BallColor.EMPTY
+    };
+
+    boolean takeBall = true;
     public ManualControl(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2){
-        MturnOuttake = hardwareMap.get(DcMotor.class, "m6");
+        MTurnOuttake = hardwareMap.get(DcMotor.class, "MTurnOuttake");
+        MIntakeShaft=hardwareMap.get(DcMotor.class,"MIntakeShaft");
+        MOuttakeShooter=hardwareMap.get(DcMotor.class,"MOuttakeShooter");
     }
 
     public void ControlTurnOutTake(){
-        if(gamepad2.right_trigger >= 0.1){
-            MturnOuttake.setPower(gamepad2.right_trigger);
-        } else if(gamepad2.left_trigger >= 0.1){
-            MturnOuttake.setPower(-gamepad2.left_trigger);
+        if(Gamepad2.right_trigger >= 0.1){
+            MTurnOuttake.setPower(Gamepad2.right_trigger);
+        } else if(Gamepad2.left_trigger >= 0.1){
+            MTurnOuttake.setPower(-Gamepad2.left_trigger);
         } else {
-            MturnOuttake.setPower(0);
+            MTurnOuttake.setPower(0);
         }
     }
     public void ControlIntakeShaft(){
-        if(gamepad1.dpad_up){
-            TakeBall = !TakeBall;
+        if(SortBall.IsFull(load)){
+            MIntakeShaft.setPower(1);
+        }
+        if(Gamepad1.triangle){
+            takeBall = !takeBall;
+            if(takeBall){
+                MIntakeShaft.setPower(1);
+            }
+            else
+                MIntakeShaft.setPower(0);
         }
     }
+    public void ControlOuttakeShooter(){
+        if(Gamepad1.cross) {
+            while (SortBall.IsFull(load))
+                MOuttakeShooter.setPower(1);
+        }
+
+        else
+            MOuttakeShooter.setPower(0);
+    }
+    public void ShootPurpleArtifact(){
+
+    }
+
 }
