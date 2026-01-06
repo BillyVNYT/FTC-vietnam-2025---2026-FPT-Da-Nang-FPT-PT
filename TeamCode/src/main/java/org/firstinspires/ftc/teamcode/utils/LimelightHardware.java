@@ -1,9 +1,7 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.utils;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
-import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import com.qualcomm.hardware.limelightvision.LLResultTypes.FiducialResult;
@@ -13,11 +11,13 @@ import java.util.List;
 class ApriltagData{
     double x;
     double y;
+    double z;
     double area;
-    int id;
-    ApriltagData(double x, double y, double area, int id){
+    double id;
+    ApriltagData(double x, double y, double z, double area, int id){
         this.x = x;
         this.y = y;
+        this.z = z;
         this.area = area;
         this.id = id;
     }
@@ -32,26 +32,24 @@ public class LimelightHardware {
         limelight.start();
     }
 
-    public void changePileline(int tab){
+    public void changePipeline(int tab){
         limelight.pipelineSwitch(tab);
         limelight.reloadPipeline();
     }
     public ApriltagData getAprilTagData(){
         LLResult result = limelight.getLatestResult();
+        ApriltagData apriltagData = new ApriltagData(0, 0, 0,0, 0);
 
-        if(result != null && result.isValid()){
+        if(result != null && result.isValid()) {
             List<FiducialResult> fiducials = result.getFiducialResults();
-            for (FiducialResult fiducial : fiducials){
-                return new ApriltagData(result.getTx(), result.getTy(), result.getTa(), fiducial.getFiducialId());
+            for (FiducialResult fiducial : fiducials) {
+                double distance = 62 * Math.pow(fiducial.getTargetPoseCameraSpace().getPosition().z, 0.92);
+
+                apriltagData = new ApriltagData(result.getTx(), result.getTy(),
+                        distance, result.getTa(), fiducial.getFiducialId());
             }
         }
-        return new ApriltagData(0, 0, 0, 0);
-    }
-    public double getDistance(){
-        List<FiducialResult> result = limelight.getLatestResult().getFiducialResults();
-        for (FiducialResult fiducial : result) {
-            return 162 * Math.pow(fiducial.getTargetPoseCameraSpace().getPosition().z, 0.92);
-        }
-        return 0;
+
+        return apriltagData;
     }
 }
