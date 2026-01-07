@@ -67,7 +67,7 @@ public class Shooter {
         isBusy=true;
         ElapsedTime timer = new ElapsedTime();
         timer.reset();
-        if(timer.seconds()>36)
+        if(timer.seconds()>3)
                 isBusy=false;
 
     }
