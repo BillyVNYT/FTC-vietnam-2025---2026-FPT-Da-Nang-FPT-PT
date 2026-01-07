@@ -101,7 +101,11 @@ public class ManualControl {
         } else
             MOuttakeShooter.setPower(0);
     }
-
+    public void ShootBall(TelemetryManager telemetry) throws InterruptedException{
+        if(Gamepad2.circle){
+            shooter.shoot(telemetry);
+        }
+    }
     public void ShootPurpleArtifact(TelemetryManager telemetry) throws InterruptedException {
 
         if (Gamepad1.left_bumper
