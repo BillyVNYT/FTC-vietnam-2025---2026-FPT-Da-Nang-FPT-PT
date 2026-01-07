@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.SortBall;
 import org.firstinspires.ftc.teamcode.utils.Shooter;
+import org.firstinspires.ftc.teamcode.utils.ShootDistance;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.bylazar.telemetry.TelemetryManager;
 import org.firstinspires.ftc.teamcode.utils.Lifter;
@@ -14,6 +15,7 @@ import org.firstinspires.ftc.teamcode.utils.Lifter;
 public class ManualControl {
     Shooter shooter;
     Lifter lifter;
+    ShootDistance shootDistance;
 
     enum ShootState {
         IDLE,
@@ -68,7 +70,8 @@ public class ManualControl {
         MShooter2 = hardwareMap.get(DcMotor.class, "MShooter2");
         lifter = new Lifter(hardwareMap);
         shooter = new Shooter(hardwareMap);
-
+        double shootDistanceUp;
+        double shootDistanceDown;
     }
 
     public void ControlTurnOutTake() {
@@ -104,6 +107,22 @@ public class ManualControl {
     public void ShootBall(TelemetryManager telemetry) throws InterruptedException{
         if(Gamepad2.circle){
             shooter.shoot(telemetry);
+        }
+    }
+    public void ChangeDistanceUp(){
+        if(Gamepad2.left_trigger  > 0.2){
+            shootDistance.ChangeDistanceUp(Gamepad2.left_trigger);
+        }
+        else{
+            shootDistance.ChangeDistanceUp(0);
+        }
+    }
+    public void ChangeDistanceDown(){
+        if(Gamepad2.right_trigger  > 0.2){
+            shootDistance.ChangeDistanceDown(Gamepad2.right_trigger);
+        }
+        else{
+            shootDistance.ChangeDistanceDown(0);
         }
     }
     public void ShootPurpleArtifact(TelemetryManager telemetry) throws InterruptedException {
