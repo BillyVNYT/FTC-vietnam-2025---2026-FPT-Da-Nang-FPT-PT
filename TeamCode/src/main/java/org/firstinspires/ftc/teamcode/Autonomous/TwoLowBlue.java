@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 @Configurable // Panels
 public class TwoLowBlue extends OpMode {
     Pose startPose = new Pose(53.062, 18.085, Math.toRadians(180));
-    Pose[] startToPickupMidPoses = {startPose, pickupMidPose};
+    Pose[] startToPickupMidPoses = {lowZonePose, pickupMidPose};
     PathPoses[] pathPoses = {new PathPoses(Math.toRadians(180), startToPickupMidPoses, GenericAuto.PathState.PICK_UP),
             new PathPoses(Math.toRadians(180), pickupMidToTopZonePoses, GenericAuto.PathState.LAUNCH_ZONE),
             new PathPoses(Math.toRadians(180), Math.toRadians(145), topZoneToPickupGatePoses, GenericAuto.PathState.PICK_UP),

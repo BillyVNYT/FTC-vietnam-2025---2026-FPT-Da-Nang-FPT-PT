@@ -8,7 +8,7 @@ public class BluePathPoses {
     public static Pose pickupGatePose = new Pose(11.261, 60.057);
     public static Pose pickupTopPose = new Pose(13.649, 83.943);
     public static Pose pickupLowPose = new Pose(8.531, 36.0);
-    public static Pose lowZonePose = new Pose(59.545, 8.531);
+    public static Pose lowZonePose = new Pose(59.545, 18.531);
     public static Pose leavePose= new Pose(21.327, 69.441);
 
     public static Pose[] topZoneToPickupMidPoses = {topZonePose, new Pose(58.692, 54.768), pickupMidPose};
