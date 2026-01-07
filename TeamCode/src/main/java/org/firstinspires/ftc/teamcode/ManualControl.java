@@ -8,7 +8,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.SortBall;
 
 public class ManualControl {
+
     DcMotor MTurnOuttake;
+
     DcMotor MOuttakeShooter;
     DcMotor MShooter1;
     DcMotor MShooter2;
@@ -65,7 +67,6 @@ public class ManualControl {
     public void ShootPurpleArtifact() {
 
         boolean hasPurpleBall = false;
-
         for (SortBall.BallColor ball : load) {
             if (ball == SortBall.BallColor.PURPLE) {
                 hasPurpleBall = true;
