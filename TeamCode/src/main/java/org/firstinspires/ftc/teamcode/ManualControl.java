@@ -6,11 +6,32 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.SortBall;
+import com.qualcomm.robotcore.hardware.Servo;
 
 public class ManualControl {
+    enum ShootState {
+        IDLE,
+        ROTATING,
+        SHOOTING
+    }
 
+    ShootState shootState = ShootState.IDLE;
+    long shootTimer = 0;
+
+    Servo alignServo;
+    double[] SLOT_POS = {0.0, 0.33, 0.66};
+
+    private void rotateToBall(SortBall.BallColor target) {
+        for (int i = 0; i < load.length; i++) {
+            if (load[i] == target) {
+                alignServo.setPosition(SLOT_POS[i]);
+                break;
+            }
+        }
+    }
+
+    double[] SPIN_POS = {0.0, 0.33, 0.66};
     DcMotor MTurnOuttake;
-
     DcMotor MOuttakeShooter;
     DcMotor MShooter1;
     DcMotor MShooter2;
@@ -24,6 +45,13 @@ public class ManualControl {
     };
 
     boolean takeBall = true;
+
+    private boolean hasBall(SortBall.BallColor color) {
+        for (SortBall.BallColor ball : load) {
+            if (ball == color) return true;
+        }
+        return false;
+    }
 
     public ManualControl(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2) {
         MTurnOuttake = hardwareMap.get(DcMotor.class, "MTurnOuttake");
@@ -66,43 +94,22 @@ public class ManualControl {
 
     public void ShootPurpleArtifact() {
 
-        boolean hasPurpleBall = false;
-        for (SortBall.BallColor ball : load) {
-            if (ball == SortBall.BallColor.PURPLE) {
-                hasPurpleBall = true;
-                break;
+        if (shootState == ShootState.IDLE
+                && Gamepad1.left_bumper
+                && hasBall(SortBall.BallColor.PURPLE)) {
+
+            rotateToBall(SortBall.BallColor.PURPLE);
+            shootTimer = System.currentTimeMillis();
+            shootState = ShootState.ROTATING;
+        }
+
+        if (shootState == ShootState.ROTATING) {
+            if (System.currentTimeMillis() - shootTimer > 300) {
+                MShooter1.setPower(1);
+                MShooter2.setPower(1);
+                shootTimer = System.currentTimeMillis();
+                shootState = ShootState.SHOOTING;
             }
-        }
-
-        if (Gamepad1.left_bumper && hasPurpleBall) {
-            MShooter1.setPower(1);
-            MShooter2.setPower(1);
-        } else {
-            MShooter1.setPower(0);
-            MShooter2.setPower(0);
-        }
-    }
-    public void ShootGreenArtifact() {
-
-        boolean hasGreenBall = false;
-
-        for (SortBall.BallColor ball : load) {
-            if (ball == SortBall.BallColor.GREEN) {
-                hasGreenBall = true;
-                break;
-            }
-        }
-
-
-        if (Gamepad1.right_bumper && hasGreenBall) {
-            MShooter1.setPower(1);
-            MShooter2.setPower(1);
-        } else {
-            MShooter1.setPower(0);
-            MShooter2.setPower(0);
         }
     }
 }
-
-
-
