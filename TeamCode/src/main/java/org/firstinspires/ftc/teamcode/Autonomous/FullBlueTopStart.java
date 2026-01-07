@@ -5,17 +5,16 @@ import static org.firstinspires.ftc.teamcode.Autonomous.BluePathPoses.*;
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 
 @Autonomous
 @Configurable // Panels
-public class FullBlueTopStart extends OpMode {
+public class FullBlueTopStart extends LinearOpMode {
     Pose startPose = new Pose(27.48929159802308, 127.79571663920923, Math.toRadians(180));
     Pose goalPose = new Pose(26.787, 128.303);
+    GenericAuto auto;
     Pose[] startToTopZonePoses = {goalPose, topZonePose};
-
-
 
     PathPoses[] pathPoses = {new PathPoses(Math.toRadians(180), startToTopZonePoses, GenericAuto.PathState.LAUNCH_ZONE),
             new PathPoses(Math.toRadians(180), topZoneToPickupMidPoses, GenericAuto.PathState.PICK_UP),
@@ -35,16 +34,27 @@ public class FullBlueTopStart extends OpMode {
             new PathPoses(Math.toRadians(180), lowZoneToLeavePoses, GenericAuto.PathState.LEAVE)
     };
 
-    GenericAuto auto;
-
     @Override
-    public void init() {
+    public void runOpMode() throws InterruptedException {
+        telemetry.addData("Status", "Initialized");
         auto = new GenericAuto(telemetry, hardwareMap, startPose, pathPoses);
+        waitForStart();
+        while(opModeIsActive()){
+            auto.updateFollower(telemetry);
+            telemetry.addData("Status", "Running");
+            telemetry.update();
+        }
+
     }
 
-    @Override
-    public void loop() {
-        auto.updateFollower(telemetry);
-    }
+
+//    @Override
+//    public void init() {
+//        auto = new GenericAuto(telemetry, hardwareMap, startPose, pathPoses);
+//    }
+//
+//    @Override
+//    public void loop() {
+//    }
 
 }
