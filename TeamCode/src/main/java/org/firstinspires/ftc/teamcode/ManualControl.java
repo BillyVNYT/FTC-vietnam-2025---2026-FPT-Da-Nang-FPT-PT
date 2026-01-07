@@ -99,51 +99,25 @@ public class ManualControl {
             MOuttakeShooter.setPower(0);
     }
 
-    public void ShootPurpleArtifact(TelemetryManager telemetry) {
+    public void ShootPurpleArtifact(TelemetryManager telemetry) throws InterruptedException {
 
-        if (shootState == ShootState.IDLE
-                && Gamepad1.left_bumper
+        if (Gamepad1.left_bumper
                 && hasBall(SortBall.BallColor.PURPLE)
                 && !shooter.isBusy()) {
 
             rotateToBall(SortBall.BallColor.PURPLE);
-            shootTimer = System.currentTimeMillis();
-            shootState = ShootState.ROTATING;
-        }
-
-        if (shootState == ShootState.ROTATING) {
-            if (System.currentTimeMillis() - shootTimer > 300) {
-                try {
-                    shooter.shoot(telemetry);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-                shootState = ShootState.IDLE;
-            }
+            shooter.shoot(telemetry);
         }
     }
 
-    public void ShootGreenArtifact(TelemetryManager telemetry) {
+    public void ShootGreenArtifact(TelemetryManager telemetry) throws InterruptedException {
 
-        if (shootState == ShootState.IDLE
-                && Gamepad1.right_bumper
+        if (Gamepad1.right_bumper
                 && hasBall(SortBall.BallColor.GREEN)
                 && !shooter.isBusy()) {
 
             rotateToBall(SortBall.BallColor.GREEN);
-            shootTimer = System.currentTimeMillis();
-            shootState = ShootState.ROTATING;
-        }
-
-        if (shootState == ShootState.ROTATING) {
-            if (System.currentTimeMillis() - shootTimer > 300) {
-                try {
-                    shooter.shoot(telemetry);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-                shootState = ShootState.IDLE;
-            }
+            shooter.shoot(telemetry);
         }
     }
 }
