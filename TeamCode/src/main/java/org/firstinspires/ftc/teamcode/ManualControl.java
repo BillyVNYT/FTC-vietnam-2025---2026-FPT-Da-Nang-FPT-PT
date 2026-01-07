@@ -6,9 +6,14 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.SortBall;
+import org.firstinspires.ftc.teamcode.utils.Shooter;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.bylazar.telemetry.TelemetryManager;
+
 
 public class ManualControl {
+    Shooter shooter;
+
     enum ShootState {
         IDLE,
         ROTATING,
@@ -59,6 +64,8 @@ public class ManualControl {
         MOuttakeShooter = hardwareMap.get(DcMotor.class, "MOuttakeShooter");
         MShooter1 = hardwareMap.get(DcMotor.class, "MShooter1");
         MShooter2 = hardwareMap.get(DcMotor.class, "MShooter2");
+        shooter = new Shooter(hardwareMap);
+
     }
 
     public void ControlTurnOutTake() {
@@ -92,11 +99,12 @@ public class ManualControl {
             MOuttakeShooter.setPower(0);
     }
 
-    public void ShootPurpleArtifact() {
+    public void ShootPurpleArtifact(TelemetryManager telemetry) {
 
         if (shootState == ShootState.IDLE
                 && Gamepad1.left_bumper
-                && hasBall(SortBall.BallColor.PURPLE)) {
+                && hasBall(SortBall.BallColor.PURPLE)
+                && !shooter.isBusy()) {
 
             rotateToBall(SortBall.BallColor.PURPLE);
             shootTimer = System.currentTimeMillis();
@@ -105,10 +113,36 @@ public class ManualControl {
 
         if (shootState == ShootState.ROTATING) {
             if (System.currentTimeMillis() - shootTimer > 300) {
-                MShooter1.setPower(1);
-                MShooter2.setPower(1);
-                shootTimer = System.currentTimeMillis();
-                shootState = ShootState.SHOOTING;
+                try {
+                    shooter.shoot(telemetry);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+                shootState = ShootState.IDLE;
+            }
+        }
+    }
+
+    public void ShootGreenArtifact(TelemetryManager telemetry) {
+
+        if (shootState == ShootState.IDLE
+                && Gamepad1.right_bumper
+                && hasBall(SortBall.BallColor.GREEN)
+                && !shooter.isBusy()) {
+
+            rotateToBall(SortBall.BallColor.GREEN);
+            shootTimer = System.currentTimeMillis();
+            shootState = ShootState.ROTATING;
+        }
+
+        if (shootState == ShootState.ROTATING) {
+            if (System.currentTimeMillis() - shootTimer > 300) {
+                try {
+                    shooter.shoot(telemetry);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+                shootState = ShootState.IDLE;
             }
         }
     }
