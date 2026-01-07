@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.SortBall;
 import org.firstinspires.ftc.teamcode.utils.Shooter;
 import org.firstinspires.ftc.teamcode.utils.ShootDistance;
+import org.firstinspires.ftc.teamcode.utils.AdjustBarrel;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.bylazar.telemetry.TelemetryManager;
 import org.firstinspires.ftc.teamcode.utils.Lifter;
@@ -16,6 +17,12 @@ public class ManualControl {
     Shooter shooter;
     Lifter lifter;
     ShootDistance shootDistance;
+
+    AdjustBarrel adjustBarrel;
+
+
+
+
 
     enum ShootState {
         IDLE,
@@ -39,6 +46,7 @@ public class ManualControl {
     }
 
     double[] SPIN_POS = {0.0, 0.33, 0.66};
+    DcMotor BarrelMotor;
     DcMotor MTurnOuttake;
     DcMotor MOuttakeShooter;
     DcMotor MShooter1;
@@ -73,7 +81,6 @@ public class ManualControl {
         double shootDistanceUp;
         double shootDistanceDown;
     }
-
     public void ControlTurnOutTake() {
         if (Gamepad2.right_trigger >= 0.1) {
             MTurnOuttake.setPower(Gamepad2.right_trigger);
@@ -109,6 +116,17 @@ public class ManualControl {
             shooter.shoot(telemetry);
         }
     }
+    public void AdjustBarrel() {
+        double stickX = Gamepad2.right_stick_x;
+        double BarrelMotorPower = stickX * 0.6;
+
+        if (Math.abs(BarrelMotorPower) < 0.05) {
+            BarrelMotorPower = 0;
+        }
+
+        AdjustBarrel.adjustBarrel(BarrelMotorPower);
+    }
+
     public void ChangeDistanceUp(){
         if(Gamepad2.left_trigger  > 0.2){
             shootDistance.ChangeDistanceUp(Gamepad2.left_trigger);
