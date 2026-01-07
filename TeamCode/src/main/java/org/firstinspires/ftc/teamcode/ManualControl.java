@@ -9,10 +9,11 @@ import org.firstinspires.ftc.teamcode.SortBall;
 import org.firstinspires.ftc.teamcode.utils.Shooter;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.bylazar.telemetry.TelemetryManager;
-
+import org.firstinspires.ftc.teamcode.utils.Lifter;
 
 public class ManualControl {
     Shooter shooter;
+    Lifter lifter;
 
     enum ShootState {
         IDLE,
@@ -43,6 +44,7 @@ public class ManualControl {
     DcMotor MIntakeShaft;
     Gamepad Gamepad1;
     Gamepad Gamepad2;
+    DcMotor liftMotor;
     SortBall.BallColor[] load = {
             SortBall.BallColor.GREEN,
             SortBall.BallColor.PURPLE,
@@ -64,6 +66,7 @@ public class ManualControl {
         MOuttakeShooter = hardwareMap.get(DcMotor.class, "MOuttakeShooter");
         MShooter1 = hardwareMap.get(DcMotor.class, "MShooter1");
         MShooter2 = hardwareMap.get(DcMotor.class, "MShooter2");
+        lifter = new Lifter(hardwareMap);
         shooter = new Shooter(hardwareMap);
 
     }
@@ -118,6 +121,19 @@ public class ManualControl {
 
             rotateToBall(SortBall.BallColor.GREEN);
             shooter.shoot(telemetry);
+        }
+    }
+
+    public void liftRobot() {
+
+        if (Gamepad1.dpad_up) {
+            lifter.lift();
+
+        } else if (Gamepad1.dpad_down) {
+            lifter.lower();
+
+        } else {
+            liftMotor.setPower(0);
         }
     }
 }
