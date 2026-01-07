@@ -11,9 +11,11 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 @Autonomous
 @Configurable // Panels
 public class FullBlueTopStart extends OpMode {
-    Pose startPose = new Pose(26.787, 128.303, Math.toRadians(180));
+    Pose startPose = new Pose(27.48929159802308, 127.79571663920923, Math.toRadians(180));
     Pose goalPose = new Pose(26.787, 128.303);
     Pose[] startToTopZonePoses = {goalPose, topZonePose};
+
+
 
     PathPoses[] pathPoses = {new PathPoses(Math.toRadians(180), startToTopZonePoses, GenericAuto.PathState.LAUNCH_ZONE),
             new PathPoses(Math.toRadians(180), topZoneToPickupMidPoses, GenericAuto.PathState.PICK_UP),

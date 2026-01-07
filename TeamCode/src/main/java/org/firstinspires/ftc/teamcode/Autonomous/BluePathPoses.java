@@ -3,13 +3,13 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 import com.pedropathing.geometry.Pose;
 
 public class BluePathPoses {
-    public static Pose topZonePose = new Pose(63.810, 70.294);
-    public static Pose pickupMidPose = new Pose(8.531, 59.204);
+    public static Pose topZonePose = new Pose(65.17855664951552, 79.94421324671876);
+    public static Pose pickupMidPose = new Pose(10.66589629675898, 54.67825604909545);
     public static Pose pickupGatePose = new Pose(11.261, 60.057);
     public static Pose pickupTopPose = new Pose(13.649, 83.943);
-    public static Pose pickupLowPose = new Pose(8.531, 36.0);
-    public static Pose lowZonePose = new Pose(59.545, 18.531);
-    public static Pose leavePose= new Pose(21.327, 69.441);
+    public static Pose pickupLowPose = new Pose(8.530805687203792, 36.0);
+    public static Pose lowZonePose = new Pose(59.54502369668247, 8.530805687203792);
+    public static Pose leavePose= new Pose(21.32701421800948, 69.44075829383885);
 
     public static Pose[] topZoneToPickupMidPoses = {topZonePose, new Pose(58.692, 54.768), pickupMidPose};
     public static Pose[] pickupMidToTopZonePoses = {pickupMidPose, topZonePose};
