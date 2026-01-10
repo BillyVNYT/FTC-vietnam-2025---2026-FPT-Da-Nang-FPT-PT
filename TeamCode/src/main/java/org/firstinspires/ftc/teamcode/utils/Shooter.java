@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.utils;
 
+import static java.lang.Thread.sleep;
+
 import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -80,18 +82,18 @@ public class Shooter {
         }
 
         setMotorVelocity(tprShot, telemetry);
-        wait(1000);
+        sleep(1000);
 
         // load balls
         SLoader.setPosition(0.5);
-        wait(1000);
+        sleep(1000);
 
         // reset shooter
         MLoader.setPower(0);
         SLoader.setPosition(0);
         MShooter1.setPower(0);
         MShooter2.setPower(0);
-        wait(1000);
+        sleep(1000);
 
         isBusy = false;
         telemetry.addData("Servo angle", SAngle.getPosition());
