@@ -12,7 +12,6 @@ import org.firstinspires.ftc.teamcode.utils.Lifter;
 public class ManualControl {
     Shooter shooter;
     Lifter lifter;
-    ShootDistance shootDistance;
 
     AdjustBarrel adjustBarrel;
 
@@ -70,8 +69,6 @@ public class ManualControl {
         MShooter2 = hardwareMap.get(DcMotor.class, "MShooter2");
         lifter = new Lifter(hardwareMap);
         shooter = new Shooter(hardwareMap);
-        double shootDistanceUp;
-        double shootDistanceDown;
     }
     public void controlTurnOutTake() {
         if (Gamepad2.right_trigger >= 0.1) {
@@ -84,7 +81,7 @@ public class ManualControl {
     }
 
     public void controlIntakeShaft() {
-        if (SortBall.IsFull(load)) {
+        if (SortBall.isFull(load)) {
             MIntakeShaft.setPower(1);
         }
         if (Gamepad1.triangle) {
@@ -98,7 +95,7 @@ public class ManualControl {
 
     public void controlOuttakeShooter() {
         if (Gamepad1.cross) {
-            while (SortBall.IsFull(load))
+            while (SortBall.isFull(load))
                 MOuttakeShooter.setPower(1);
         } else
             MOuttakeShooter.setPower(0);
@@ -119,20 +116,13 @@ public class ManualControl {
         AdjustBarrel.adjustBarrel(BarrelMotorPower);
     }
 
-    public void changeDistanceUp(){
-        if(Gamepad2.left_trigger  > 0.2){
-            shootDistance.ChangeDistanceUp(Gamepad2.left_trigger);
+    public void updateShooterAngleServo(){
+        if(Gamepad2.left_trigger > 0.2){
+            shooter.updateServoAngle(-Gamepad2.left_trigger);
         }
-        else{
-            shootDistance.ChangeDistanceUp(0);
-        }
-    }
-    public void changeDistanceDown(){
-        if(Gamepad2.right_trigger  > 0.2){
-            shootDistance.ChangeDistanceDown(Gamepad2.right_trigger);
-        }
-        else{
-            shootDistance.ChangeDistanceDown(0);
+
+        if(Gamepad2.right_trigger > 0.2){
+            shooter.updateServoAngle(Gamepad2.right_trigger);
         }
     }
     public void ShootPurpleArtifact(Telemetry telemetry) throws InterruptedException {

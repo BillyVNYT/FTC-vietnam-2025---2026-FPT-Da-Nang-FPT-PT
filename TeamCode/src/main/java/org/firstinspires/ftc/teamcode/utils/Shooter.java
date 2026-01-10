@@ -127,4 +127,10 @@ public class Shooter {
     public boolean isBusy(){
         return isBusy;
     }
+
+    public void updateServoAngle(double angle){
+        double currentAngle = SAngle.getPosition();
+        SAngle.setPosition(currentAngle + angle);
+    }
+
 }

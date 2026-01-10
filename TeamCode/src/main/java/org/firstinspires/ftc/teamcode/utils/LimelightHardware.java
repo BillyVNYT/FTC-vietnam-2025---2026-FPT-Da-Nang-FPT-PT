@@ -7,22 +7,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.hardware.limelightvision.LLResultTypes.FiducialResult;
 
 import java.util.List;
-
-class ApriltagData{
-    double x;
-    double y;
-    double z;
-    double area;
-    double id;
-    ApriltagData(double x, double y, double z, double area, int id){
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.area = area;
-        this.id = id;
-    }
-}
-
 public class LimelightHardware {
     public Limelight3A limelight;
     public LimelightHardware(HardwareMap hardwareMap){

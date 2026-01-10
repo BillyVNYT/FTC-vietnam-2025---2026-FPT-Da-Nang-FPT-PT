@@ -14,7 +14,7 @@ public class Intake {
     public void start(){
         intake.setPower(1);
     }
-    public void CheckCommandControl() {
+    public void toggleIntake() {
         if (manualControl.takeBall) {
             intake.setPower(1);
         } else {
