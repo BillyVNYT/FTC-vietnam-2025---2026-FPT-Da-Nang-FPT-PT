@@ -5,20 +5,20 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Intake {
-    private DcMotor CaiCucXoayXoay;
+    private DcMotor intake;
     private ManualControl manualControl;
     public Intake(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2){
-        CaiCucXoayXoay = hardwareMap.get(DcMotor.class, "m8");
+        intake = hardwareMap.get(DcMotor.class, "m8");
         manualControl = new ManualControl(hardwareMap, gamepad1, gamepad2);
     }
-    public void Start(){
-        CaiCucXoayXoay.setPower(1);
+    public void start(){
+        intake.setPower(1);
     }
     public void CheckCommandControl() {
         if (manualControl.takeBall) {
-            CaiCucXoayXoay.setPower(1);
+            intake.setPower(1);
         } else {
-            CaiCucXoayXoay.setPower(0);
+            intake.setPower(0);
         }
     }
 }

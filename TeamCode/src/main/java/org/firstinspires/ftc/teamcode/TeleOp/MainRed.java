@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.AutoTrackStartMatch;
 import org.firstinspires.ftc.teamcode.DriveTrain;
@@ -29,6 +30,7 @@ import org.firstinspires.ftc.teamcode.utils.Shooter;
 //
 //
 //     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+@TeleOp
 public class MainRed extends LinearOpMode {
     private DriveTrain driveTrain = new DriveTrain(hardwareMap);
     private Shooter outtake = new Shooter(hardwareMap);
@@ -39,7 +41,7 @@ public class MainRed extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         waitForStart();
-        intake.Start();
+        intake.start();
         while (opModeIsActive()){
             driveTrain.DrivetrainControlAdvanced(gamepad1, gamepad2);
             if(gamepad1.right_bumper){
@@ -51,9 +53,9 @@ public class MainRed extends LinearOpMode {
             if(AutoHold){
                 outtake.trackAprilTag(telemetry);
             } else {
-                manualControl.ControlTurnOutTake();
+                manualControl.controlTurnOutTake();
             }
-            manualControl.ControlIntakeShaft();
+            manualControl.controlIntakeShaft();
             intake.CheckCommandControl();
         }
     }

@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.utils;
 
-import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -64,7 +63,7 @@ public class Shooter {
         return (int) sum / count;
     }
 
-    public void shoot(TelemetryManager telemetry) throws InterruptedException{
+    public void shoot(Telemetry telemetry) throws InterruptedException{
         isBusy = true;
 
         double distance = limelight.getAprilTagData().z;
@@ -98,7 +97,7 @@ public class Shooter {
         telemetry.addLine("---------------------------");
     }
 
-    public void setMotorVelocity(int velocity, TelemetryManager telemetry){
+    public void setMotorVelocity(int velocity, Telemetry telemetry){
         MShooter1.setVelocity(velocity);
         MShooter2.setVelocity(velocity);
         MLoader.setVelocity(300);
