@@ -64,13 +64,15 @@ public class Shooter {
         return (int) sum / count;
     }
     public void fakeshoot(TelemetryManager telemetry) throws InterruptedException{
-        isBusy=true;
-        ElapsedTime timer = new ElapsedTime();
+        ElapsedTime timer= new ElapsedTime();
         timer.reset();
-        if(timer.seconds()>3)
-                isBusy=false;
-
+        isBusy=true;
+        while(timer.milliseconds()<3000){
+            continue;
+        }
+        isBusy=false;
     }
+
     public void shoot(TelemetryManager telemetry) throws InterruptedException{
         isBusy = true;
 

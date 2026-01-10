@@ -29,7 +29,7 @@ public class GenericAuto {
     public Follower follower;
     public Shooter shooter;
     private final List<PathChain> paths = new ArrayList<>();
-    private final List<PathState> states = new ArrayList<>();;
+    private final List<PathState> states = new ArrayList<>();
     private PathState currentState ;
     private int curPathIdx = 0;
     boolean  shotTriggered = false;
@@ -78,14 +78,14 @@ public class GenericAuto {
         switch (currentState) {
             case SHOOT:
                 if (!shotTriggered) {
-//                     shooter.shoot(panelsTelemetry);
+                     shooter.fakeshoot(panelsTelemetry);
                     shotTriggered = true;
                 }
 
-                // if (!shooter.isBusy()) { // Uncomment when shooter logic is ready
+                 if (!shooter.isBusy()) { // Uncomment when shooter logic is ready
                 shotTriggered = false;
                 goToNextPath();
-                // }
+                 }
                 break;
 
             case PICK_UP:
