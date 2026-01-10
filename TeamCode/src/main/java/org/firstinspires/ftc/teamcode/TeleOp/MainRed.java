@@ -1,14 +1,13 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.AutoTrackStartMatch;
 import org.firstinspires.ftc.teamcode.DriveTrain;
 import org.firstinspires.ftc.teamcode.Intake;
 import org.firstinspires.ftc.teamcode.ManualControl;
-import org.firstinspires.ftc.teamcode.Outtake;
+import org.firstinspires.ftc.teamcode.utils.Shooter;
 
 //                       _oo0oo_
 //                      o8888888o
@@ -31,9 +30,10 @@ import org.firstinspires.ftc.teamcode.Outtake;
 //
 //
 //     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+@TeleOp
 public class MainRed extends LinearOpMode {
     private DriveTrain driveTrain = new DriveTrain(hardwareMap);
-    private Outtake outtake = new Outtake(hardwareMap, telemetry);
+    private Shooter outtake = new Shooter(hardwareMap);
     private ManualControl manualControl = new ManualControl(hardwareMap, gamepad1, gamepad2);
     private Intake intake = new Intake(hardwareMap, gamepad1, gamepad2);
     private AutoTrackStartMatch autoTrackStartMatch = new AutoTrackStartMatch(hardwareMap);
@@ -41,21 +41,21 @@ public class MainRed extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         waitForStart();
-        intake.Start();
+        intake.start();
         while (opModeIsActive()){
             driveTrain.DrivetrainControlAdvanced(gamepad1, gamepad2);
             if(gamepad1.right_bumper){
-                outtake.Shoot();
+                outtake.shoot(telemetry);
             }
             if(gamepad1.start){
                 AutoHold = true;
             }
             if(AutoHold){
-                outtake.holdOutTake();
+                outtake.trackAprilTag(telemetry);
             } else {
-                manualControl.ControlTurnOutTake();
+                manualControl.controlTurnOutTake();
             }
-            manualControl.ControlIntakeShaft();
+            manualControl.controlIntakeShaft();
             intake.CheckCommandControl();
         }
     }

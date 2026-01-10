@@ -1,16 +1,12 @@
 package org.firstinspires.ftc.teamcode;
-import org.firstinspires.ftc.teamcode.SortBall;
-import static org.firstinspires.ftc.teamcode.SortBall.IsFull;
-import static org.firstinspires.ftc.teamcode.SortBall.BallColor;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import org.firstinspires.ftc.teamcode.SortBall;
 import org.firstinspires.ftc.teamcode.utils.Shooter;
 import org.firstinspires.ftc.teamcode.utils.ShootDistance;
 import org.firstinspires.ftc.teamcode.utils.AdjustBarrel;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.bylazar.telemetry.TelemetryManager;
 import org.firstinspires.ftc.teamcode.utils.Lifter;
 
 public class ManualControl {
@@ -19,10 +15,6 @@ public class ManualControl {
     ShootDistance shootDistance;
 
     AdjustBarrel adjustBarrel;
-
-
-
-
 
     enum ShootState {
         IDLE,
@@ -81,7 +73,7 @@ public class ManualControl {
         double shootDistanceUp;
         double shootDistanceDown;
     }
-    public void ControlTurnOutTake() {
+    public void controlTurnOutTake() {
         if (Gamepad2.right_trigger >= 0.1) {
             MTurnOuttake.setPower(Gamepad2.right_trigger);
         } else if (Gamepad2.left_trigger >= 0.1) {
@@ -91,7 +83,7 @@ public class ManualControl {
         }
     }
 
-    public void ControlIntakeShaft() {
+    public void controlIntakeShaft() {
         if (SortBall.IsFull(load)) {
             MIntakeShaft.setPower(1);
         }
@@ -104,19 +96,19 @@ public class ManualControl {
         }
     }
 
-    public void ControlOuttakeShooter() {
+    public void controlOuttakeShooter() {
         if (Gamepad1.cross) {
             while (SortBall.IsFull(load))
                 MOuttakeShooter.setPower(1);
         } else
             MOuttakeShooter.setPower(0);
     }
-    public void ShootBall(TelemetryManager telemetry) throws InterruptedException{
+    public void shootBall(Telemetry telemetry) throws InterruptedException{
         if(Gamepad2.circle){
             shooter.shoot(telemetry);
         }
     }
-    public void AdjustBarrel() {
+    public void adjustBarrel() {
         double stickX = Gamepad2.right_stick_x;
         double BarrelMotorPower = stickX * 0.6;
 
@@ -127,7 +119,7 @@ public class ManualControl {
         AdjustBarrel.adjustBarrel(BarrelMotorPower);
     }
 
-    public void ChangeDistanceUp(){
+    public void changeDistanceUp(){
         if(Gamepad2.left_trigger  > 0.2){
             shootDistance.ChangeDistanceUp(Gamepad2.left_trigger);
         }
@@ -135,7 +127,7 @@ public class ManualControl {
             shootDistance.ChangeDistanceUp(0);
         }
     }
-    public void ChangeDistanceDown(){
+    public void changeDistanceDown(){
         if(Gamepad2.right_trigger  > 0.2){
             shootDistance.ChangeDistanceDown(Gamepad2.right_trigger);
         }
@@ -143,7 +135,7 @@ public class ManualControl {
             shootDistance.ChangeDistanceDown(0);
         }
     }
-    public void ShootPurpleArtifact(TelemetryManager telemetry) throws InterruptedException {
+    public void ShootPurpleArtifact(Telemetry telemetry) throws InterruptedException {
 
         if (Gamepad1.left_bumper
                 && hasBall(SortBall.BallColor.PURPLE)
@@ -154,7 +146,7 @@ public class ManualControl {
         }
     }
 
-    public void ShootGreenArtifact(TelemetryManager telemetry) throws InterruptedException {
+    public void shootGreenArtifact(Telemetry telemetry) throws InterruptedException {
 
         if (Gamepad1.right_bumper
                 && hasBall(SortBall.BallColor.GREEN)

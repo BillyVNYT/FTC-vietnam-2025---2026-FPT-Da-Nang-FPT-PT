@@ -1,8 +1,5 @@
 package org.firstinspires.ftc.teamcode.utils;
 
-import static java.lang.Thread.sleep;
-
-import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -66,7 +63,7 @@ public class Shooter {
         return (int) sum / count;
     }
 
-    public void shoot(TelemetryManager telemetry) throws InterruptedException{
+    public void shoot(Telemetry telemetry) throws InterruptedException{
         isBusy = true;
 
         double distance = limelight.getAprilTagData().z;
@@ -82,25 +79,25 @@ public class Shooter {
         }
 
         setMotorVelocity(tprShot, telemetry);
-        sleep(1000);
+        wait(1000);
 
         // load balls
         SLoader.setPosition(0.5);
-        sleep(1000);
+        wait(1000);
 
         // reset shooter
         MLoader.setPower(0);
         SLoader.setPosition(0);
         MShooter1.setPower(0);
         MShooter2.setPower(0);
-        sleep(1000);
+        wait(1000);
 
         isBusy = false;
         telemetry.addData("Servo angle", SAngle.getPosition());
         telemetry.addLine("---------------------------");
     }
 
-    public void setMotorVelocity(int velocity, TelemetryManager telemetry){
+    public void setMotorVelocity(int velocity, Telemetry telemetry){
         MShooter1.setVelocity(velocity);
         MShooter2.setVelocity(velocity);
         MLoader.setVelocity(300);
