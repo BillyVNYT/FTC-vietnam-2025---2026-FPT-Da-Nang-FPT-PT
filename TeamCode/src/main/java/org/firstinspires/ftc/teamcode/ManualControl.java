@@ -1,0 +1,162 @@
+package org.firstinspires.ftc.teamcode;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import org.firstinspires.ftc.teamcode.utils.Shooter;
+import org.firstinspires.ftc.teamcode.utils.ShootDistance;
+import org.firstinspires.ftc.teamcode.utils.AdjustBarrel;
+import com.qualcomm.robotcore.hardware.Servo;
+import org.firstinspires.ftc.teamcode.utils.Lifter;
+
+public class ManualControl {
+    Shooter shooter;
+    Lifter lifter;
+
+    AdjustBarrel adjustBarrel;
+
+    enum ShootState {
+        IDLE,
+        ROTATING,
+        SHOOTING
+    }
+
+    ShootState shootState = ShootState.IDLE;
+    long shootTimer = 0;
+
+    Servo alignServo;
+    double[] SLOT_POS = {0.0, 0.33, 0.66};
+
+    private void rotateToBall(SortBall.BallColor target) {
+        for (int i = 0; i < load.length; i++) {
+            if (load[i] == target) {
+                alignServo.setPosition(SLOT_POS[i]);
+                break;
+            }
+        }
+    }
+
+    double[] SPIN_POS = {0.0, 0.33, 0.66};
+    DcMotor BarrelMotor;
+    DcMotor MTurnOuttake;
+    DcMotor MOuttakeShooter;
+    DcMotor MShooter1;
+    DcMotor MShooter2;
+    DcMotor MIntakeShaft;
+    Gamepad Gamepad1;
+    Gamepad Gamepad2;
+    DcMotor liftMotor;
+    SortBall.BallColor[] load = {
+            SortBall.BallColor.GREEN,
+            SortBall.BallColor.PURPLE,
+            SortBall.BallColor.EMPTY
+    };
+
+    boolean takeBall = true;
+
+    private boolean hasBall(SortBall.BallColor color) {
+        for (SortBall.BallColor ball : load) {
+            if (ball == color) return true;
+        }
+        return false;
+    }
+
+    public ManualControl(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2) {
+        MTurnOuttake = hardwareMap.get(DcMotor.class, "MTurnOuttake");
+        MIntakeShaft = hardwareMap.get(DcMotor.class, "MIntakeShaft");
+        MOuttakeShooter = hardwareMap.get(DcMotor.class, "MOuttakeShooter");
+        MShooter1 = hardwareMap.get(DcMotor.class, "MShooter1");
+        MShooter2 = hardwareMap.get(DcMotor.class, "MShooter2");
+        lifter = new Lifter(hardwareMap);
+        shooter = new Shooter(hardwareMap);
+    }
+    public void controlTurnOutTake() {
+        if (Gamepad2.right_trigger >= 0.1) {
+            MTurnOuttake.setPower(Gamepad2.right_trigger);
+        } else if (Gamepad2.left_trigger >= 0.1) {
+            MTurnOuttake.setPower(-Gamepad2.left_trigger);
+        } else {
+            MTurnOuttake.setPower(0);
+        }
+    }
+
+    public void controlIntakeShaft() {
+        if (SortBall.isFull(load)) {
+            MIntakeShaft.setPower(1);
+        }
+        if (Gamepad1.triangle) {
+            takeBall = !takeBall;
+            if (takeBall) {
+                MIntakeShaft.setPower(1);
+            } else
+                MIntakeShaft.setPower(0);
+        }
+    }
+
+    public void controlOuttakeShooter() {
+        if (Gamepad1.cross) {
+            while (SortBall.isFull(load))
+                MOuttakeShooter.setPower(1);
+        } else
+            MOuttakeShooter.setPower(0);
+    }
+    public void shootBall(Telemetry telemetry) throws InterruptedException{
+        if(Gamepad2.circle){
+            shooter.shoot(telemetry);
+        }
+    }
+    public void adjustBarrel() {
+        double stickX = Gamepad2.right_stick_x;
+        double BarrelMotorPower = stickX * 0.6;
+
+        if (Math.abs(BarrelMotorPower) < 0.05) {
+            BarrelMotorPower = 0;
+        }
+
+        AdjustBarrel.adjustBarrel(BarrelMotorPower);
+    }
+
+    public void updateShooterAngleServo(){
+        if(Gamepad2.left_trigger > 0.2){
+            shooter.updateServoAngle(-Gamepad2.left_trigger);
+        }
+
+        if(Gamepad2.right_trigger > 0.2){
+            shooter.updateServoAngle(Gamepad2.right_trigger);
+        }
+    }
+    public void ShootPurpleArtifact(Telemetry telemetry) throws InterruptedException {
+
+        if (Gamepad1.left_bumper
+                && hasBall(SortBall.BallColor.PURPLE)
+                && !shooter.isBusy()) {
+
+            rotateToBall(SortBall.BallColor.PURPLE);
+            shooter.shoot(telemetry);
+        }
+    }
+
+    public void shootGreenArtifact(Telemetry telemetry) throws InterruptedException {
+
+        if (Gamepad1.right_bumper
+                && hasBall(SortBall.BallColor.GREEN)
+                && !shooter.isBusy()) {
+
+            rotateToBall(SortBall.BallColor.GREEN);
+            shooter.shoot(telemetry);
+        }
+    }
+
+    public void liftRobot() {
+
+        if (Gamepad1.dpad_up) {
+            lifter.lift();
+
+        } else if (Gamepad1.dpad_down) {
+            lifter.lower();
+
+        } else {
+            liftMotor.setPower(0);
+        }
+    }
+}
