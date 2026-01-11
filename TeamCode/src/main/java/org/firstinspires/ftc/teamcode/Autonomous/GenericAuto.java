@@ -70,7 +70,7 @@ public class GenericAuto {
         }
     }
 
-    private void autonomousPathUpdate() throws InterruptedException {
+    private void autonomousPathUpdate(){
         if (follower.isBusy()) {
             return; // Wait for the current path to complete
         }
@@ -111,7 +111,7 @@ public class GenericAuto {
         follower.followPath(currentPath);
     }
 
-    public void updateFollower(Telemetry telemetry) throws InterruptedException {
+    public void updateFollower(Telemetry telemetry) {
         follower.update();
         autonomousPathUpdate();
 
