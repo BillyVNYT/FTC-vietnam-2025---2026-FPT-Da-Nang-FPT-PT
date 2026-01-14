@@ -11,6 +11,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.SortBall;
+
 
 public class Shooter {
     private final DcMotorEx MShooter1, MShooter2, MLoader;
@@ -25,11 +27,7 @@ public class Shooter {
     boolean isBusy = false;
 
     int tprShot = 0;
-    int WINDOW = 10;
-    double[] buffer = new double[WINDOW];
-    int index = 0;
-    int count = 0;
-
+    boolean overwriteShoot;
 
     public Shooter(HardwareMap hardwareMap) {
         MShooter1 = hardwareMap.get(DcMotorEx.class, "m3");
@@ -47,6 +45,7 @@ public class Shooter {
 
         SAngle = hardwareMap.get(Servo.class, "s1");
         SAngle.setPosition(0.8492);
+        
         SLoader = hardwareMap.get(Servo.class, "s2");
         SLoader.setPosition(0.5);
 
@@ -54,18 +53,9 @@ public class Shooter {
         timer.reset();
     }
 
-    int getAverage(double newValue) {
-        buffer[index] = newValue;
-        index = (index + 1) % WINDOW;
-        count = Math.min(count + 1, WINDOW);
+    int FLYWHEEL_VELOCITY_GAIN_DURATION = 1000;
 
-        double sum = 0;
-        for (int i = 0; i < count; i++) sum += buffer[i];
-
-        return (int) sum / count;
-    }
-
-    public void shoot(Telemetry telemetry) throws InterruptedException{
+    public void shoot(int count, SortBall spindexer, Telemetry telemetry) throws InterruptedException{
         isBusy = true;
 
         double distance = limelight.getAprilTagData().z;
@@ -81,22 +71,37 @@ public class Shooter {
         }
 
         setMotorVelocity(tprShot, telemetry);
-        sleep(1000);
+        sleep(FLYWHEEL_VELOCITY_GAIN_DURATION);
 
         // load balls
         SLoader.setPosition(0.5);
-        sleep(1000);
+        sleep(500);
+        MLoader.setPower(1);
+
+        spindexer.rotateToShooter(count);
 
         // reset shooter
         MLoader.setPower(0);
         SLoader.setPosition(0);
-        MShooter1.setPower(0);
-        MShooter2.setPower(0);
+        MShooter1.setVelocity(0);
+        MShooter2.setVelocity(0);
         sleep(1000);
 
         isBusy = false;
         telemetry.addData("Servo angle", SAngle.getPosition());
         telemetry.addLine("---------------------------");
+    }
+
+    public void toggleFlywheel() {
+        if(!overwriteShoot) {
+            int maxShooterVelocity = 2200;
+            MShooter1.setVelocity(maxShooterVelocity);
+            MShooter2.setVelocity(maxShooterVelocity);
+        } else {
+            MShooter1.setVelocity(0);
+            MShooter2.setVelocity(0);
+        }
+        overwriteShoot = !overwriteShoot;
     }
 
     public void setMotorVelocity(int velocity, Telemetry telemetry){
@@ -115,13 +120,11 @@ public class Shooter {
 
     public void trackAprilTag(Telemetry telemetry){
         double error = limelight.getAprilTagData().x;
-        double distance = limelight.getAprilTagData().z;
 
         if(error >= 5 || error <= -5){
-            MTurnOuttake.setPower(distance*Kp);
+            MTurnOuttake.setPower(error*Kp);
         } else MTurnOuttake.setPower(0);
 
-        telemetry.addData("Distance", distance);
         telemetry.addData("Tx", error);
         telemetry.addLine("---------------------------");
     }
@@ -133,6 +136,10 @@ public class Shooter {
     public void updateServoAngle(double angle){
         double currentAngle = SAngle.getPosition();
         SAngle.setPosition(currentAngle + angle);
+    }
+
+    public void updateOuttakeAngle(double rx){
+        MTurnOuttake.setPower(rx);
     }
 
 }
