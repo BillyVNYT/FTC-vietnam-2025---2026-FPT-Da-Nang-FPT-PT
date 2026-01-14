@@ -1,26 +1,20 @@
 package org.firstinspires.ftc.teamcode.utils;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 public class Lifter {
-    private DcMotor liftMotor;
-    private static final double LIFT_POWER = 0.8;
-    private static final double LOWER_POWER = -0.8;
+    private Servo SLift;
 
     public Lifter(HardwareMap hardwareMap) {
-        liftMotor = hardwareMap.get(DcMotor.class, "liftMotor");
-
-        liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        liftMotor.setDirection(DcMotor.Direction.FORWARD);
+        SLift = hardwareMap.get(Servo.class, "liftMotor");
     }
     public void lift() {
-            liftMotor.setPower(LIFT_POWER);
+        SLift.setPosition(0);
+    }
 
-        }
     public void lower() {
-            liftMotor.setPower(LOWER_POWER);
-
+         SLift.setPosition(1);
     }
 }
 

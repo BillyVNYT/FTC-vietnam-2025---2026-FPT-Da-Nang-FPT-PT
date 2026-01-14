@@ -1,5 +1,11 @@
 package org.firstinspires.ftc.teamcode;
+import static java.lang.Thread.sleep;
+
 import com.bylazar.telemetry.TelemetryManager;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.teamcode.utils.ColorSensor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,17 +18,58 @@ public class SortBall {
         EMPTY
     }
     List<BallColor> obeliskData;
-    SortBall(List<BallColor> obeliskData) {
+    ColorSensor colorSensor1, colorSensor2, colorSensor3;
+    Servo spindexer;
+
+    SortBall(List<BallColor> obeliskData, HardwareMap hardwareMap) {
         this.obeliskData = obeliskData;
+        colorSensor1 = hardwareMap.get(ColorSensor.class, "cs");
+        colorSensor2 = hardwareMap.get(ColorSensor.class, "cs2");
+        colorSensor3 = hardwareMap.get(ColorSensor.class, "cs3");
     }
 
-    public static boolean isFull(BallColor[] load){
-        for(BallColor ball : load){
-            if(ball == BallColor.EMPTY)
-                return false;
-        }
-        return true;
+    double[] INTAKE_SLOT_POS = {0.385, 0.455, 0.52};
+    double[] OUTTAKE_SLOT_POS = {0.4, 0.5, 0.6};
+
+    private List<SortBall.BallColor> currentLoad;
+
+    public List<SortBall.BallColor> getCurrentLoad() {
+        return currentLoad;
     }
+
+    private void releaseBall(int idx) {
+        currentLoad.remove(idx);
+    }
+
+    private void readyToShoot() {
+        spindexer.setPosition(OUTTAKE_SLOT_POS[0]);
+    }
+
+    public void loadBallsIn() throws InterruptedException {
+        BallColor color1 = colorSensor1.detectBallColor(2000);
+        BallColor color2 = colorSensor2.detectBallColor(3000);
+        BallColor color3 = colorSensor3.detectBallColor(4000);
+
+        int size = currentLoad.size();
+        boolean cs1Detected = !color1.equals(BallColor.EMPTY);
+        boolean cs2Detected = !color2.equals(BallColor.EMPTY);
+        boolean cs3Detected = !color3.equals(BallColor.EMPTY);
+        BallColor color = cs1Detected ? color1 : (cs2Detected ? color2 : color3);
+
+        if((cs1Detected || cs2Detected || cs3Detected) && size < 3) {
+            currentLoad.add(color);
+            spindexer.setPosition(INTAKE_SLOT_POS[size+1]);
+            sleep(500);
+        }
+
+        if(size == 3) readyToShoot();
+
+    }
+
+    public boolean isFull(){
+        return getCurrentLoad().size() == 3;
+    }
+
     /**
      * @param currentLoad  Array of 3 strings (e.g., {"G", "P", "E"})
      * @return int The number of spins needed (0, 1, or 2).
@@ -63,4 +110,25 @@ public class SortBall {
         }
         return currentMatches;
     }
+
+
+    public void rotateToBall(SortBall.BallColor target) {
+        for (int i = 0; i <currentLoad.size(); i++) {
+            if (currentLoad.get(i) == target) {
+                spindexer.setPosition(INTAKE_SLOT_POS[i]);
+                break;
+            }
+        }
+    }
+
+    public void rotateToShooter(int count) throws InterruptedException{
+        releaseBall(0);
+
+        for(int i = 1; i < count; i++) {
+            spindexer.setPosition(OUTTAKE_SLOT_POS[i]);
+            releaseBall(i);
+            sleep(200);
+        }
+    }
+
 }
