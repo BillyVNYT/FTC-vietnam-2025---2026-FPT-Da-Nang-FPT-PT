@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.utils;
 
-
 public class ApriltagData{
     double x;
     double y;

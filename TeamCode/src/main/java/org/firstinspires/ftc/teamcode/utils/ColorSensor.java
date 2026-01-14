@@ -3,12 +3,14 @@ package org.firstinspires.ftc.teamcode.utils;
 import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynchDevice;
+import com.qualcomm.robotcore.hardware.configuration.annotations.DeviceProperties;
 import com.qualcomm.robotcore.hardware.configuration.annotations.I2cDeviceType;
 import com.qualcomm.robotcore.util.TypeConversion;
 
 import org.firstinspires.ftc.teamcode.SortBall;
 
 @I2cDeviceType
+@DeviceProperties(name = "TCS34725 Color Sensor", description = "TCS34725 Color Sensor Driver", xmlTag = "TCS34725")
 public class ColorSensor extends I2cDeviceSynchDevice<I2cDeviceSynch> {
 
     // Địa chỉ I2C mặc định của TCS34725 là 0x29

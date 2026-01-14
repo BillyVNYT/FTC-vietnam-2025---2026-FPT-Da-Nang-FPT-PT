@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.utils;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import org.firstinspires.ftc.teamcode.utils.ApriltagData;
 
 import com.qualcomm.hardware.limelightvision.LLResultTypes.FiducialResult;
 
