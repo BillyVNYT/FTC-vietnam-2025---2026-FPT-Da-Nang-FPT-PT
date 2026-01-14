@@ -113,7 +113,7 @@ public class SortBall {
 
 
     public void rotateToBall(SortBall.BallColor target) {
-        for (int i = 0; i <currentLoad.size(); i++) {
+        for (int i = 0; i < currentLoad.size(); i++) {
             if (currentLoad.get(i) == target) {
                 spindexer.setPosition(INTAKE_SLOT_POS[i]);
                 break;
