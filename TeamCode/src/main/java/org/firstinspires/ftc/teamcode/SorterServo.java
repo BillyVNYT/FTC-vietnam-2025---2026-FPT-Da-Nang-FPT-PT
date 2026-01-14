@@ -3,14 +3,15 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.teamcode.utils.ColorSensor;
 
 @TeleOp
 public class SorterServo extends LinearOpMode {
     Servo servo;
     DcMotor motor;
-    TCS34725Driver colorSensor;
+    ColorSensor colorSensor;
 
     int idx = 0;
 
@@ -21,7 +22,8 @@ public class SorterServo extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         servo = hardwareMap.servo.get("s1");
         motor = hardwareMap.dcMotor.get("m1");
-        colorSensor = hardwareMap.get(TCS34725Driver.class, "tcs_sensor");
+        colorSensor = hardwareMap.get(ColorSensor.class, "tcs_sensor");
+
         servo.setPosition(positions[0]);
         motor.setPower(1);
         waitForStart();
