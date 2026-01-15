@@ -5,6 +5,8 @@ import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -15,8 +17,8 @@ public class SortBall {
         PURPLE,
         EMPTY
     }
-    double[] INTAKE_SLOT_POS = {0.385, 0.455, 0.52};
-    double[] OUTTAKE_SLOT_POS = {0.4, 0.5, 0.6};
+    double[] INTAKE_SLOT_POS = {0.27, 0.64, 1};
+    double[] OUTTAKE_SLOT_POS = {0.74, 0.37, 0};
 
     List<BallColor> obeliskData;
     ColorSensor colorSensor1, colorSensor2, colorSensor3;
@@ -27,8 +29,9 @@ public class SortBall {
         colorSensor1 = hardwareMap.get(ColorSensor.class, "cs");
         colorSensor2 = hardwareMap.get(ColorSensor.class, "cs2");
         colorSensor3 = hardwareMap.get(ColorSensor.class, "cs3");
-        spindexer = hardwareMap.get(Servo.class, "spindexer");
 
+        spindexer = hardwareMap.get(Servo.class, "s2");
+        spindexer.setDirection(Servo.Direction.REVERSE);
         spindexer.setPosition(INTAKE_SLOT_POS[0]);
     }
 
@@ -46,26 +49,30 @@ public class SortBall {
         spindexer.setPosition(OUTTAKE_SLOT_POS[0]);
     }
 
-    public void loadBallsIn() throws InterruptedException {
-        BallColor color1 = colorSensor1.detectBallColor(2000);
-        BallColor color2 = colorSensor2.detectBallColor(3000);
-        BallColor color3 = colorSensor3.detectBallColor(4000);
+    int MAX_SIZE = 3;
+    public void loadBallsIn(Telemetry telemetry) throws InterruptedException {
+        BallColor color1 = colorSensor1.detectBallColor(2500, telemetry);
+        BallColor color2 = colorSensor2.detectBallColor(4000, telemetry);
+//        BallColor color3 = colorSensor3.detectBallColor(4000, telemetry);
 
         int size = currentLoad.size();
+        telemetry.addData("Size", size);
+        telemetry.update();
+
         boolean cs1Detected = !color1.equals(BallColor.EMPTY);
         boolean cs2Detected = !color2.equals(BallColor.EMPTY);
-        boolean cs3Detected = !color3.equals(BallColor.EMPTY);
-        BallColor color = cs1Detected ? color1 : (cs2Detected ? color2 : color3);
+//        boolean cs3Detected = !color3.equals(BallColor.EMPTY);
+        BallColor color = cs1Detected ? color1 : color2;
 
-        if((cs1Detected || cs2Detected || cs3Detected) && size < 3) {
+        if((cs1Detected || cs2Detected) && size < MAX_SIZE) {
             currentLoad.add(color);
             // spin to next empty slot
-            spindexer.setPosition(INTAKE_SLOT_POS[size+1]);
-            sleep(500);
+            if(size < (MAX_SIZE - 1)) {
+                telemetry.addData("servo pos", spindexer.getPosition());
+                spindexer.setPosition(INTAKE_SLOT_POS[size + 1]);
+                sleep(250);
+            } else readyToShoot();
         }
-
-        if(size == 3) readyToShoot();
-
     }
 
     public boolean isFull(){
@@ -124,12 +131,12 @@ public class SortBall {
     }
 
     public void spinToShooter(int count) throws InterruptedException{
-        releaseBall();
+//        releaseBall();
 
         for(int i = 1; i < count; i++) {
             spindexer.setPosition(OUTTAKE_SLOT_POS[i]);
-            releaseBall();
-            sleep(200);
+//            releaseBall();
+            sleep(1000);
         }
     }
 

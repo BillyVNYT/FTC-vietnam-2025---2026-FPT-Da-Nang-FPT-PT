@@ -9,7 +9,7 @@ public class Intake {
     boolean active = false;
 
     public Intake(HardwareMap hardwareMap){
-        intake = hardwareMap.get(DcMotor.class, "m8");
+        intake = hardwareMap.get(DcMotor.class, "m7");
     }
 
     public boolean isActive() {
