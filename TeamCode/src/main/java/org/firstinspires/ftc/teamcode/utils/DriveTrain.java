@@ -25,6 +25,7 @@ public class DriveTrain {
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
                 RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
                 RevHubOrientationOnRobot.UsbFacingDirection.UP));
+        imu.initialize(parameters);
     }
 
     public void drivetrainControlBasic(Gamepad gamepad1){

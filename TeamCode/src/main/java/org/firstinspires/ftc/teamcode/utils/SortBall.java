@@ -15,31 +15,34 @@ public class SortBall {
         PURPLE,
         EMPTY
     }
+    double[] INTAKE_SLOT_POS = {0.385, 0.455, 0.52};
+    double[] OUTTAKE_SLOT_POS = {0.4, 0.5, 0.6};
+
     List<BallColor> obeliskData;
     ColorSensor colorSensor1, colorSensor2, colorSensor3;
     Servo spindexer;
 
-    SortBall(List<BallColor> obeliskData, HardwareMap hardwareMap) {
+    public SortBall(List<BallColor> obeliskData, HardwareMap hardwareMap) {
         this.obeliskData = obeliskData;
         colorSensor1 = hardwareMap.get(ColorSensor.class, "cs");
         colorSensor2 = hardwareMap.get(ColorSensor.class, "cs2");
         colorSensor3 = hardwareMap.get(ColorSensor.class, "cs3");
+        spindexer = hardwareMap.get(Servo.class, "spindexer");
+
+        spindexer.setPosition(INTAKE_SLOT_POS[0]);
     }
 
-    double[] INTAKE_SLOT_POS = {0.385, 0.455, 0.52};
-    double[] OUTTAKE_SLOT_POS = {0.4, 0.5, 0.6};
-
-    private List<SortBall.BallColor> currentLoad;
+    private final List<SortBall.BallColor> currentLoad = new ArrayList<>();
 
     public List<SortBall.BallColor> getCurrentLoad() {
         return currentLoad;
     }
 
-    private void releaseBall(int idx) {
-        currentLoad.remove(idx);
+    private void releaseBall() {
+        currentLoad.remove(0);
     }
 
-    private void readyToShoot() {
+    public void readyToShoot() {
         spindexer.setPosition(OUTTAKE_SLOT_POS[0]);
     }
 
@@ -56,6 +59,7 @@ public class SortBall {
 
         if((cs1Detected || cs2Detected || cs3Detected) && size < 3) {
             currentLoad.add(color);
+            // spin to next empty slot
             spindexer.setPosition(INTAKE_SLOT_POS[size+1]);
             sleep(500);
         }
@@ -110,21 +114,21 @@ public class SortBall {
     }
 
 
-    public void rotateToBall(SortBall.BallColor target) {
+    public void spinTargetToShooter(SortBall.BallColor target){
         for (int i = 0; i < currentLoad.size(); i++) {
             if (currentLoad.get(i) == target) {
-                spindexer.setPosition(INTAKE_SLOT_POS[i]);
+                spindexer.setPosition(OUTTAKE_SLOT_POS[i]);
                 break;
             }
         }
     }
 
-    public void rotateToShooter(int count) throws InterruptedException{
-        releaseBall(0);
+    public void spinToShooter(int count) throws InterruptedException{
+        releaseBall();
 
         for(int i = 1; i < count; i++) {
             spindexer.setPosition(OUTTAKE_SLOT_POS[i]);
-            releaseBall(i);
+            releaseBall();
             sleep(200);
         }
     }
