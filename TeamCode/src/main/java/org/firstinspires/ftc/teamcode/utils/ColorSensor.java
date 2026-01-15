@@ -7,8 +7,6 @@ import com.qualcomm.robotcore.hardware.configuration.annotations.DevicePropertie
 import com.qualcomm.robotcore.hardware.configuration.annotations.I2cDeviceType;
 import com.qualcomm.robotcore.util.TypeConversion;
 
-import org.firstinspires.ftc.teamcode.SortBall;
-
 @I2cDeviceType
 @DeviceProperties(name = "TCS34725 Color Sensor", description = "TCS34725 Color Sensor Driver", xmlTag = "TCS34725")
 public class ColorSensor extends I2cDeviceSynchDevice<I2cDeviceSynch> {
