@@ -3,11 +3,11 @@ package org.firstinspires.ftc.teamcode.utils;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import org.firstinspires.ftc.teamcode.utils.ApriltagData;
 
 import com.qualcomm.hardware.limelightvision.LLResultTypes.FiducialResult;
 
 import java.util.List;
+
 
 class ApriltagData{
     double x;
@@ -23,7 +23,6 @@ class ApriltagData{
         this.id = id;
     }
 }
-
 public class LimelightHardware {
     public Limelight3A limelight;
     public LimelightHardware(HardwareMap hardwareMap){

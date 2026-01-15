@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.utils.DriveTrain;
 import org.firstinspires.ftc.teamcode.ManualControl2;
@@ -30,26 +31,25 @@ import org.firstinspires.ftc.teamcode.utils.Motif;
 public class MainRed extends LinearOpMode {
     private DriveTrain driveTrain;
     private ManualControl2 manualControl2;
-//    private Motif motif;
+//    private Motif motif = new Motif(hardwareMap);
 
     @Override
     public void runOpMode() throws InterruptedException {
         driveTrain = new DriveTrain(hardwareMap);
-//        motif = new Motif(hardwareMap);
-        waitForStart();
         manualControl2 = new ManualControl2(hardwareMap, gamepad2);
+
+        waitForStart();
 
         while (opModeIsActive()){
 //            driveTrain.drivetrainControlAdvanced(gamepad1);
-            driveTrain.drivetrainControlBasic(gamepad2);
+//            driveTrain.noTurnDrivetrainControl(gamepad2);
 //
 //            manualControl2.controlTurnOutTake(telemetry);
 //            manualControl2.updateShooterAngleServo(telemetry);
 //            manualControl2.toggleFlywheel();
+//            manualControl2.shootBall(telemetry);
 
-            manualControl2.shootBall(telemetry);
             manualControl2.controlIntakeShaft(telemetry);
-
 //            manualControl2.readyToShoot();
 //            manualControl2.shootPurpleBall(telemetry);
 //            manualControl2.shootGreenBall(telemetry);
