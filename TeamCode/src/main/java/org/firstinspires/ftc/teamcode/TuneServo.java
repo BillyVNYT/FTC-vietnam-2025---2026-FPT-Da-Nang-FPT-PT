@@ -11,18 +11,18 @@ public class TuneServo extends LinearOpMode {
     boolean reversed = false;
     @Override
     public void runOpMode() throws InterruptedException {
-        servo = hardwareMap.servo.get("spindexer");
+        servo = hardwareMap.servo.get("s1");
         servo.setPosition(0);
         waitForStart();
 
         while (opModeIsActive()) {
             if (gamepad1.right_bumper && pos < 1) {
-                pos += 0.0005;
+                pos += 0.0002;
                 servo.setPosition(pos);
             }
 
             if (gamepad1.left_bumper && pos > 0) {
-                pos -= 0.0005;
+                pos -= 0.0002;
                 servo.setPosition(pos);
             }
 

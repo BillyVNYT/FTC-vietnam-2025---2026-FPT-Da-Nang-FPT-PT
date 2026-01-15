@@ -77,7 +77,7 @@ public class Shooter {
         sleep(500);
         MLoader.setPower(1);
 
-        spindexer.spinToShooter(count);
+//        spindexer.spinToShooter(count);
 
         // reset shooter
         MLoader.setPower(0);

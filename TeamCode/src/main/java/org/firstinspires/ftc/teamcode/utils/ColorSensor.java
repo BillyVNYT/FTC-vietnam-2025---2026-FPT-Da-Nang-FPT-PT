@@ -21,9 +21,9 @@ public class ColorSensor extends I2cDeviceSynchDevice<I2cDeviceSynch> {
 
         if(c < cValue) return SortBall.BallColor.EMPTY;
 
-        if (g > r) {
+        if (g > (r+500)) {
             return SortBall.BallColor.GREEN;
-        } else if (r > g) {
+        } else if (r > (g+500)) {
             return SortBall.BallColor.PURPLE;
         }
         return SortBall.BallColor.EMPTY;
