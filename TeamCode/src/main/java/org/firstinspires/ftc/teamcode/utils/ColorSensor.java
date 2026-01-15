@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.hardware.configuration.annotations.DevicePropertie
 import com.qualcomm.robotcore.hardware.configuration.annotations.I2cDeviceType;
 import com.qualcomm.robotcore.util.TypeConversion;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 @I2cDeviceType
 @DeviceProperties(name = "TCS34725 Color Sensor", description = "TCS34725 Color Sensor Driver", xmlTag = "TCS34725")
 public class ColorSensor extends I2cDeviceSynchDevice<I2cDeviceSynch> {
@@ -14,16 +16,24 @@ public class ColorSensor extends I2cDeviceSynchDevice<I2cDeviceSynch> {
     // Địa chỉ I2C mặc định của TCS34725 là 0x29
     public final static I2cAddr ADDRESS_I2C_DEFAULT = I2cAddr.create7bit(0x29);
 
-    public SortBall.BallColor detectBallColor(int cValue) {
+    public SortBall.BallColor detectBallColor(int cValue, Telemetry telemetry) {
         int r = getRed();
         int g = getGreen();
         int c = getClear();
 
+        double rRatio = (double) r / c;
+        double gRatio = (double) g / c;
+
+        telemetry.addLine(String.format("Red: %d, Green: %d, Clear: %d", r, g, c));
+        telemetry.addLine(String.format("Red Ratio: %f, Green Ratio: %f", rRatio, gRatio));
+
         if(c < cValue) return SortBall.BallColor.EMPTY;
 
-        if (g > r) {
+        if (gRatio > rRatio) {
+            telemetry.addLine("Detected Green Ball");
             return SortBall.BallColor.GREEN;
-        } else if (r > g) {
+        } else if (rRatio > gRatio) {
+            telemetry.addLine("Detected Purple Ball");
             return SortBall.BallColor.PURPLE;
         }
         return SortBall.BallColor.EMPTY;

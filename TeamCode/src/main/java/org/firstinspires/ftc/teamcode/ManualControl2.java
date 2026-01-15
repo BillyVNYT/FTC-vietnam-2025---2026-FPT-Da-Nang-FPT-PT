@@ -22,10 +22,11 @@ public class ManualControl2 {
     Intake intake;
     List<SortBall.BallColor> samples;
 
-    public ManualControl2(HardwareMap hardwareMap) {
-        lifter = new Lifter(hardwareMap);
+    public ManualControl2(HardwareMap hardwareMap, Gamepad gamepad) {
+//        lifter = new Lifter(hardwareMap);
         shooter = new Shooter(hardwareMap);
         intake = new Intake(hardwareMap);
+        Gamepad2 = gamepad;
 
         samples = new ArrayList<>();
         samples.add(SortBall.BallColor.PURPLE);
@@ -41,12 +42,12 @@ public class ManualControl2 {
     }
 
     public void shootBall(Telemetry telemetry) throws InterruptedException{
-        if(Gamepad2.crossWasPressed()){
+        if(Gamepad2.crossWasPressed() && !shooter.isBusy()){
             shooter.shoot(3, spindexer, telemetry);
         }
     }
 
-    public void controlIntakeShaft() throws InterruptedException {
+    public void controlIntakeShaft(Telemetry telemetry) throws InterruptedException {
         boolean intakeActive = intake.isActive();
 
         if(Gamepad2.triangleWasPressed()) {
@@ -54,7 +55,7 @@ public class ManualControl2 {
             else intake.start();
         }
 
-        if(intakeActive) spindexer.loadBallsIn();
+        if(intakeActive) spindexer.loadBallsIn(telemetry);
     }
 
     public void updateShooterAngleServo(Telemetry telemetry){

@@ -28,28 +28,31 @@ import org.firstinspires.ftc.teamcode.utils.Motif;
 //     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 @TeleOp
 public class MainRed extends LinearOpMode {
-    private DriveTrain driveTrain = new DriveTrain(hardwareMap);
+    private DriveTrain driveTrain;
     private ManualControl2 manualControl2;
-    private Motif motif = new Motif(hardwareMap);
+//    private Motif motif;
 
     @Override
     public void runOpMode() throws InterruptedException {
+        driveTrain = new DriveTrain(hardwareMap);
+//        motif = new Motif(hardwareMap);
         waitForStart();
-        manualControl2 = new ManualControl2(hardwareMap);
+        manualControl2 = new ManualControl2(hardwareMap, gamepad2);
 
         while (opModeIsActive()){
-            driveTrain.drivetrainControlAdvanced(gamepad1);
-            driveTrain.noTurnDrivetrainControl(gamepad2);
+//            driveTrain.drivetrainControlAdvanced(gamepad1);
+            driveTrain.drivetrainControlBasic(gamepad2);
+//
+//            manualControl2.controlTurnOutTake(telemetry);
+//            manualControl2.updateShooterAngleServo(telemetry);
+//            manualControl2.toggleFlywheel();
 
-            manualControl2.controlTurnOutTake(telemetry);
-            manualControl2.updateShooterAngleServo(telemetry);
-            manualControl2.toggleFlywheel();
             manualControl2.shootBall(telemetry);
+            manualControl2.controlIntakeShaft(telemetry);
 
-            manualControl2.controlIntakeShaft();
-            manualControl2.readyToShoot();
-            manualControl2.shootPurpleBall(telemetry);
-            manualControl2.shootGreenBall(telemetry);
+//            manualControl2.readyToShoot();
+//            manualControl2.shootPurpleBall(telemetry);
+//            manualControl2.shootGreenBall(telemetry);
         }
     }
 }
