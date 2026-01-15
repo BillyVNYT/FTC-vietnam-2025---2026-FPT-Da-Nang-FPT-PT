@@ -6,7 +6,7 @@ public class ApriltagData{
     double z;
     double area;
     public int id;
-    ApriltagData(double x, double y, double z, double area, int id){
+    public ApriltagData(double x, double y, double z, double area, int id){
         this.x = x;
         this.y = y;
         this.z = z;
