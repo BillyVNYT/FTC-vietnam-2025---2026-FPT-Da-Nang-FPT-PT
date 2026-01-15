@@ -77,7 +77,7 @@ public class Shooter {
         sleep(500);
         MLoader.setPower(1);
 
-        spindexer.rotateToShooter(count);
+        spindexer.spinToShooter(count);
 
         // reset shooter
         MLoader.setPower(0);
@@ -132,13 +132,20 @@ public class Shooter {
         return isBusy;
     }
 
-    public void updateServoAngle(double angle){
+    public void updateServoAngle(double angle, Telemetry telemetry){
         double currentAngle = SAngle.getPosition();
-        SAngle.setPosition(currentAngle + angle);
+        double pos = Math.max(0, Math.min(1, currentAngle + angle));
+        SAngle.setPosition(pos);
+
+        telemetry.addData("Pos", pos);
+        telemetry.addLine("---------------------------");
     }
 
-    public void updateOuttakeAngle(double rx){
+    public void updateOuttakeAngle(double rx, Telemetry telemetry){
         MTurnOuttake.setPower(rx);
+
+        telemetry.addData("Outtake rx", rx);
+        telemetry.addLine("---------------------------");
     }
 
 }

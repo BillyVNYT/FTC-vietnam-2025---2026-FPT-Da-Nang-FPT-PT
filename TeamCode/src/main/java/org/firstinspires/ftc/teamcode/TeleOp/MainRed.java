@@ -41,12 +41,13 @@ public class MainRed extends LinearOpMode {
             driveTrain.drivetrainControlAdvanced(gamepad1);
             driveTrain.noTurnDrivetrainControl(gamepad2);
 
-            manualControl2.controlTurnOutTake();
-            manualControl2.updateShooterAngleServo();
+            manualControl2.controlTurnOutTake(telemetry);
+            manualControl2.updateShooterAngleServo(telemetry);
             manualControl2.toggleFlywheel();
             manualControl2.shootBall(telemetry);
 
             manualControl2.controlIntakeShaft();
+            manualControl2.readyToShoot();
             manualControl2.shootPurpleBall(telemetry);
             manualControl2.shootGreenBall(telemetry);
         }
