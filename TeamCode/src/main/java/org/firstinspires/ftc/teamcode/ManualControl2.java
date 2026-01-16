@@ -22,11 +22,12 @@ public class ManualControl2 {
     Intake intake;
     List<SortBall.BallColor> samples;
 
-    public ManualControl2(HardwareMap hardwareMap, Gamepad gamepad2) {
+    public ManualControl2(HardwareMap hardwareMap, Gamepad gamepad) {
 //        lifter = new Lifter(hardwareMap);
-//        shooter = new Shooter(hardwareMap);
+        shooter = new Shooter(hardwareMap);
         intake = new Intake(hardwareMap);
-        this.Gamepad2 = gamepad2;
+        Gamepad2 = gamepad;
+
         samples = new ArrayList<>();
         samples.add(SortBall.BallColor.PURPLE);
         samples.add(SortBall.BallColor.PURPLE);
@@ -41,7 +42,7 @@ public class ManualControl2 {
     }
 
     public void shootBall(Telemetry telemetry) throws InterruptedException{
-        if(Gamepad2.crossWasPressed()){
+        if(Gamepad2.crossWasPressed() && !shooter.isBusy()){
             shooter.shoot(3, spindexer, telemetry);
         }
     }
@@ -71,7 +72,7 @@ public class ManualControl2 {
 
         int purpleIdx = spindexer.getCurrentLoad().indexOf(SortBall.BallColor.PURPLE);
         if (purpleIdx > -1 && !shooter.isBusy()) {
-//            spindexer.spinTargetToShooter(SortBall.BallColor.PURPLE);
+            spindexer.spinTargetToShooter(SortBall.BallColor.PURPLE);
             sleep(200);
 
             shooter.shoot(1, spindexer, telemetry);
@@ -83,7 +84,7 @@ public class ManualControl2 {
 
         int greenIdx = spindexer.getCurrentLoad().indexOf(SortBall.BallColor.GREEN);
         if (greenIdx > -1 && !shooter.isBusy()) {
-//            spindexer.spinTargetToShooter(SortBall.BallColor.GREEN);
+            spindexer.spinTargetToShooter(SortBall.BallColor.GREEN);
 
             shooter.shoot(1, spindexer, telemetry);
         }
@@ -98,7 +99,7 @@ public class ManualControl2 {
     public void readyToShoot() {
         boolean empty = spindexer.getCurrentLoad().get(0) == SortBall.BallColor.EMPTY;
         if(Gamepad2.squareWasPressed() && !empty && !shooter.isBusy()) {
-//            spindexer.readyToShoot();
+            spindexer.readyToShoot();
         }
     }
 }
