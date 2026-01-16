@@ -17,12 +17,12 @@ public class TuneServo extends LinearOpMode {
 
         while (opModeIsActive()) {
             if (gamepad1.right_bumper && pos < 1) {
-                pos += 0.0005;
+                pos += 0.0002;
                 servo.setPosition(pos);
             }
 
             if (gamepad1.left_bumper && pos > 0) {
-                pos -= 0.0005;
+                pos -= 0.0002;
                 servo.setPosition(pos);
             }
 

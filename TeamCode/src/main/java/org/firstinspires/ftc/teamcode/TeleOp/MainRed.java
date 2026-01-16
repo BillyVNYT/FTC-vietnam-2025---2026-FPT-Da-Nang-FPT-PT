@@ -30,15 +30,14 @@ import org.firstinspires.ftc.teamcode.utils.Motif;
 public class MainRed extends LinearOpMode {
     private DriveTrain driveTrain;
     private ManualControl2 manualControl2;
-//    private Motif motif;
+//    private Motif motif = new Motif(hardwareMap);
 
     @Override
     public void runOpMode() throws InterruptedException {
         driveTrain = new DriveTrain(hardwareMap);
-//        motif = new Motif(hardwareMap);
-        waitForStart();
         manualControl2 = new ManualControl2(hardwareMap, gamepad2);
 
+        waitForStart();
         while (opModeIsActive()){
 //            driveTrain.drivetrainControlAdvanced(gamepad1);
             driveTrain.drivetrainControlBasic(gamepad2);

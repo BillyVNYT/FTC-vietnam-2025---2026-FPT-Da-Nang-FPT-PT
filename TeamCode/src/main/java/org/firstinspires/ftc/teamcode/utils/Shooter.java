@@ -94,7 +94,7 @@ public class Shooter {
         });
         servoToggler.start();
 
-        spindexer.spinToShooter(count);
+//        spindexer.spinToShooter(count);
 
         servoToggler.interrupt();
         // END OF CONCURRENT EXECUTION
