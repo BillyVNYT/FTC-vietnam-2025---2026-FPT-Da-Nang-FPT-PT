@@ -11,27 +11,33 @@ public class TuneServo extends LinearOpMode {
     boolean reversed = false;
     @Override
     public void runOpMode() throws InterruptedException {
-        servo = hardwareMap.servo.get("s2");
+        servo = hardwareMap.servo.get("s4");
         servo.setPosition(0);
         waitForStart();
 
         while (opModeIsActive()) {
-            if (gamepad1.right_bumper && pos < 1) {
-                pos += 0.0002;
-                servo.setPosition(pos);
-            }
-
-            if (gamepad1.left_bumper && pos > 0) {
-                pos -= 0.0002;
-                servo.setPosition(pos);
-            }
-
-            if (gamepad1.crossWasPressed()) {
-                servo.setDirection(reversed ? Servo.Direction.FORWARD : Servo.Direction.REVERSE);
-                reversed = !reversed;
-            }
-
-            telemetry.addData("Position", pos);
+//            if (gamepad1.right_bumper && pos < 1) {
+//                pos += 0.0002;
+//                servo.setPosition(pos);
+//            }
+//
+//            if (gamepad1.left_bumper && pos > 0) {
+//                pos -= 0.0002;
+//                servo.setPosition(pos);
+//            }
+//
+//            if (gamepad1.crossWasPressed()) {
+//                servo.setDirection(reversed ? Servo.Direction.FORWARD : Servo.Direction.REVERSE);
+//                reversed = !reversed;
+//            }
+//            servo.setPosition(0);
+//            sleep(5000);
+//            telemetry.addData("Position", servo.getPosition());
+//            telemetry.update();
+//            servo.setPosition(1);
+//            sleep(5000);
+//            telemetry.addData("Position", servo.getPosition());
+            servo.setPosition(0.5);
             telemetry.update();
         }
     }
