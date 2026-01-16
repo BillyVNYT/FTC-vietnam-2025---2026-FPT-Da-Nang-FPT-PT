@@ -24,7 +24,7 @@ public class Shooter {
     double F = 0.0112;
     double Kp = 1;
     double[] servoPositions = {0.8492, 0.6389, 0};
-    double SLoaderOutHiddenPos = 0.658;
+    double SLoaderOutHiddenPos = 0.7;
     double SLoaderOutVisiblePos = 0.8145;
 
     boolean isBusy = false;
