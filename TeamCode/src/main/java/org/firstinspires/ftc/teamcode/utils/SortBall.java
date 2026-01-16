@@ -17,10 +17,10 @@ public class SortBall {
         PURPLE,
         EMPTY
     }
-    double[] INTAKE_SLOT_POS = {0.27, 0.64, 1};
-    double[] OUTTAKE_SLOT_POS = {0.74, 0.37, 0};
+    double[] INTAKE_SLOT_POS = {0.259, 0.629, 1};
+    double[] OUTTAKE_SLOT_POS = {0.795, 0.418, 0};
 
-    private final List<SortBall.BallColor> currentLoad = new ArrayList<>();
+    private final List<SortBall.BallColor> currentLoad = new ArrayList<>(3);
     List<BallColor> obeliskData;
     ColorSensor colorSensor1, colorSensor2, colorSensor3;
     Servo spindexer;
@@ -56,7 +56,10 @@ public class SortBall {
         BallColor color1 = colorSensor1.detectBallColor(2500, telemetry);
         BallColor color2 = colorSensor2.detectBallColor(4000, telemetry);
 //        BallColor color3 = colorSensor3.detectBallColor(4000, telemetry);
-
+        if (isFull()) {
+            readyToShoot();
+            return;
+        }
         int firstEmptyIdx = -1;
         for (int i = 0; i < currentLoad.size(); i++) {
             if (currentLoad.get(i) == BallColor.EMPTY) {
@@ -80,14 +83,17 @@ public class SortBall {
                 double nextSlot = INTAKE_SLOT_POS[firstEmptyIdx + 1];
                 spindexer.setPosition(nextSlot);
 
-                long sleepTime = (long) Math.abs(nextSlot - INTAKE_SLOT_POS[firstEmptyIdx])*700;
+                long sleepTime = (long) Math.abs(nextSlot - INTAKE_SLOT_POS[firstEmptyIdx])*5000;
                 sleep(sleepTime);
             } else readyToShoot();
         }
     }
 
     public boolean isFull(){
-        return getCurrentLoad().size() == 3;
+        for (BallColor b : currentLoad) {
+            if (b == BallColor.EMPTY) return false;
+        }
+        return true;
     }
 
     /**
@@ -143,10 +149,14 @@ public class SortBall {
 
     public void spinToShooter(int count) throws InterruptedException{
         releaseBall(0);
+        sleep(360);
+
         for(int i = 1; i < count; i++) {
             spindexer.setPosition(OUTTAKE_SLOT_POS[i]);
             releaseBall(i);
-            sleep(1000);
+            sleep(450);
         }
+
+        sleep(200);
     }
 }
