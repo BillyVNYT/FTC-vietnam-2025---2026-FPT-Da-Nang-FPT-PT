@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.utils;
 import static java.lang.Thread.sleep;
 
 import com.bylazar.telemetry.TelemetryManager;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -23,7 +24,6 @@ public class SortBall {
     List<BallColor> obeliskData;
     ColorSensor colorSensor1, colorSensor2, colorSensor3;
     Servo spindexer;
-
     public SortBall(List<BallColor> obeliskData, HardwareMap hardwareMap) {
         this.obeliskData = obeliskData;
         colorSensor1 = hardwareMap.get(ColorSensor.class, "cs");
@@ -42,8 +42,6 @@ public class SortBall {
     }
 
     private void releaseBall() {
-        if (currentLoad.isEmpty()) return;
-
         currentLoad.remove(0);
     }
 
@@ -68,17 +66,18 @@ public class SortBall {
 
         if((cs1Detected || cs2Detected) && size < MAX_SIZE) {
             currentLoad.add(color);
-
+            // spin to next empty slot
             if(size < (MAX_SIZE - 1)) {
-                // spin to next empty slot
+                telemetry.addData("servo pos", spindexer.getPosition());
+                telemetry.addData("sleep time", Math.abs(INTAKE_SLOT_POS[size+1]-INTAKE_SLOT_POS[size])*1000);
                 spindexer.setPosition(INTAKE_SLOT_POS[size + 1]);
-                sleep(300);
+                sleep((long)(Math.abs(INTAKE_SLOT_POS[size+1] - INTAKE_SLOT_POS[size]) * 700));
             } else readyToShoot();
         }
     }
 
     public boolean isFull(){
-        return getCurrentLoad().size() == MAX_SIZE;
+        return getCurrentLoad().size() == 3;
     }
 
     /**
@@ -133,13 +132,12 @@ public class SortBall {
     }
 
     public void spinToShooter(int count) throws InterruptedException{
-        releaseBall();
+//        releaseBall();
 
         for(int i = 1; i < count; i++) {
             spindexer.setPosition(OUTTAKE_SLOT_POS[i]);
-            releaseBall();
+//            releaseBall();
             sleep(1000);
         }
     }
-
 }
