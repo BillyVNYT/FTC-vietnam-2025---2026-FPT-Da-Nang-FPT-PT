@@ -8,11 +8,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.utils.Intake;
 import org.firstinspires.ftc.teamcode.utils.Lifter;
+import org.firstinspires.ftc.teamcode.utils.Motif;
 import org.firstinspires.ftc.teamcode.utils.Shooter;
 import org.firstinspires.ftc.teamcode.utils.SortBall;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ManualControl2 {
     Shooter shooter;
@@ -20,7 +18,7 @@ public class ManualControl2 {
     SortBall spindexer;
     Gamepad Gamepad2;
     Intake intake;
-    List<SortBall.BallColor> samples;
+    Motif motif;
 
     public ManualControl2(HardwareMap hardwareMap, Gamepad gamepad) {
 //        lifter = new Lifter(hardwareMap);
@@ -28,12 +26,9 @@ public class ManualControl2 {
         intake = new Intake(hardwareMap);
         Gamepad2 = gamepad;
 
-        samples = new ArrayList<>();
-        samples.add(SortBall.BallColor.PURPLE);
-        samples.add(SortBall.BallColor.PURPLE);
-        samples.add(SortBall.BallColor.GREEN);
+        motif = new Motif(hardwareMap);
 
-        spindexer = new SortBall(samples, hardwareMap);
+        spindexer = new SortBall(motif.getSampleMotif(), hardwareMap);
     }
 
     public void controlTurnOutTake(Telemetry telemetry) {

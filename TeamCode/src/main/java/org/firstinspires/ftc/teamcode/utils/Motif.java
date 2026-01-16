@@ -14,6 +14,9 @@ public class Motif {
     public Motif(HardwareMap hardwareMap) {
         limelight = new LimelightHardware(hardwareMap);
     }
+    public List<SortBall.BallColor> getSampleMotif() {
+        return obelisk21;
+    }
 
     public List<SortBall.BallColor> getMotif() {
         int id = limelight.getAprilTagData().id;

@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.utils.DriveTrain;
 import org.firstinspires.ftc.teamcode.ManualControl2;
-import org.firstinspires.ftc.teamcode.utils.Motif;
 
 //                       _oo0oo_
 //                      o8888888o
@@ -30,7 +29,6 @@ import org.firstinspires.ftc.teamcode.utils.Motif;
 public class MainRed extends LinearOpMode {
     private DriveTrain driveTrain;
     private ManualControl2 manualControl2;
-//    private Motif motif = new Motif(hardwareMap);
 
     @Override
     public void runOpMode() throws InterruptedException {

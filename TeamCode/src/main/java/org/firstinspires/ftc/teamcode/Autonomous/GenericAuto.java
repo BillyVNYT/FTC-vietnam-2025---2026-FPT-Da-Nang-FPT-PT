@@ -13,7 +13,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.utils.Motif;
 import org.firstinspires.ftc.teamcode.utils.Shooter;
+import org.firstinspires.ftc.teamcode.utils.SortBall;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +30,8 @@ public class GenericAuto {
     private final TelemetryManager panelsTelemetry;
     public Follower follower;
     public Shooter shooter;
+    private final SortBall spindexer;
+    private final Motif motif;
     private final List<PathChain> paths = new ArrayList<>();
     private final List<PathState> states = new ArrayList<>();;
     private PathState currentState ;
@@ -41,13 +45,16 @@ public class GenericAuto {
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startPose);
 
+        shooter = new Shooter(hardwareMap);
+        motif = new Motif(hardwareMap);
+        spindexer = new SortBall(motif.getSampleMotif(), hardwareMap);
+
         buildPaths(follower, pathPoses);
 
         if (!states.isEmpty()) {
             currentState = states.get(0);
             follower.followPath(paths.get(0));
         } else currentState = PathState.LEAVE;
-
 
         panelsTelemetry.update(telemetry);
     }
@@ -70,7 +77,7 @@ public class GenericAuto {
         }
     }
 
-    private void autonomousPathUpdate(){
+    private void autonomousPathUpdate(Telemetry telemetry) throws InterruptedException {
         if (follower.isBusy()) {
             return; // Wait for the current path to complete
         }
@@ -78,14 +85,14 @@ public class GenericAuto {
         switch (currentState) {
             case SHOOT:
                 if (!shotTriggered) {
-//                     shooter.shoot(panelsTelemetry);
+                    shooter.shoot(3, spindexer, telemetry);
                     shotTriggered = true;
                 }
 
-                // if (!shooter.isBusy()) { // Uncomment when shooter logic is ready
-                shotTriggered = false;
-                goToNextPath();
-                // }
+                 if (!shooter.isBusy()) {
+                    shotTriggered = false;
+                    goToNextPath();
+                 }
                 break;
 
             case PICK_UP:
@@ -111,9 +118,9 @@ public class GenericAuto {
         follower.followPath(currentPath);
     }
 
-    public void updateFollower(Telemetry telemetry) {
+    public void updateFollower(Telemetry telemetry) throws InterruptedException{
         follower.update();
-        autonomousPathUpdate();
+        autonomousPathUpdate(telemetry);
 
         panelsTelemetry.debug("Path State", currentState);
         panelsTelemetry.debug("Path Index", curPathIdx);
