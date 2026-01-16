@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.utils;
 
 import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
@@ -7,35 +7,36 @@ import com.qualcomm.robotcore.hardware.configuration.annotations.DevicePropertie
 import com.qualcomm.robotcore.hardware.configuration.annotations.I2cDeviceType;
 import com.qualcomm.robotcore.util.TypeConversion;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 @I2cDeviceType
 @DeviceProperties(name = "TCS34725 Color Sensor", description = "TCS34725 Color Sensor Driver", xmlTag = "TCS34725")
-public class TCS34725Driver extends I2cDeviceSynchDevice<I2cDeviceSynch> {
+public class ColorSensor extends I2cDeviceSynchDevice<I2cDeviceSynch> {
 
     // Địa chỉ I2C mặc định của TCS34725 là 0x29
     public final static I2cAddr ADDRESS_I2C_DEFAULT = I2cAddr.create7bit(0x29);
 
-    public String detectBallColor() {
+    public SortBall.BallColor detectBallColor(int cValue, Telemetry telemetry) {
         int r = getRed();
         int g = getGreen();
-        int b = getBlue();
         int c = getClear();
 
-        // Tránh chia cho 0 nếu cảm biến bị lỗi
-        if (c == 0) return "UNKNOWN";
+        double rRatio = (double) r / c;
+        double gRatio = (double) g / c;
 
-        // Tính tỷ lệ phần trăm của từng màu
-        double redRatio = (double) r / c;
-        double greenRatio = (double) g / c;
-        double blueRatio = (double) b / c;
+        telemetry.addLine(String.format("Red: %d, Green: %d, Clear: %d", r, g, c));
+        telemetry.addLine(String.format("Red Ratio: %f, Green Ratio: %f", rRatio, gRatio));
 
-        // Thuật toán so sánh
-        if (greenRatio > redRatio && greenRatio > blueRatio) {
-            return "GREEN"; // Bóng xanh
-        } else if (redRatio > greenRatio && blueRatio > greenRatio) {
-            return "PURPLE"; // Bóng tím (Đỏ và Xanh dương đều mạnh hơn Xanh lá)
+        if(c < cValue) return SortBall.BallColor.EMPTY;
+
+        if (gRatio > rRatio) {
+            telemetry.addLine("Detected Green Ball");
+            return SortBall.BallColor.GREEN;
+        } else if (rRatio > gRatio) {
+            telemetry.addLine("Detected Purple Ball");
+            return SortBall.BallColor.PURPLE;
         }
-
-        return "NONE";
+        return SortBall.BallColor.EMPTY;
     }
 
     public enum Register {
@@ -53,7 +54,7 @@ public class TCS34725Driver extends I2cDeviceSynchDevice<I2cDeviceSynch> {
         Register(int bVal) { this.bVal = bVal; }
     }
 
-    public TCS34725Driver(I2cDeviceSynch deviceClient) {
+    public ColorSensor(I2cDeviceSynch deviceClient) {
         super(deviceClient, true);
         this.deviceClient.setI2cAddress(ADDRESS_I2C_DEFAULT);
         super.registerArmingStateCallback(false);

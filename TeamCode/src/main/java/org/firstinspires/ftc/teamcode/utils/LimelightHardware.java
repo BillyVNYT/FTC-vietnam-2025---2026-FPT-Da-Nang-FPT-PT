@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.utils;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import org.firstinspires.ftc.teamcode.utils.ApriltagData;
 
 import com.qualcomm.hardware.limelightvision.LLResultTypes.FiducialResult;
 
@@ -13,8 +14,8 @@ class ApriltagData{
     double y;
     double z;
     double area;
-    double id;
-    ApriltagData(double x, double y, double z, double area, int id){
+    public int id;
+    public ApriltagData(double x, double y, double z, double area, int id){
         this.x = x;
         this.y = y;
         this.z = z;
