@@ -17,8 +17,8 @@ public class SortBall {
         PURPLE,
         EMPTY
     }
-    double[] INTAKE_SLOT_POS = {0.7424, 0.3688, 0};
-    double[] OUTTAKE_SLOT_POS = {0.328, 0.5, 0.6};
+    double[] INTAKE_SLOT_POS = {0.27, 0.64, 1};
+    double[] OUTTAKE_SLOT_POS = {0.74, 0.37, 0};
 
     List<BallColor> obeliskData;
     ColorSensor colorSensor1, colorSensor2, colorSensor3;
@@ -26,11 +26,12 @@ public class SortBall {
 
     public SortBall(List<BallColor> obeliskData, HardwareMap hardwareMap) {
         this.obeliskData = obeliskData;
-        colorSensor1 = hardwareMap.get(ColorSensor.class, "cs1");
+        colorSensor1 = hardwareMap.get(ColorSensor.class, "cs");
         colorSensor2 = hardwareMap.get(ColorSensor.class, "cs2");
         colorSensor3 = hardwareMap.get(ColorSensor.class, "cs3");
-        spindexer = hardwareMap.get(Servo.class, "s1");
 
+        spindexer = hardwareMap.get(Servo.class, "s2");
+        spindexer.setDirection(Servo.Direction.REVERSE);
         spindexer.setPosition(INTAKE_SLOT_POS[0]);
     }
 
@@ -41,27 +42,24 @@ public class SortBall {
     }
 
     private void releaseBall() {
+        if (currentLoad.isEmpty()) return;
+
         currentLoad.remove(0);
     }
 
-//    public void readyToShoot() {
-//        spindexer.setPosition(OUTTAKE_SLOT_POS[0]);
-//    }
+    public void readyToShoot() {
+        spindexer.setPosition(OUTTAKE_SLOT_POS[0]);
+    }
 
-    int MAX_SIZE = 300;
-
+    int MAX_SIZE = 3;
     public void loadBallsIn(Telemetry telemetry) throws InterruptedException {
-        BallColor color1 = colorSensor1.detectBallColor(2500);
-        BallColor color2 = colorSensor2.detectBallColor(4000);
-//        BallColor color3 = colorSensor3.detectBallColor(5000);
+        BallColor color1 = colorSensor1.detectBallColor(2500, telemetry);
+        BallColor color2 = colorSensor2.detectBallColor(4000, telemetry);
+//        BallColor color3 = colorSensor3.detectBallColor(4000, telemetry);
 
         int size = currentLoad.size();
         telemetry.addData("Size", size);
-
-        if(size == 4) {
-            telemetry.addLine("-----------ALL IN!!!");
-            return;
-        }
+        telemetry.update();
 
         boolean cs1Detected = !color1.equals(BallColor.EMPTY);
         boolean cs2Detected = !color2.equals(BallColor.EMPTY);
@@ -70,27 +68,17 @@ public class SortBall {
 
         if((cs1Detected || cs2Detected) && size < MAX_SIZE) {
             currentLoad.add(color);
-//             spin to next empty slot
-            sleep(5000);
+
+            if(size < (MAX_SIZE - 1)) {
+                // spin to next empty slot
+                spindexer.setPosition(INTAKE_SLOT_POS[size + 1]);
+                sleep(300);
+            } else readyToShoot();
         }
-        spindexer.setPosition(INTAKE_SLOT_POS[size]);
-
-        String cs1Data = "r:" + colorSensor1.getRed() + " g:" + colorSensor1.getGreen() + " c:" + colorSensor1.getClear();
-        String cs2Data = "r:" + colorSensor2.getRed() + " g:" + colorSensor2.getGreen() + " c:" + colorSensor2.getClear();
-        String cs3Data = "r:" + colorSensor3.getRed() + " g:" + colorSensor3.getGreen() + " c:" + colorSensor3.getClear();
-        telemetry.addData("cs1 detected", color1);
-        telemetry.addData("cs1 data", cs1Data);
-        telemetry.addData("cs2 detected", color2);
-        telemetry.addData("cs2 data", cs2Data);
-        telemetry.addData("spindexer", spindexer.getPosition());
-
-        telemetry.addData("ball color", color);
-        telemetry.update();
-
     }
 
     public boolean isFull(){
-        return getCurrentLoad().size() == 3;
+        return getCurrentLoad().size() == MAX_SIZE;
     }
 
     /**
@@ -135,23 +123,23 @@ public class SortBall {
     }
 
 
-//    public void spinTargetToShooter(SortBall.BallColor target){
-//        for (int i = 0; i < currentLoad.size(); i++) {
-//            if (currentLoad.get(i) == target) {
-//                spindexer.setPosition(OUTTAKE_SLOT_POS[i]);
-//                break;
-//            }
-//        }
-//    }
-//
-//    public void spinToShooter(int count) throws InterruptedException{
-//        releaseBall();
-//
-//        for(int i = 1; i < count; i++) {
-//            spindexer.setPosition(OUTTAKE_SLOT_POS[i]);
-//            releaseBall();
-//            sleep(200);
-//        }
-//    }
+    public void spinTargetToShooter(SortBall.BallColor target){
+        for (int i = 0; i < currentLoad.size(); i++) {
+            if (currentLoad.get(i) == target) {
+                spindexer.setPosition(OUTTAKE_SLOT_POS[i]);
+                break;
+            }
+        }
+    }
+
+    public void spinToShooter(int count) throws InterruptedException{
+        releaseBall();
+
+        for(int i = 1; i < count; i++) {
+            spindexer.setPosition(OUTTAKE_SLOT_POS[i]);
+            releaseBall();
+            sleep(1000);
+        }
+    }
 
 }

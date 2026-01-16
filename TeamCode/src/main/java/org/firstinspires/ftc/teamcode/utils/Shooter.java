@@ -61,8 +61,8 @@ public class Shooter {
     public void shoot(int count, SortBall spindexer, Telemetry telemetry) throws InterruptedException{
         spindexer.readyToShoot();
         sleep(500);
-        isBusy = true;
 
+        isBusy = true;
 //        double distance = limelight.getAprilTagData().z;
         double distance = 250;
         if(distance <= 95){
@@ -94,7 +94,7 @@ public class Shooter {
         });
         servoToggler.start();
 
-//        spindexer.spinToShooter(count);
+        spindexer.spinToShooter(count);
 
         servoToggler.interrupt();
         // END OF CONCURRENT EXECUTION
