@@ -16,7 +16,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
-            .mass(18.0)
+            .mass(15.00036)
             .forwardZeroPowerAcceleration(-27.27123952980804)
             .lateralZeroPowerAcceleration(-50.80552134663126)
             .translationalPIDFCoefficients(new PIDFCoefficients(0.0536, 0, 0.005036, 0.000000036))
@@ -45,6 +45,8 @@ public class Constants {
             .strafeEncoder_HardwareMapName("m5")
 //            .forwardEncoderDirection(Encoder.REVERSE)
             .strafeEncoderDirection(Encoder.REVERSE)
+
+
             .forwardPodY(-4.601)
             .strafePodX(4.3535)
             .IMU_HardwareMapName("imu")
