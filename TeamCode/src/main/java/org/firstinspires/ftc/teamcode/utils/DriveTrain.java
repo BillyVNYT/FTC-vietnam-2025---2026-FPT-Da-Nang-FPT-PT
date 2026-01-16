@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.utils;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -20,6 +21,9 @@ public class DriveTrain {
         LeftFrontDrive = hardwareMap.get(DcMotor.class, "m3");
         LeftBackDrive = hardwareMap.get(DcMotor.class, "m4");
 
+        LeftBackDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+        RightBackDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+
         IMU imu = hardwareMap.get(IMU.class, "imu");
         // Adjust the orientation parameters to match your robot
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
@@ -34,8 +38,8 @@ public class DriveTrain {
         double rx = gamepad1.right_stick_x;
 
         LeftFrontDrive.setPower(y + x + rx);
-        LeftBackDrive.setPower(y - x + rx);
-        RightFrontDrive.setPower(y - x - rx);
+        LeftBackDrive.setPower(y - x - rx);
+        RightFrontDrive.setPower(y - x + rx);
         RightBackDrive.setPower(y + x - rx);
     }
 
