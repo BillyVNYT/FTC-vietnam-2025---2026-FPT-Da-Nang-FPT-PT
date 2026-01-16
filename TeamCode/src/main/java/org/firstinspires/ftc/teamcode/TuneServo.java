@@ -30,15 +30,15 @@ public class TuneServo extends LinearOpMode {
 //                servo.setDirection(reversed ? Servo.Direction.FORWARD : Servo.Direction.REVERSE);
 //                reversed = !reversed;
 //            }
-//            servo.setPosition(0);
-//            sleep(5000);
-//            telemetry.addData("Position", servo.getPosition());
-//            telemetry.update();
-//            servo.setPosition(1);
-//            sleep(5000);
-//            telemetry.addData("Position", servo.getPosition());
-            servo.setPosition(0.5);
+            servo.setPosition(0);
+            telemetry.addData("Position", servo.getPosition());
             telemetry.update();
+            sleep(5000);
+            servo.setPosition(1);
+            telemetry.addData("Position", servo.getPosition());
+            telemetry.update();
+            sleep(5000);
+//            servo.setPosition(0.5);
         }
     }
 }
