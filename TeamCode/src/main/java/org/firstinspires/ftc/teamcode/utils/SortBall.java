@@ -42,6 +42,8 @@ public class SortBall {
     }
 
     private void releaseBall() {
+        if (currentLoad.isEmpty()) return;
+
         currentLoad.remove(0);
     }
 
@@ -66,17 +68,17 @@ public class SortBall {
 
         if((cs1Detected || cs2Detected) && size < MAX_SIZE) {
             currentLoad.add(color);
-            // spin to next empty slot
+
             if(size < (MAX_SIZE - 1)) {
-                telemetry.addData("servo pos", spindexer.getPosition());
+                // spin to next empty slot
                 spindexer.setPosition(INTAKE_SLOT_POS[size + 1]);
-                sleep(250);
+                sleep(300);
             } else readyToShoot();
         }
     }
 
     public boolean isFull(){
-        return getCurrentLoad().size() == 3;
+        return getCurrentLoad().size() == MAX_SIZE;
     }
 
     /**
@@ -131,11 +133,11 @@ public class SortBall {
     }
 
     public void spinToShooter(int count) throws InterruptedException{
-//        releaseBall();
+        releaseBall();
 
         for(int i = 1; i < count; i++) {
             spindexer.setPosition(OUTTAKE_SLOT_POS[i]);
-//            releaseBall();
+            releaseBall();
             sleep(1000);
         }
     }
