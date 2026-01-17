@@ -56,10 +56,6 @@ public class SortBall {
         BallColor color1 = colorSensor1.detectBallColor(2500, telemetry);
         BallColor color2 = colorSensor2.detectBallColor(4000, telemetry);
 //        BallColor color3 = colorSensor3.detectBallColor(4000, telemetry);
-        if (isFull()) {
-            readyToShoot();
-            return;
-        }
         int firstEmptyIdx = -1;
         for (int i = 0; i < currentLoad.size(); i++) {
             if (currentLoad.get(i) == BallColor.EMPTY) {
@@ -83,7 +79,7 @@ public class SortBall {
                 double nextSlot = INTAKE_SLOT_POS[firstEmptyIdx + 1];
                 spindexer.setPosition(nextSlot);
 
-                long sleepTime = (long) Math.abs(nextSlot - INTAKE_SLOT_POS[firstEmptyIdx])*5000;
+                long sleepTime = (long) (Math.abs(nextSlot - INTAKE_SLOT_POS[firstEmptyIdx])*700);
                 sleep(sleepTime);
             } else readyToShoot();
         }
