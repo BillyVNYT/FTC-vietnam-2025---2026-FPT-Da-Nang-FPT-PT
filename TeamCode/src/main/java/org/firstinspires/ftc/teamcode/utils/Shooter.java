@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -18,14 +19,14 @@ public class Shooter {
 //    private final DcMotor MTurnOuttake;
     private final Servo SAngle;
     private final Servo SLoaderOut;
-    private final Servo SLoaderUp1, SLoaderUp2;
+    private final ServoImplEx SLoaderUp1, SLoaderUp2;
 //    private final LimelightHardware limelight;
     double P = 15.1;
     double F = 0.0112;
     double Kp = 1;
     double[] servoPositions = {0.8492, 0.6389, 0};
-    double SLoaderOutHiddenPos = 0.658;
-    double SLoaderOutVisiblePos = 0.8145;
+    double SLoaderOutHiddenPos = 0.7;
+    double SLoaderOutVisiblePos = 0.9;
 
     boolean isBusy = false;
 
@@ -37,7 +38,7 @@ public class Shooter {
         MShooter2 = hardwareMap.get(DcMotorEx.class, "m6");
         MShooter1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MShooter2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        MShooter2.setDirection(DcMotorSimple.Direction.REVERSE);
+        MShooter1.setDirection(DcMotorSimple.Direction.REVERSE);
 
 //        MTurnOuttake = hardwareMap.get(DcMotor.class, "m");
 
@@ -47,8 +48,8 @@ public class Shooter {
         SAngle = hardwareMap.get(Servo.class, "s6");
         SAngle.setPosition(0.8492);
 
-        SLoaderUp1 = hardwareMap.get(Servo.class, "s4");
-        SLoaderUp2 = hardwareMap.get(Servo.class, "s5");
+        SLoaderUp1 = hardwareMap.get(ServoImplEx.class, "s4");
+        SLoaderUp2 = hardwareMap.get(ServoImplEx.class, "s5");
 
         SLoaderOut = hardwareMap.get(Servo.class, "s1");
         SLoaderOut.setPosition(SLoaderOutHiddenPos);
@@ -82,6 +83,8 @@ public class Shooter {
         // load balls
         SLoaderOut.setPosition(SLoaderOutVisiblePos);
         sleep(500);
+        SLoaderUp1.setPwmEnable();
+        SLoaderUp2.setPwmEnable();
 
         // START OF CONCURRENT EXECUTION OF SERVO LOADER UP AND SPINDEXER
         Thread servoToggler = new Thread(() -> {
@@ -98,7 +101,8 @@ public class Shooter {
 
         servoToggler.interrupt();
         // END OF CONCURRENT EXECUTION
-
+        SLoaderUp1.setPwmDisable();
+        SLoaderUp2.setPwmDisable();
         SLoaderOut.setPosition(SLoaderOutHiddenPos);
         MShooter1.setVelocity(0);
         MShooter2.setVelocity(0);
