@@ -18,7 +18,8 @@ public class SortBall {
         EMPTY
     }
     double[] INTAKE_SLOT_POS = {0.259, 0.629, 1};
-    double[] OUTTAKE_SLOT_POS = {0.795, 0.418, 0};
+    double[] OUTTAKE_SLOT_POS = {0.418, 0.795, 0};
+    int[] OUTTAKE_SLOT_ORDER = {1, 0, 2};
 
     private final List<SortBall.BallColor> currentLoad = new ArrayList<>(3);
     List<BallColor> obeliskData;
@@ -31,7 +32,7 @@ public class SortBall {
         colorSensor3 = hardwareMap.get(ColorSensor.class, "cs3");
 
         spindexer = hardwareMap.get(Servo.class, "s2");
-//        spindexer.setDirection(Servo.Direction.REVERSE);
+        spindexer.setDirection(Servo.Direction.REVERSE);
         spindexer.setPosition(INTAKE_SLOT_POS[0]);
 
         currentLoad.add(BallColor.EMPTY);
@@ -49,14 +50,14 @@ public class SortBall {
     }
 
     public void readyToShoot() {
-        spindexer.setDirection(Servo.Direction.REVERSE);
-        spindexer.setPosition(OUTTAKE_SLOT_POS[0]);
+        spindexer.setPosition(OUTTAKE_SLOT_POS[OUTTAKE_SLOT_ORDER[0]]);
     }
 
     public void loadBallsIn(Telemetry telemetry) throws InterruptedException {
         BallColor color1 = colorSensor1.detectBallColor(2500, telemetry);
         BallColor color2 = colorSensor2.detectBallColor(4000, telemetry);
 //        BallColor color3 = colorSensor3.detectBallColor(4000, telemetry);
+
         int firstEmptyIdx = -1;
         for (int i = 0; i < currentLoad.size(); i++) {
             if (currentLoad.get(i) == BallColor.EMPTY) {
@@ -87,10 +88,7 @@ public class SortBall {
     }
 
     public boolean isFull(){
-        for (BallColor b : currentLoad) {
-            if (b == BallColor.EMPTY) return false;
-        }
-        return true;
+        return !getCurrentLoad().contains(BallColor.EMPTY);
     }
 
     /**
@@ -145,13 +143,12 @@ public class SortBall {
     }
 
     public void spinToShooter(int count) throws InterruptedException{
-        releaseBall(0);
-        spindexer.setDirection(Servo.Direction.REVERSE);
+        releaseBall(OUTTAKE_SLOT_ORDER[0]);
         sleep(360);
 
         for(int i = 1; i < count; i++) {
-            spindexer.setPosition(OUTTAKE_SLOT_POS[i]);
-            releaseBall(i);
+            spindexer.setPosition(OUTTAKE_SLOT_POS[OUTTAKE_SLOT_ORDER[i]]);
+            releaseBall(OUTTAKE_SLOT_ORDER[i]);
             sleep(600);
         }
 

@@ -60,9 +60,6 @@ public class Shooter {
     int FLYWHEEL_VELOCITY_GAIN_DURATION = 500;
 
     public void shoot(int count, SortBall spindexer, Telemetry telemetry) throws InterruptedException{
-        spindexer.readyToShoot();
-        sleep(500);
-
         isBusy = true;
 //        double distance = limelight.getAprilTagData().z;
         double distance = 250;
