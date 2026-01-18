@@ -17,6 +17,7 @@ public class TuneServo extends LinearOpMode {
         if (!auto) {
             telemetry.addLine("Press Right Bumper to increase position");
             telemetry.addLine("Press Left Bumper to decrease position");
+            telemetry.addData("pos", pos);
         }
         telemetry.update();
     }
@@ -34,7 +35,7 @@ public class TuneServo extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        servo = hardwareMap.servo.get("s4");
+        servo = hardwareMap.servo.get("s1");
         servo.setPosition(0);
         waitForStart();
 

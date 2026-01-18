@@ -17,11 +17,11 @@ public class SortBall {
         PURPLE,
         EMPTY
     }
-    double[] INTAKE_SLOT_POS = {0.27, 0.64, 1};
-    double[] OUTTAKE_SLOT_POS = {0.37, 0.74, 0};
+    double[] INTAKE_SLOT_POS = {0.259, 0.629, 1};
+    double[] OUTTAKE_SLOT_POS = {0.418, 0.795, 0};
     int[] OUTTAKE_SLOT_ORDER = {1, 0, 2};
 
-    private final List<SortBall.BallColor> currentLoad = new ArrayList<>();
+    private final List<SortBall.BallColor> currentLoad = new ArrayList<>(3);
     List<BallColor> obeliskData;
     ColorSensor colorSensor1, colorSensor2, colorSensor3;
     Servo spindexer;
@@ -81,7 +81,7 @@ public class SortBall {
                 double nextSlot = INTAKE_SLOT_POS[firstEmptyIdx + 1];
                 spindexer.setPosition(nextSlot);
 
-                long sleepTime = (long) Math.abs(nextSlot - INTAKE_SLOT_POS[firstEmptyIdx])*700;
+                long sleepTime = (long) (Math.abs(nextSlot - INTAKE_SLOT_POS[firstEmptyIdx])*700);
                 sleep(sleepTime);
             } else readyToShoot();
         }
@@ -143,12 +143,15 @@ public class SortBall {
     }
 
     public void spinToShooter(int count) throws InterruptedException{
-        releaseBall(0);
+        releaseBall(OUTTAKE_SLOT_ORDER[0]);
+        sleep(360);
 
         for(int i = 1; i < count; i++) {
             spindexer.setPosition(OUTTAKE_SLOT_POS[OUTTAKE_SLOT_ORDER[i]]);
-            releaseBall(i);
-            sleep(1000);
+            releaseBall(OUTTAKE_SLOT_ORDER[i]);
+            sleep(600);
         }
+
+        sleep(300);
     }
 }
