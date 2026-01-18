@@ -98,6 +98,7 @@ public class Shooter {
 
         servoToggler.interrupt();
         // END OF CONCURRENT EXECUTION
+        sleep(50);
         SLoaderUp1.setPwmDisable();
         SLoaderUp2.setPwmDisable();
         SLoaderOut.setPosition(SLoaderOutHiddenPos);
@@ -105,8 +106,6 @@ public class Shooter {
         MShooter2.setVelocity(0);
 
         isBusy = false;
-        telemetry.addData("Servo angle", SAngle.getPosition());
-        telemetry.addLine("---------------------------");
         telemetry.update();
     }
 
@@ -155,7 +154,7 @@ public class Shooter {
         double pos = Math.max(0, Math.min(1, currentAngle + angle));
         SAngle.setPosition(pos);
 
-        telemetry.addData("Pos", pos);
+        telemetry.addData("Angle servo pos", pos);
         telemetry.addLine("---------------------------");
     }
 

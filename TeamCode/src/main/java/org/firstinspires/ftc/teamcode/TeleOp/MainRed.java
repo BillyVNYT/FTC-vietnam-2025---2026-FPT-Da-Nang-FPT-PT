@@ -47,8 +47,8 @@ public class MainRed extends LinearOpMode {
             manualControl2.shootBall(telemetry);
             manualControl2.controlIntakeShaft(telemetry);
 
-//            manualControl2.shootPurpleBall(telemetry);
-//            manualControl2.shootGreenBall(telemetry);
+            manualControl2.shootPurpleBall(telemetry);
+            manualControl2.shootGreenBall(telemetry);
         }
     }
 }

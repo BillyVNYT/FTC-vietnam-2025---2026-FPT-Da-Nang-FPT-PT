@@ -18,8 +18,8 @@ public class SortBall {
         EMPTY
     }
     double[] INTAKE_SLOT_POS = {0.259, 0.629, 1};
-    double[] OUTTAKE_SLOT_POS = {0.418, 0.795, 0};
-    int[] OUTTAKE_SLOT_ORDER = {1, 0, 2};
+    double[] OUTTAKE_SLOT_POS = {0.495, 0.862, 0.112};
+    int[] OUTTAKE_SLOT_ORDER = {2, 0, 1};
 
     private final List<SortBall.BallColor> currentLoad = new ArrayList<>(3);
     List<BallColor> obeliskData;
@@ -32,7 +32,6 @@ public class SortBall {
         colorSensor3 = hardwareMap.get(ColorSensor.class, "cs3");
 
         spindexer = hardwareMap.get(Servo.class, "s2");
-        spindexer.setDirection(Servo.Direction.REVERSE);
         spindexer.setPosition(INTAKE_SLOT_POS[0]);
 
         currentLoad.add(BallColor.EMPTY);
