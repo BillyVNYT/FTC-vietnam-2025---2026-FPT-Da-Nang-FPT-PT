@@ -26,7 +26,7 @@ public class Shooter {
     double Kp = 1;
     double[] servoPositions = {0.8492, 0.6389, 0};
     double SLoaderOutHiddenPos = 0.7;
-    double SLoaderOutVisiblePos = 0.9;
+    double SLoaderOutVisiblePos = 0.9125;
 
     boolean isBusy = false;
 
@@ -106,7 +106,6 @@ public class Shooter {
         SLoaderOut.setPosition(SLoaderOutHiddenPos);
         MShooter1.setVelocity(0);
         MShooter2.setVelocity(0);
-        sleep(1000);
 
         isBusy = false;
         telemetry.addData("Servo angle", SAngle.getPosition());

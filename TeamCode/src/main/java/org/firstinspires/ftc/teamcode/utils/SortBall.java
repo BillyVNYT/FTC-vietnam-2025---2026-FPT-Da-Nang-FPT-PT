@@ -31,7 +31,7 @@ public class SortBall {
         colorSensor3 = hardwareMap.get(ColorSensor.class, "cs3");
 
         spindexer = hardwareMap.get(Servo.class, "s2");
-        spindexer.setDirection(Servo.Direction.REVERSE);
+//        spindexer.setDirection(Servo.Direction.REVERSE);
         spindexer.setPosition(INTAKE_SLOT_POS[0]);
 
         currentLoad.add(BallColor.EMPTY);
@@ -49,6 +49,7 @@ public class SortBall {
     }
 
     public void readyToShoot() {
+        spindexer.setDirection(Servo.Direction.REVERSE);
         spindexer.setPosition(OUTTAKE_SLOT_POS[0]);
     }
 
@@ -145,14 +146,15 @@ public class SortBall {
 
     public void spinToShooter(int count) throws InterruptedException{
         releaseBall(0);
+        spindexer.setDirection(Servo.Direction.REVERSE);
         sleep(360);
 
         for(int i = 1; i < count; i++) {
             spindexer.setPosition(OUTTAKE_SLOT_POS[i]);
             releaseBall(i);
-            sleep(450);
+            sleep(600);
         }
 
-        sleep(200);
+        sleep(300);
     }
 }

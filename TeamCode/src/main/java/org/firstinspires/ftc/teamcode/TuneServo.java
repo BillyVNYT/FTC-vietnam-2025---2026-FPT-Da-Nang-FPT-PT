@@ -35,7 +35,7 @@ public class TuneServo extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        servo = hardwareMap.servo.get("s2");
+        servo = hardwareMap.servo.get("s1");
         servo.setPosition(0);
         waitForStart();
 
