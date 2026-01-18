@@ -18,7 +18,8 @@ public class SortBall {
         EMPTY
     }
     double[] INTAKE_SLOT_POS = {0.27, 0.64, 1};
-    double[] OUTTAKE_SLOT_POS = {0.74, 0.37, 0};
+    double[] OUTTAKE_SLOT_POS = {0.37, 0.74, 0};
+    int[] OUTTAKE_SLOT_ORDER = {1, 0, 2};
 
     private final List<SortBall.BallColor> currentLoad = new ArrayList<>();
     List<BallColor> obeliskData;
@@ -49,7 +50,7 @@ public class SortBall {
     }
 
     public void readyToShoot() {
-        spindexer.setPosition(OUTTAKE_SLOT_POS[0]);
+        spindexer.setPosition(OUTTAKE_SLOT_POS[OUTTAKE_SLOT_ORDER[0]]);
     }
 
     public void loadBallsIn(Telemetry telemetry) throws InterruptedException {
@@ -87,7 +88,7 @@ public class SortBall {
     }
 
     public boolean isFull(){
-        return getCurrentLoad().size() == 3;
+        return !getCurrentLoad().contains(BallColor.EMPTY);
     }
 
     /**
@@ -143,8 +144,9 @@ public class SortBall {
 
     public void spinToShooter(int count) throws InterruptedException{
         releaseBall(0);
+
         for(int i = 1; i < count; i++) {
-            spindexer.setPosition(OUTTAKE_SLOT_POS[i]);
+            spindexer.setPosition(OUTTAKE_SLOT_POS[OUTTAKE_SLOT_ORDER[i]]);
             releaseBall(i);
             sleep(1000);
         }
