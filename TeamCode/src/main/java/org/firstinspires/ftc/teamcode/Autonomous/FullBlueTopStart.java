@@ -30,8 +30,8 @@ public class FullBlueTopStart extends LinearOpMode {
             new PathPoses(Math.toRadians(145), Math.toRadians(180), topZoneToPickupTopPoses, GenericAuto.PathState.PICK_UP),
             new PathPoses(Math.toRadians(180), pickupTopToTopZonePoses, GenericAuto.PathState.SHOOT),
             new PathPoses(Math.toRadians(180), topZoneToPickupLowPoses, GenericAuto.PathState.PICK_UP),
-            new PathPoses(Math.toRadians(180), pickupLowToLowZonePoses, GenericAuto.PathState.SHOOT),
-            new PathPoses(Math.toRadians(180), lowZoneToLeavePoses, GenericAuto.PathState.LEAVE)
+            new PathPoses(Math.toRadians(180), pickupLowToTopZonePoses, GenericAuto.PathState.SHOOT),
+            new PathPoses(Math.toRadians(180), topZoneToLeavePoses, GenericAuto.PathState.LEAVE)
     };
 
     GenericAuto auto;
