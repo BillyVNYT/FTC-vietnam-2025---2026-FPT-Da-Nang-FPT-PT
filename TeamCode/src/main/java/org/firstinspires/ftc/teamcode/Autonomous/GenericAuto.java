@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.utils.Intake;
 import org.firstinspires.ftc.teamcode.utils.Motif;
 import org.firstinspires.ftc.teamcode.utils.Shooter;
 import org.firstinspires.ftc.teamcode.utils.SortBall;
@@ -23,15 +24,16 @@ import java.util.List;
 public class GenericAuto {
     public enum PathState {
         PICK_UP,
-        LAUNCH_ZONE,
         SHOOT,
         LEAVE,
+        START,
     }
     private final TelemetryManager panelsTelemetry;
     public Follower follower;
     public Shooter shooter;
     private final SortBall spindexer;
     private final Motif motif;
+    private final Intake intake;
     private final List<PathChain> paths = new ArrayList<>();
     private final List<PathState> states = new ArrayList<>();;
     private PathState currentState ;
@@ -44,7 +46,7 @@ public class GenericAuto {
 
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startPose);
-
+        intake = new Intake(hardwareMap);
         shooter = new Shooter(hardwareMap);
         motif = new Motif(hardwareMap);
         spindexer = new SortBall(motif.getSampleMotif(), hardwareMap);
@@ -91,20 +93,22 @@ public class GenericAuto {
 
                  if (!shooter.isBusy()) {
                     shotTriggered = false;
+                    intake.start();
                     goToNextPath();
                  }
                 break;
 
             case PICK_UP:
+                intake.stop();
+                spindexer.readyToShoot();
                 goToNextPath();
                 break;
-            case LAUNCH_ZONE:
+            case START:
+                PathChain currentPath = paths.get(curPathIdx);
+                follower.followPath(currentPath);
                 currentState = PathState.SHOOT;
-                goToNextPath();
-                break;
             case LEAVE:
                 panelsTelemetry.addData("done", "leave");
-                goToNextPath();
                 break;
         }
     }

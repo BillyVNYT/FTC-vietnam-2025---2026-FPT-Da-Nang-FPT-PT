@@ -61,8 +61,9 @@ public class Shooter {
 
     public void shoot(int count, SortBall spindexer, Telemetry telemetry) throws InterruptedException{
         isBusy = true;
+        telemetry.addLine("SHOOOOOOOT");
 //        double distance = limelight.getAprilTagData().z;
-        double distance = 250;
+        double distance = 150;
         if(distance <= 95){
             SAngle.setPosition(servoPositions[2]);
             tprShot = (int) (1435.084*Math.pow(distance, 0.06423677));

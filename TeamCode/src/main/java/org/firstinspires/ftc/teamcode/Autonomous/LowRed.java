@@ -20,9 +20,9 @@ public class LowRed extends LinearOpMode {
     Pose[] lowZoneToPickup2Poses = {lowZonePose, new Pose(90.000, 60.000), pickup2Pose};
     Pose[] pickup2ToHighScorePoses = {pickup2Pose, highZonePose};
     PathPoses[] pathPoses = {new PathPoses(Math.toRadians(90), Math.toRadians(0), lowZoneToPickup1Poses, GenericAuto.PathState.PICK_UP),
-            new PathPoses(Math.toRadians(0), Math.toRadians(120), pickup1ToLowScorePoses, GenericAuto.PathState.LAUNCH_ZONE),
+            new PathPoses(Math.toRadians(0), Math.toRadians(120), pickup1ToLowScorePoses, GenericAuto.PathState.SHOOT),
             new PathPoses(Math.toRadians(120), Math.toRadians(0), lowZoneToPickup2Poses, GenericAuto.PathState.PICK_UP),
-            new PathPoses(Math.toRadians(0), Math.toRadians(135), pickup2ToHighScorePoses, GenericAuto.PathState.LAUNCH_ZONE)
+            new PathPoses(Math.toRadians(0), Math.toRadians(135), pickup2ToHighScorePoses, GenericAuto.PathState.SHOOT)
     };
 
     GenericAuto auto;
