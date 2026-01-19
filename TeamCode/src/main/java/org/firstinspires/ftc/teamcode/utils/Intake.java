@@ -11,7 +11,7 @@ public class Intake {
 
     public Intake(HardwareMap hardwareMap){
         intake = hardwareMap.get(DcMotor.class, "m5");
-//        intake.setDirection(DcMotorSimple.Direction.REVERSE);
+        intake.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     public boolean isActive() {

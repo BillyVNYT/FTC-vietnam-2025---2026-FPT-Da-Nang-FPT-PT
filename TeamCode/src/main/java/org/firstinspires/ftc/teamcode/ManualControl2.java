@@ -16,7 +16,7 @@ public class ManualControl2 {
     Shooter shooter;
     Lifter lifter;
     SortBall spindexer;
-    Gamepad Gamepad2;
+    Gamepad gamepad2;
     Intake intake;
     Motif motif;
 
@@ -24,20 +24,19 @@ public class ManualControl2 {
 //        lifter = new Lifter(hardwareMap);
         shooter = new Shooter(hardwareMap);
         intake = new Intake(hardwareMap);
-        Gamepad2 = gamepad;
+        gamepad2 = gamepad;
 
         motif = new Motif(hardwareMap);
-
         spindexer = new SortBall(motif.getSampleMotif(), hardwareMap);
     }
 
     public void controlTurnOutTake(Telemetry telemetry) {
-        double rx = Gamepad2.right_stick_x;
+        double rx = gamepad2.right_stick_x;
         shooter.updateOuttakeAngle(rx, telemetry);
     }
 
     public void shootBall(Telemetry telemetry) throws InterruptedException{
-        if(Gamepad2.crossWasPressed() && !shooter.isBusy()){
+        if(gamepad2.crossWasPressed() && !shooter.isBusy()){
             shooter.shoot(3, spindexer, telemetry);
         }
     }
@@ -45,25 +44,28 @@ public class ManualControl2 {
     public void controlIntakeShaft(Telemetry telemetry) throws InterruptedException {
         boolean intakeActive = intake.isActive();
 
-        if(Gamepad2.triangleWasPressed()) {
+        if(gamepad2.triangleWasPressed()) {
             if(intakeActive) intake.stop();
             else intake.start();
         }
 
-        if(intakeActive) spindexer.loadBallsIn(telemetry);
+        if(intakeActive) {
+            spindexer.loadBallsIn(telemetry);
+            if (spindexer.isFull()) intake.stop();
+        }
     }
 
     public void updateShooterAngleServo(Telemetry telemetry){
-        if(Gamepad2.left_trigger > 0.2){
-            shooter.updateServoAngle(-Gamepad2.left_trigger, telemetry);
+        if(gamepad2.left_trigger > 0.2){
+            shooter.updateServoAngle(-gamepad2.left_trigger, telemetry);
         }
-        if(Gamepad2.right_trigger > 0.2){
-            shooter.updateServoAngle(Gamepad2.right_trigger, telemetry);
+        if(gamepad2.right_trigger > 0.2){
+            shooter.updateServoAngle(gamepad2.right_trigger, telemetry);
         }
     }
 
     public void shootPurpleBall(Telemetry telemetry) throws InterruptedException {
-        if(!Gamepad2.rightBumperWasPressed()) return;
+        if(!gamepad2.rightBumperWasPressed()) return;
 
         int purpleIdx = spindexer.getCurrentLoad().indexOf(SortBall.BallColor.PURPLE);
         if (purpleIdx > -1 && !shooter.isBusy()) {
@@ -75,7 +77,7 @@ public class ManualControl2 {
     }
 
     public void shootGreenBall(Telemetry telemetry) throws InterruptedException {
-        if(!Gamepad2.leftBumperWasPressed()) return;
+        if(!gamepad2.leftBumperWasPressed()) return;
 
         int greenIdx = spindexer.getCurrentLoad().indexOf(SortBall.BallColor.GREEN);
         if (greenIdx > -1 && !shooter.isBusy()) {
@@ -86,15 +88,9 @@ public class ManualControl2 {
     }
 
     public void toggleFlywheel() {
-        if(Gamepad2.circleWasPressed()){
+        if(gamepad2.circleWasPressed()){
             shooter.toggleFlywheel();
         }
     }
 
-    public void readyToShoot() {
-        boolean empty = spindexer.getCurrentLoad().get(0) == SortBall.BallColor.EMPTY;
-        if(Gamepad2.squareWasPressed() && !empty && !shooter.isBusy()) {
-//            spindexer.readyToShoot();
-        }
-    }
 }

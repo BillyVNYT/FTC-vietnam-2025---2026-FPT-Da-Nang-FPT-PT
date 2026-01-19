@@ -25,8 +25,8 @@ public class Shooter {
     double F = 0.0112;
     double Kp = 1;
     double[] servoPositions = {0.8492, 0.6389, 0};
-    double SLoaderOutHiddenPos = 0.7;
-    double SLoaderOutVisiblePos = 0.9125;
+    double SLoaderOutHiddenPos = 0.03;
+    double SLoaderOutVisiblePos = 0.164;
 
     boolean isBusy = false;
 
@@ -34,24 +34,24 @@ public class Shooter {
     boolean overwriteShoot;
 
     public Shooter(HardwareMap hardwareMap) {
-        MShooter1 = hardwareMap.get(DcMotorEx.class, "m5");
-        MShooter2 = hardwareMap.get(DcMotorEx.class, "m6");
+        MShooter1 = hardwareMap.get(DcMotorEx.class, "m0");
+        MShooter2 = hardwareMap.get(DcMotorEx.class, "m1");
         MShooter1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MShooter2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MShooter1.setDirection(DcMotorSimple.Direction.REVERSE);
 
-//        MTurnOuttake = hardwareMap.get(DcMotor.class, "m");
+//        MTurnOuttake = hardwareMap.get(DcMotor.class, "m4");
 
         PIDFCoefficients pidf = new PIDFCoefficients(P, 0, 0, F);
         MShooter1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
 
-        SAngle = hardwareMap.get(Servo.class, "s6");
+        SAngle = hardwareMap.get(Servo.class, "s3");
         SAngle.setPosition(0.8492);
 
-        SLoaderUp1 = hardwareMap.get(ServoImplEx.class, "s4");
-        SLoaderUp2 = hardwareMap.get(ServoImplEx.class, "s5");
+        SLoaderUp1 = hardwareMap.get(ServoImplEx.class, "s10");
+        SLoaderUp2 = hardwareMap.get(ServoImplEx.class, "s11");
 
-        SLoaderOut = hardwareMap.get(Servo.class, "s1");
+        SLoaderOut = hardwareMap.get(Servo.class, "s9");
         SLoaderOut.setPosition(SLoaderOutHiddenPos);
 
 //        limelight = new LimelightHardware(hardwareMap);
@@ -60,12 +60,12 @@ public class Shooter {
     int FLYWHEEL_VELOCITY_GAIN_DURATION = 500;
 
     public void shoot(int count, SortBall spindexer, Telemetry telemetry) throws InterruptedException{
-//        spindexer.readyToShoot();
-        sleep(500);
+        spindexer.readyToShoot();
+        sleep(200);
 
         isBusy = true;
 //        double distance = limelight.getAprilTagData().z;
-        double distance = 250;
+        double distance = 150;
         if(distance <= 95){
             SAngle.setPosition(servoPositions[2]);
             tprShot = (int) (1435.084*Math.pow(distance, 0.06423677));
@@ -100,6 +100,7 @@ public class Shooter {
         spindexer.spinToShooter(count);
 
         servoToggler.interrupt();
+        sleep(50);
         // END OF CONCURRENT EXECUTION
         SLoaderUp1.setPwmDisable();
         SLoaderUp2.setPwmDisable();
