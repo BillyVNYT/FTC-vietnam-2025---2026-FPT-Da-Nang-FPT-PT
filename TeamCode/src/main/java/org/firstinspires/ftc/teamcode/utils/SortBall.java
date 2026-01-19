@@ -17,22 +17,24 @@ public class SortBall {
         PURPLE,
         EMPTY
     }
-    double[] INTAKE_SLOT_POS = {0.259, 0.629, 1};
+    double[] INTAKE_SLOT_POS = {1, 0.8689, 0.7389};
     double[] OUTTAKE_SLOT_POS = {0.795, 0.418, 0};
 
     private final List<SortBall.BallColor> currentLoad = new ArrayList<>(3);
     List<BallColor> obeliskData;
-    ColorSensor colorSensor1, colorSensor2, colorSensor3;
+    ColorSensor colorSensor1, colorSensor2;
     Servo spindexer1, spindexer2;
     public SortBall(List<BallColor> obeliskData, HardwareMap hardwareMap) {
         this.obeliskData = obeliskData;
         colorSensor1 = hardwareMap.get(ColorSensor.class, "cs");
         colorSensor2 = hardwareMap.get(ColorSensor.class, "cs2");
-        colorSensor3 = hardwareMap.get(ColorSensor.class, "cs3");
 
-        spindexer1 = hardwareMap.get(Servo.class, "s1");
-        spindexer2 = hardwareMap.get(Servo.class, "s2");
+        spindexer1 = hardwareMap.get(Servo.class, "s0");
+        spindexer2 = hardwareMap.get(Servo.class, "s1");
         spindexer2.setDirection(Servo.Direction.REVERSE);
+
+        spindexer1.setPosition(INTAKE_SLOT_POS[0]);
+        spindexer2.setPosition(INTAKE_SLOT_POS[0]);
 
         currentLoad.add(BallColor.EMPTY);
         currentLoad.add(BallColor.EMPTY);
@@ -48,13 +50,12 @@ public class SortBall {
         currentLoad.set(idx, BallColor.EMPTY);
     }
 
-//    public void readyToShoot() {
-//        spindexer.setDirection(Servo.Direction.REVERSE);
-//        spindexer.setPosition(OUTTAKE_SLOT_POS[0]);
-//    }
+    public void readyToShoot() {
+        controlSpindexer(OUTTAKE_SLOT_POS[0]);
+    }
 
     public void loadBallsIn(Telemetry telemetry) throws InterruptedException {
-        BallColor color1 = colorSensor1.detectBallColor(2500, telemetry);
+        BallColor color1 = colorSensor1.detectBallColor(1500, telemetry);
         BallColor color2 = colorSensor2.detectBallColor(4000, telemetry);
 //        BallColor color3 = colorSensor3.detectBallColor(4000, telemetry);
         int firstEmptyIdx = -1;
@@ -78,11 +79,11 @@ public class SortBall {
             if(firstEmptyIdx < 2) {
                 // spin to next empty slot
                 double nextSlot = INTAKE_SLOT_POS[firstEmptyIdx + 1];
-//                spindexer.setPosition(nextSlot);
+                controlSpindexer(nextSlot);
 
                 long sleepTime = (long) (Math.abs(nextSlot - INTAKE_SLOT_POS[firstEmptyIdx])*700);
                 sleep(sleepTime);
-            } //else readyToShoot();
+            } else readyToShoot();
         }
     }
 

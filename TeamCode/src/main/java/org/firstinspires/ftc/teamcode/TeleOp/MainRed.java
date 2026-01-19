@@ -32,13 +32,13 @@ public class MainRed extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        driveTrain = new DriveTrain(hardwareMap);
+//        driveTrain = new DriveTrain(hardwareMap);
         manualControl2 = new ManualControl2(hardwareMap, gamepad2);
 
         waitForStart();
         while (opModeIsActive()){
 //            driveTrain.drivetrainControlAdvanced(gamepad1);
-            driveTrain.drivetrainControlBasic(gamepad2);
+//            driveTrain.drivetrainControlBasic(gamepad2);
 //
 //            manualControl2.controlTurnOutTake(telemetry);
 //            manualControl2.updateShooterAngleServo(telemetry);

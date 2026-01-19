@@ -94,7 +94,7 @@ public class ManualControl2 {
     public void readyToShoot() {
         boolean empty = spindexer.getCurrentLoad().get(0) == SortBall.BallColor.EMPTY;
         if(Gamepad2.squareWasPressed() && !empty && !shooter.isBusy()) {
-            spindexer.readyToShoot();
+//            spindexer.readyToShoot();
         }
     }
 }
