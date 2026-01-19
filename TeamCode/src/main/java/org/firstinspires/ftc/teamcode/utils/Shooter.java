@@ -60,7 +60,7 @@ public class Shooter {
     int FLYWHEEL_VELOCITY_GAIN_DURATION = 500;
 
     public void shoot(int count, SortBall spindexer, Telemetry telemetry) throws InterruptedException{
-        spindexer.readyToShoot();
+        spindexer.readyToShoot(false, telemetry);
         sleep(200);
 
         isBusy = true;

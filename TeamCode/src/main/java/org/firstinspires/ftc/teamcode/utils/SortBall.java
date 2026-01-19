@@ -1,14 +1,13 @@
 package org.firstinspires.ftc.teamcode.utils;
 import static java.lang.Thread.sleep;
 
-import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class SortBall {
@@ -19,6 +18,7 @@ public class SortBall {
     }
     double[] INTAKE_SLOT_POS = {0.2467, 0.1194, 0};
     double[] OUTTAKE_SLOT_POS = {0.0878, 0.2106, 0.333, 0.4544, 0.7072, 0.8339, 0.9528};
+    int bestSpin = 0;
     int ID_Obelisk = 23;
 
     private final List<SortBall.BallColor> currentLoad = new ArrayList<>();
@@ -52,8 +52,14 @@ public class SortBall {
         currentLoad.set(idx, BallColor.EMPTY);
     }
 
-    public void readyToShoot() {
-        controlSpindexer(OUTTAKE_SLOT_POS[0]);
+    public void readyToShoot(boolean sort, Telemetry telemetry) {
+        if (sort) controlSpindexer(OUTTAKE_SLOT_POS[0]);
+        else {
+            List<SortBall.BallColor> reversedLoad = currentLoad.subList(0, 3);
+            Collections.reverse(reversedLoad);
+            controlSpindexer(getBestSpin(reversedLoad, telemetry));
+        }
+
 //        currentLoad.addAll(new ArrayList<>(currentLoad.subList(0, 3)));
 //        if(ID_Obelisk == 23){
 //            FirstBall = BallColor.PURPLE;
@@ -101,9 +107,12 @@ public class SortBall {
                 double nextSlot = INTAKE_SLOT_POS[firstEmptyIdx + 1];
                 controlSpindexer(nextSlot);
 
-                long sleepTime = (long) (Math.abs(nextSlot - INTAKE_SLOT_POS[firstEmptyIdx])*1000);
-                sleep(1000);
-            } else readyToShoot();
+                sleep(250);
+            } else {
+                telemetry.addLine("ALL IN");
+                telemetry.update();
+                readyToShoot(false, telemetry);
+            }
         }
     }
 
@@ -115,7 +124,7 @@ public class SortBall {
      * @param currentLoad  Array of 3 strings (e.g., {"G", "P", "E"})
      * @return int The number of spins needed (0, 1, or 2).
      */
-    public int getBestSpin(BallColor[] currentLoad, TelemetryManager telemetry) {
+    public int getBestSpin(List<BallColor> currentLoad, Telemetry telemetry) {
         int bestSpin = 0;
         int maxMatches = -1;
 
@@ -127,17 +136,17 @@ public class SortBall {
 
             }
         }
-        telemetry.addData("Intake:", Arrays.toString(currentLoad));
+        telemetry.addData("Intake:", currentLoad);
         telemetry.addData("Best Spin:", bestSpin);
         return bestSpin;
     }
 
-    private int getCurrentMatches(BallColor[] currentLoad, int spins) {
+    private int getCurrentMatches(List<BallColor> currentLoad, int spins) {
         List<BallColor> firingStream = new ArrayList<>();
 
         for (int i = 0; i < 3; i++) {
             // (i + spins) % 3 simulates the rotation index
-            BallColor bullet = currentLoad[(i + spins) % 3];
+            BallColor bullet = currentLoad.get((i + spins) % 3);
             if (bullet != BallColor.EMPTY) firingStream.add(bullet);
         }
 
@@ -163,13 +172,13 @@ public class SortBall {
     }
 
     public void spinToShooter(int count) throws InterruptedException{
-        releaseBall(0);
+        releaseBall(bestSpin);
         sleep(360);
 
-        for(int i = 1; i < count+1; i++) {
-            controlSpindexer(OUTTAKE_SLOT_POS[i]);
-            if (i<count) releaseBall(i);
-            sleep(600);
+        for(int i = 1; i < count + 1; i++) { // xoay them 1 vi tri de ban qua cuoi cung
+            controlSpindexer(OUTTAKE_SLOT_POS[bestSpin + i]);
+            if (i < count) releaseBall(bestSpin + i);
+            sleep(360);
         }
 
     }

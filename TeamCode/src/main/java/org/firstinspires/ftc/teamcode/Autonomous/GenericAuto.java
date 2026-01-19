@@ -100,7 +100,7 @@ public class GenericAuto {
 
             case PICK_UP:
                 intake.stop();
-                spindexer.readyToShoot();
+                spindexer.readyToShoot(false, telemetry);
                 goToNextPath();
                 break;
             case START:
