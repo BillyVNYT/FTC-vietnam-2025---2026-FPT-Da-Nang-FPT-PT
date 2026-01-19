@@ -45,8 +45,8 @@ public class TestShooter extends LinearOpMode{
 //            setMotorVelocity(2436,telemetry);
 //            telemetry.update();
 //        }
-          MShooter2=hardwareMap.get(DcMotor.class,"m5");
-          MShooter1=hardwareMap.get(DcMotor.class,"m6");
+          MShooter2=hardwareMap.get(DcMotor.class,"m0");
+          MShooter1=hardwareMap.get(DcMotor.class,"m1");
           MShooter1.setDirection(DcMotorSimple.Direction.REVERSE);
           waitForStart();
           while(opModeIsActive()){
