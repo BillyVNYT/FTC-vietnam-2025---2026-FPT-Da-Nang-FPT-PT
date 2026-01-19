@@ -17,13 +17,15 @@ public class SortBall {
         PURPLE,
         EMPTY
     }
-    double[] INTAKE_SLOT_POS = {1, 0.8689, 0.7389};
-    double[] OUTTAKE_SLOT_POS = {0.795, 0.418, 0};
+    double[] INTAKE_SLOT_POS = {0.2467, 0.1194, 0};
+    double[] OUTTAKE_SLOT_POS = {0.0878, 0.2106, 0.3289, 0.7072, 0.8339, 0.9528};
+    int ID_Obelisk = 23;
 
-    private final List<SortBall.BallColor> currentLoad = new ArrayList<>(3);
+    private final List<SortBall.BallColor> currentLoad = new ArrayList<>();
     List<BallColor> obeliskData;
     ColorSensor colorSensor1, colorSensor2;
     Servo spindexer1, spindexer2;
+    BallColor FistBall, SecondBall;
     public SortBall(List<BallColor> obeliskData, HardwareMap hardwareMap) {
         this.obeliskData = obeliskData;
         colorSensor1 = hardwareMap.get(ColorSensor.class, "cs");
@@ -51,7 +53,22 @@ public class SortBall {
     }
 
     public void readyToShoot() {
-        controlSpindexer(OUTTAKE_SLOT_POS[0]);
+        currentLoad.addAll(new ArrayList<>(currentLoad.subList(0, 3)));
+        if(ID_Obelisk == 23){
+            FistBall = BallColor.PURPLE;
+            SecondBall = BallColor.PURPLE;
+        } else if (ID_Obelisk == 22) {
+            FistBall = BallColor.PURPLE;
+            SecondBall = BallColor.GREEN;
+        } else {
+            FistBall = BallColor.GREEN;
+            SecondBall = BallColor.PURPLE;
+        }
+        for(int i = 1; i < 6; i++){
+            if(currentLoad.get(i) == SecondBall && currentLoad.get(i-1) == FistBall){
+                controlSpindexer(OUTTAKE_SLOT_POS[i-1]);
+            }
+        }
     }
 
     public void loadBallsIn(Telemetry telemetry) throws InterruptedException {
@@ -82,7 +99,7 @@ public class SortBall {
                 controlSpindexer(nextSlot);
 
                 long sleepTime = (long) (Math.abs(nextSlot - INTAKE_SLOT_POS[firstEmptyIdx])*700);
-                sleep(sleepTime);
+                sleep(250);
             } else readyToShoot();
         }
     }
