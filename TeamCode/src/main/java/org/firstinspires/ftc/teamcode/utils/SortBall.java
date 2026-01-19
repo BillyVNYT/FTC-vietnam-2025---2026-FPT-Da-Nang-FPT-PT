@@ -17,7 +17,7 @@ public class SortBall {
         EMPTY
     }
     double[] INTAKE_SLOT_POS = {0.2467, 0.1194, 0};
-    double[] OUTTAKE_SLOT_POS = {0.0878, 0.2106, 0.333, 0.4544, 0.7072, 0.8339, 0.9528};
+    double[] OUTTAKE_SLOT_POS = {0.0865, 0.2106, 0.333, 0.4544, 0.7072, 0.8339, 0.9528};
     int bestSpin = 0;
     int ID_Obelisk = 23;
 
@@ -173,12 +173,12 @@ public class SortBall {
 
     public void spinToShooter(int count) throws InterruptedException{
         releaseBall(bestSpin);
-        sleep(360);
+        sleep(250);
 
         for(int i = 1; i < count + 1; i++) { // xoay them 1 vi tri de ban qua cuoi cung
             controlSpindexer(OUTTAKE_SLOT_POS[bestSpin + i]);
             if (i < count) releaseBall(bestSpin + i);
-            sleep(360);
+            sleep(250);
         }
 
     }
