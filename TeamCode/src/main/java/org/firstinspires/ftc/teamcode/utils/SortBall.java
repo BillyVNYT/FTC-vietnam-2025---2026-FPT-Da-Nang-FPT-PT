@@ -118,14 +118,14 @@ public class SortBall {
             handleSensor(telemetry, colorTail1, colorTail2, true);
         }
 
-        if(gamepad.left_stick_x > 0 && spindexerReversed) {
+        if(gamepad.left_stick_x < 0 && spindexerReversed) {
             // chuyển hướng đi tiến
             spindexerReversed = false;
             controlSpindexer(nextSlot);
             timeIntake.reset();
         }
 
-        if(gamepad.left_stick_x < 0 && !spindexerReversed){
+        if(gamepad.left_stick_x > 0 && !spindexerReversed){
             // chuyển hướng đi lùi
             spindexerReversed = true;
             controlSpindexer(nextSlot2);
