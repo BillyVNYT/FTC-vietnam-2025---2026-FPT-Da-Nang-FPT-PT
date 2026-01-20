@@ -9,7 +9,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -26,7 +25,7 @@ public class Shooter {
     double Kp = 1;
     double[] servoPositions = {0.8492, 0.6389, 0};
     double SLoaderOutHiddenPos = 0.03;
-    double SLoaderOutVisiblePos = 0.164;
+    double SLoaderOutVisiblePos = 0.182;
 
     boolean isBusy = false;
 
@@ -77,7 +76,8 @@ public class Shooter {
             tprShot = (int) (22.15773*Math.pow(distance, 0.8496951));
         }
 
-        setMotorVelocity(tprShot, telemetry);
+//        setMotorVelocity(tprShot, telemetry);
+        setMotorVelocity(3500, telemetry);
         sleep(FLYWHEEL_VELOCITY_GAIN_DURATION);
 
         // load balls
