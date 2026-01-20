@@ -106,8 +106,8 @@ public class SortBall {
     }
 
     public void autoLoadBallsIn(Telemetry telemetry) throws InterruptedException {
-        BallColor colorFront1 = colorSensor1.detectBallColor(1500, telemetry);
-        BallColor colorFront2 = colorSensor2.detectBallColor(1500, telemetry);
+        BallColor colorFront1 = colorSensor1.detectBallColor(1200, telemetry);
+        BallColor colorFront2 = colorSensor2.detectBallColor(1200, telemetry);
         handleSensor(telemetry, colorFront1, colorFront2, false);
     }
 
