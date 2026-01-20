@@ -96,7 +96,7 @@ public class SortBall {
                 nextSlot = INTAKE_SLOT_POS[firstEmptyIdx+1];
                 nextSlot2 = INTAKE_SLOT_POS2[firstEmptyIdx+1];
                 controlSpindexer(reversed ? nextSlot2 : nextSlot);
-                sleep(250);
+                sleep(200);
             } else {
                 telemetry.addLine("ALL IN");
                 telemetry.update();
@@ -113,14 +113,14 @@ public class SortBall {
 
     public void loadBallsIn(Telemetry telemetry, Gamepad gamepad) throws InterruptedException {
         if(!spindexerReversed && timeIntake.seconds() > 0.3) {
-            BallColor colorFront1 = colorSensor1.detectBallColor(1500, telemetry);
-            BallColor colorFront2 = colorSensor2.detectBallColor(1500, telemetry);
+            BallColor colorFront1 = colorSensor1.detectBallColor(1200, telemetry);
+            BallColor colorFront2 = colorSensor2.detectBallColor(1200, telemetry);
             handleSensor(telemetry, colorFront1, colorFront2, false);
         }
 
         if(spindexerReversed && timeIntake.seconds() > 0.3) {
-            BallColor colorTail1 = colorSensor1.detectBallColor(2000, telemetry);
-            BallColor colorTail2 = colorSensor2.detectBallColor(2000, telemetry);
+            BallColor colorTail1 = colorSensor1.detectBallColor(1200, telemetry);
+            BallColor colorTail2 = colorSensor2.detectBallColor(1200, telemetry);
             handleSensor(telemetry, colorTail1, colorTail2, true);
         }
 

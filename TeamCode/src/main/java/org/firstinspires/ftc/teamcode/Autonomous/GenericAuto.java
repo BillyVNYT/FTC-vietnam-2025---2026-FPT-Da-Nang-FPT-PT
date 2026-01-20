@@ -109,7 +109,7 @@ public class GenericAuto {
                     return;
                 }
 
-                sleep(200);
+                sleep(500);
                 intake.stop();
                 goToNextPath();
                 break;
