@@ -4,6 +4,7 @@ import static java.lang.Thread.sleep;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -29,6 +30,7 @@ public class SortBall {
     Servo spindexer1, spindexer2;
     BallColor FirstBall, SecondBall;
     boolean SpindexerReverse = false;
+    ElapsedTime timeIntake = new ElapsedTime();
     double nextSlot = INTAKE_SLOT_POS[0], nextSlot2 = INTAKE_SLOT_POS2[0];
     public SortBall(List<BallColor> obeliskData, HardwareMap hardwareMap) {
         this.obeliskData = obeliskData;
@@ -85,8 +87,8 @@ public class SortBall {
     }
 
     public void loadBallsIn(Telemetry telemetry, Gamepad gamepad) throws InterruptedException {
-        BallColor color1 = colorSensor1.detectBallColor(1000, telemetry);
-        BallColor color2 = colorSensor2.detectBallColor(1000, telemetry);
+        BallColor color1 = colorSensor1.detectBallColor(2000, telemetry);
+        BallColor color2 = colorSensor2.detectBallColor(2000, telemetry);
 //        BallColor color3 = colorSensor3.detectBallColor(4000, telemetry);
         int firstEmptyIdx = -1;
         for (int i = 0; i < currentLoad.size(); i++) {
@@ -103,7 +105,7 @@ public class SortBall {
         boolean cs2Detected = !color2.equals(BallColor.EMPTY);
 //        boolean cs3Detected = !color3.equals(BallColor.EMPTY);
         BallColor color = cs1Detected ? color1 : color2;
-        if(((cs1Detected || cs2Detected) && !SpindexerReverse) && firstEmptyIdx > -1) {
+        if(((cs1Detected || cs2Detected) && !SpindexerReverse) && firstEmptyIdx > -1 && timeIntake.seconds() > 0.3) {
             currentLoad.set(firstEmptyIdx, color);
             if(firstEmptyIdx < 2) {
                 // spin to next empty slot
@@ -114,7 +116,7 @@ public class SortBall {
                 } else {
                     controlSpindexer(nextSlot2);
                 }
-                sleep(100);
+                sleep(200);
             } else {
                 telemetry.addLine("ALL IN");
                 telemetry.update();
@@ -123,8 +125,10 @@ public class SortBall {
         }
         if(gamepad.left_stick_x < 0){
             SpindexerReverse = false;
+            timeIntake.reset();
         } else if(gamepad.left_stick_x > 0) {
             SpindexerReverse = true;
+            timeIntake.reset();
         }
         if(!SpindexerReverse){
             controlSpindexer(nextSlot);
