@@ -116,7 +116,7 @@ public class SortBall {
                 } else {
                     controlSpindexer(nextSlot2);
                 }
-                sleep(200);
+                sleep(250);
             } else {
                 telemetry.addLine("ALL IN");
                 telemetry.update();

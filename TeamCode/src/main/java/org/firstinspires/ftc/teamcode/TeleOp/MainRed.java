@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.utils.DriveTrain;
 import org.firstinspires.ftc.teamcode.ManualControl2;
+import org.firstinspires.ftc.teamcode.utils.Shooter;
 
 //                       _oo0oo_
 //                      o8888888o
@@ -31,10 +32,12 @@ import org.firstinspires.ftc.teamcode.ManualControl2;
 public class MainRed extends LinearOpMode {
     private DriveTrain driveTrain;
     private ManualControl2 manualControl2;
+    private Shooter shooter;
     @Override
     public void runOpMode() throws InterruptedException {
         driveTrain = new DriveTrain(hardwareMap);
         manualControl2 = new ManualControl2(hardwareMap, gamepad2);
+        shooter = new Shooter(hardwareMap);
 
         for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
@@ -47,13 +50,19 @@ public class MainRed extends LinearOpMode {
 //
 //            manualControl2.controlTurnOutTake(telemetry);
             manualControl2.updateShooterAngleServo(telemetry);
-            manualControl2.toggleFlywheel();
+            manualControl2.toggleFlywheel(telemetry);
 
             manualControl2.shootBall(telemetry);
             manualControl2.controlIntakeShaft(telemetry);
 
             manualControl2.shootPurpleBall(telemetry);
             manualControl2.shootGreenBall(telemetry);
+            telemetry.addData("curTargetVelocity", 2200);
+            telemetry.addData("curVelocity", shooter.MShooter1.getVelocity());
+            telemetry.addData("error", 2200 - shooter.MShooter1.getVelocity());
+            telemetry.addData("encoder", shooter.MShooter1.getCurrentPosition());
+            telemetry.addLine("---------------------------");
+            telemetry.update();
         }
     }
 }

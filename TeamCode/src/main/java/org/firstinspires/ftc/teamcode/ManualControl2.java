@@ -87,9 +87,9 @@ public class ManualControl2 {
         }
     }
 
-    public void toggleFlywheel() {
+    public void toggleFlywheel(Telemetry telemetry) {
         if(gamepad2.circleWasPressed()){
-            shooter.toggleFlywheel();
+            shooter.toggleFlywheel(telemetry);
         }
     }
 

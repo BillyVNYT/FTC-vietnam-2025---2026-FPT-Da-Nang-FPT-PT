@@ -14,14 +14,15 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 
 public class Shooter {
-    private final DcMotorEx MShooter1, MShooter2;
+    public final DcMotorEx MShooter1, MShooter2;
 //    private final DcMotor MTurnOuttake;
     private final Servo SAngle;
     private final Servo SLoaderOut;
     private final ServoImplEx SLoaderUp1, SLoaderUp2;
 //    private final LimelightHardware limelight;
-    double P = 15.1;
-    double F = 0.0112;
+    double P = 10;
+    double D = 2;
+    double F = 0.0100643;
     double Kp = 1;
     double[] servoPositions = {0.8492, 0.6389, 0};
     double SLoaderOutHiddenPos = 0.03;
@@ -37,11 +38,11 @@ public class Shooter {
         MShooter2 = hardwareMap.get(DcMotorEx.class, "m1");
         MShooter1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MShooter2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        MShooter1.setDirection(DcMotorSimple.Direction.REVERSE);
+        MShooter2.setDirection(DcMotorSimple.Direction.REVERSE);
 
 //        MTurnOuttake = hardwareMap.get(DcMotor.class, "m4");
 
-        PIDFCoefficients pidf = new PIDFCoefficients(P, 0, 0, F);
+        PIDFCoefficients pidf = new PIDFCoefficients(P, 0, D, F);
         MShooter1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
 
         SAngle = hardwareMap.get(Servo.class, "s3");
@@ -114,11 +115,11 @@ public class Shooter {
         telemetry.update();
     }
 
-    public void toggleFlywheel() {
+    public void toggleFlywheel(Telemetry telemetry) {
+        int maxShooterVelocity = 2200;
         if(!overwriteShoot) {
-            int maxShooterVelocity = 2200;
-            MShooter1.setVelocity(maxShooterVelocity);
-            MShooter2.setVelocity(maxShooterVelocity);
+            MShooter1.setVelocity(-maxShooterVelocity);
+            MShooter2.setVelocity(-maxShooterVelocity);
         } else {
             MShooter1.setVelocity(0);
             MShooter2.setVelocity(0);
