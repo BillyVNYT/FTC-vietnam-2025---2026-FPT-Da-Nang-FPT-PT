@@ -22,7 +22,7 @@ public class Shooter {
 //    private final LimelightHardware limelight;
     double P = 10;
     double D = 2;
-    double F = 0.0100643;
+    double F = 0.01030;
     double Kp = 1;
     double[] servoPositions = {0.8492, 0.6389, 0};
     double SLoaderOutHiddenPos = 0.03;
@@ -78,7 +78,7 @@ public class Shooter {
         }
 
 //        setMotorVelocity(tprShot, telemetry);
-        setMotorVelocity(3500, telemetry);
+        setMotorVelocity(2200, telemetry);
         sleep(FLYWHEEL_VELOCITY_GAIN_DURATION);
 
         // load balls
@@ -128,8 +128,8 @@ public class Shooter {
     }
 
     public void setMotorVelocity(int velocity, Telemetry telemetry){
-        MShooter1.setVelocity(velocity);
-        MShooter2.setVelocity(velocity);
+        MShooter1.setVelocity(-velocity);
+        MShooter2.setVelocity(-velocity);
 
         double curVelocity = MShooter1.getVelocity();
         double error = velocity - curVelocity;
