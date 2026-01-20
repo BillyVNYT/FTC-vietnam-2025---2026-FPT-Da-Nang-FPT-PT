@@ -85,8 +85,8 @@ public class SortBall {
     }
 
     public void loadBallsIn(Telemetry telemetry, Gamepad gamepad) throws InterruptedException {
-        BallColor color1 = colorSensor1.detectBallColor(2500, telemetry);
-        BallColor color2 = colorSensor2.detectBallColor(2500, telemetry);
+        BallColor color1 = colorSensor1.detectBallColor(1000, telemetry);
+        BallColor color2 = colorSensor2.detectBallColor(1000, telemetry);
 //        BallColor color3 = colorSensor3.detectBallColor(4000, telemetry);
         int firstEmptyIdx = -1;
         for (int i = 0; i < currentLoad.size(); i++) {
@@ -103,13 +103,17 @@ public class SortBall {
         boolean cs2Detected = !color2.equals(BallColor.EMPTY);
 //        boolean cs3Detected = !color3.equals(BallColor.EMPTY);
         BallColor color = cs1Detected ? color1 : color2;
-        if((cs1Detected || cs2Detected) && firstEmptyIdx > -1) {
+        if(((cs1Detected || cs2Detected) && !SpindexerReverse) && firstEmptyIdx > -1) {
             currentLoad.set(firstEmptyIdx, color);
             if(firstEmptyIdx < 2) {
                 // spin to next empty slot
-                nextSlot = INTAKE_SLOT_POS[firstEmptyIdx + 1];
+                nextSlot = INTAKE_SLOT_POS[firstEmptyIdx+1];
                 nextSlot2 = INTAKE_SLOT_POS2[firstEmptyIdx+1];
-
+                if(!SpindexerReverse){
+                    controlSpindexer(nextSlot);
+                } else {
+                    controlSpindexer(nextSlot2);
+                }
                 sleep(100);
             } else {
                 telemetry.addLine("ALL IN");
