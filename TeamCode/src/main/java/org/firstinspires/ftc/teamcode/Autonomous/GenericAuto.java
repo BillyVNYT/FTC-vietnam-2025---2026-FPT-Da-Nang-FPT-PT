@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
+import static java.lang.Thread.sleep;
+
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.Follower;
@@ -9,6 +11,7 @@ import com.pedropathing.geometry.Curve;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathBuilder;
 import com.pedropathing.paths.PathChain;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -59,6 +62,10 @@ public class GenericAuto {
         } else currentState = PathState.LEAVE;
 
         panelsTelemetry.update(telemetry);
+
+        for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
+            module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+        }
     }
     
     private void buildPaths(Follower follower, PathPoses[] pathPoses) {
@@ -80,17 +87,15 @@ public class GenericAuto {
     }
 
     private void autonomousPathUpdate(Telemetry telemetry) throws InterruptedException {
-        if (follower.isBusy()) {
-            return; // Wait for the current path to complete
-        }
 
         switch (currentState) {
             case SHOOT:
+                if (follower.isBusy()) return;
+
                 if (!shotTriggered) {
                     shooter.shoot(3, spindexer, telemetry);
                     shotTriggered = true;
                 }
-
                  if (!shooter.isBusy()) {
                     shotTriggered = false;
                     intake.start();
@@ -99,14 +104,22 @@ public class GenericAuto {
                 break;
 
             case PICK_UP:
+                if (follower.isBusy()) {
+                    spindexer.autoLoadBallsIn(telemetry);
+                    return;
+                }
+
+                sleep(200);
                 intake.stop();
-                spindexer.readyToShoot(false, telemetry);
                 goToNextPath();
                 break;
+
             case START:
                 PathChain currentPath = paths.get(curPathIdx);
+                spindexer.readyToShoot(false, telemetry);
                 follower.followPath(currentPath);
                 currentState = PathState.SHOOT;
+
             case LEAVE:
                 panelsTelemetry.addData("done", "leave");
                 break;
@@ -120,7 +133,7 @@ public class GenericAuto {
         currentState = states.get(curPathIdx);
         PathChain currentPath = paths.get(curPathIdx);
         boolean isPickingUp = currentState == PathState.PICK_UP;
-        follower.followPath(currentPath, isPickingUp ? 0.65 : 1, true);
+        follower.followPath(currentPath, isPickingUp ? 0.5 : 1, true);
     }
 
     public void updateFollower(Telemetry telemetry) throws InterruptedException{

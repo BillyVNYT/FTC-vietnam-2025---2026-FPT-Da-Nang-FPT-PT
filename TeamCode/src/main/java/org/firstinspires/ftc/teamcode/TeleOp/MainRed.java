@@ -48,7 +48,7 @@ public class MainRed extends LinearOpMode {
 //            driveTrain.drivetrainControlAdvanced(gamepad1);
             driveTrain.drivetrainControlBasic(gamepad2);
 //
-//            manualControl2.controlTurnOutTake(telemetry);
+            manualControl2.controlTurnOutTake(telemetry);
             manualControl2.updateShooterAngleServo(telemetry);
             manualControl2.toggleFlywheel(telemetry);
 
@@ -57,12 +57,6 @@ public class MainRed extends LinearOpMode {
 
             manualControl2.shootPurpleBall(telemetry);
             manualControl2.shootGreenBall(telemetry);
-            telemetry.addData("curTargetVelocity", 2200);
-            telemetry.addData("curVelocity", shooter.MShooter1.getVelocity());
-            telemetry.addData("error", 2200 - shooter.MShooter1.getVelocity());
-            telemetry.addData("encoder", shooter.MShooter1.getCurrentPosition());
-            telemetry.addLine("---------------------------");
-            telemetry.update();
         }
     }
 }
