@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -32,13 +33,17 @@ public class MainRed extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-//        driveTrain = new DriveTrain(hardwareMap);
+        driveTrain = new DriveTrain(hardwareMap);
         manualControl2 = new ManualControl2(hardwareMap, gamepad2);
+
+        for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
+            module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+        }
 
         waitForStart();
         while (opModeIsActive()){
 //            driveTrain.drivetrainControlAdvanced(gamepad1);
-//            driveTrain.drivetrainControlBasic(gamepad2);
+            driveTrain.drivetrainControlBasic(gamepad2);
 //
 //            manualControl2.controlTurnOutTake(telemetry);
             manualControl2.updateShooterAngleServo(telemetry);

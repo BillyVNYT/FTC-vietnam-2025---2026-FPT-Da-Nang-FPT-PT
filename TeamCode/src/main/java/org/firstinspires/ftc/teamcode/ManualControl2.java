@@ -50,7 +50,7 @@ public class ManualControl2 {
         }
 
         if(intakeActive) {
-            spindexer.loadBallsIn(telemetry);
+            spindexer.loadBallsIn(telemetry, gamepad2);
             if (spindexer.isFull()) intake.stop();
         }
     }
