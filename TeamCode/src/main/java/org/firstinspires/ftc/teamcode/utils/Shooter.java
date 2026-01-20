@@ -101,10 +101,11 @@ public class Shooter {
         spindexer.spinToShooter(count);
 
         servoToggler.interrupt();
-        sleep(50);
         // END OF CONCURRENT EXECUTION
         SLoaderUp1.setPwmDisable();
         SLoaderUp2.setPwmDisable();
+        sleep(100);
+
         SLoaderOut.setPosition(SLoaderOutHiddenPos);
         MShooter1.setVelocity(0);
         MShooter2.setVelocity(0);
