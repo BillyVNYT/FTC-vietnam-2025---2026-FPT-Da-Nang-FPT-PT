@@ -15,7 +15,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Shooter {
     public final DcMotorEx MShooter1, MShooter2;
-//    private final DcMotor MTurnOuttake;
+    private final DcMotor MTurnOuttake;
     private final Servo SAngle;
     private final Servo SLoaderOut;
     private final ServoImplEx SLoaderUp1, SLoaderUp2;
@@ -40,7 +40,7 @@ public class Shooter {
         MShooter2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MShooter2.setDirection(DcMotorSimple.Direction.REVERSE);
 
-//        MTurnOuttake = hardwareMap.get(DcMotor.class, "m4");
+        MTurnOuttake = hardwareMap.get(DcMotor.class, "m4");
 
         PIDFCoefficients pidf = new PIDFCoefficients(P, 0, D, F);
         MShooter1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
@@ -60,9 +60,6 @@ public class Shooter {
     int FLYWHEEL_VELOCITY_GAIN_DURATION = 500;
 
     public void shoot(int count, SortBall spindexer, Telemetry telemetry) throws InterruptedException{
-//        spindexer.readyToShoot(false, telemetry);
-//        sleep(200);
-
         isBusy = true;
 //        double distance = limelight.getAprilTagData().z;
         double distance = 150;
@@ -165,10 +162,7 @@ public class Shooter {
     }
 
     public void updateOuttakeAngle(double rx, Telemetry telemetry){
-//        MTurnOuttake.setPower(rx);
-
-        telemetry.addData("Outtake rx", rx);
-        telemetry.addLine("---------------------------");
+        MTurnOuttake.setPower(rx);
     }
 
 }

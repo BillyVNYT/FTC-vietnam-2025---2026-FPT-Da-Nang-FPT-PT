@@ -31,12 +31,18 @@ public class ManualControl2 {
     }
 
     public void controlTurnOutTake(Telemetry telemetry) {
-        double rx = gamepad2.right_stick_x;
-        shooter.updateOuttakeAngle(rx, telemetry);
+        if(gamepad2.dpad_left) {
+            shooter.updateOuttakeAngle(-0.5, telemetry);
+        } else if(gamepad2.dpad_right) {
+            shooter.updateOuttakeAngle(0.5, telemetry);
+        } else shooter.updateOuttakeAngle(0, telemetry);
+
     }
 
     public void shootBall(Telemetry telemetry) throws InterruptedException{
         if(gamepad2.crossWasPressed() && !shooter.isBusy()){
+            spindexer.readyToShoot(false, telemetry);
+            sleep(200);
             shooter.shoot(3, spindexer, telemetry);
         }
     }
