@@ -19,7 +19,6 @@ public class SortBall {
     double[] INTAKE_SLOT_POS = {0.2467, 0.1194, 0};
     double[] OUTTAKE_SLOT_POS = {0.0865, 0.2106, 0.333, 0.4544, 0.7072, 0.8339, 0.9528};
     int bestSpin = 0;
-    int ID_Obelisk = 23;
 
     private final List<SortBall.BallColor> currentLoad = new ArrayList<>();
     List<BallColor> obeliskData;
@@ -53,37 +52,18 @@ public class SortBall {
     }
 
     public void readyToShoot(boolean sort, Telemetry telemetry) {
-        if (sort) controlSpindexer(OUTTAKE_SLOT_POS[0]);
+        if (!sort) controlSpindexer(OUTTAKE_SLOT_POS[0]);
         else {
             List<SortBall.BallColor> reversedLoad = currentLoad.subList(0, 3);
             Collections.reverse(reversedLoad);
-            controlSpindexer(getBestSpin(reversedLoad, telemetry));
+            bestSpin = getBestSpin(reversedLoad, telemetry);
+            controlSpindexer(bestSpin);
         }
-
-//        currentLoad.addAll(new ArrayList<>(currentLoad.subList(0, 3)));
-//        if(ID_Obelisk == 23){
-//            FirstBall = BallColor.PURPLE;
-//            SecondBall = BallColor.PURPLE;
-//        } else if (ID_Obelisk == 22) {
-//            FirstBall = BallColor.PURPLE;
-//            SecondBall = BallColor.GREEN;
-//        } else {
-//            FirstBall = BallColor.GREEN;
-//            SecondBall = BallColor.PURPLE;
-//        }
-//        for(int i = 1; i < 6; i++){
-//            if(currentLoad.get(i) == SecondBall && currentLoad.get(i-1) == FirstBall){
-//                controlSpindexer(OUTTAKE_SLOT_POS[i-1]);
-//            }
-//        }
-
-
     }
 
     public void loadBallsIn(Telemetry telemetry) throws InterruptedException {
         BallColor color1 = colorSensor1.detectBallColor(2000, telemetry);
         BallColor color2 = colorSensor2.detectBallColor(4000, telemetry);
-//        BallColor color3 = colorSensor3.detectBallColor(4000, telemetry);
         int firstEmptyIdx = -1;
         for (int i = 0; i < currentLoad.size(); i++) {
             if (currentLoad.get(i) == BallColor.EMPTY) {
@@ -97,7 +77,6 @@ public class SortBall {
 
         boolean cs1Detected = !color1.equals(BallColor.EMPTY);
         boolean cs2Detected = !color2.equals(BallColor.EMPTY);
-//        boolean cs3Detected = !color3.equals(BallColor.EMPTY);
         BallColor color = cs1Detected ? color1 : color2;
 
         if((cs1Detected || cs2Detected) && firstEmptyIdx > -1) {
