@@ -26,9 +26,10 @@ public class SortBall {
     private final List<BallColor> currentLoad = new ArrayList<>();
     List<BallColor> obeliskData;
     ColorSensor colorSensor1, colorSensor2;
+//    ColorSensor colorSensor3, colorSensor4;
     Servo spindexer1, spindexer2;
-    BallColor FirstBall, SecondBall;
-    boolean SpindexerReverse = false;
+    boolean spindexerReversed = false;
+
     ElapsedTime timeIntake = new ElapsedTime();
     double nextSlot = INTAKE_SLOT_POS[0], nextSlot2 = INTAKE_SLOT_POS2[0];
     public SortBall(List<BallColor> obeliskData, HardwareMap hardwareMap) {
@@ -67,34 +68,34 @@ public class SortBall {
         }
     }
 
-    public void loadBallsIn(Telemetry telemetry, Gamepad gamepad) throws InterruptedException {
-        BallColor color1 = colorSensor1.detectBallColor(2000, telemetry);
-        BallColor color2 = colorSensor2.detectBallColor(2000, telemetry);
-        int firstEmptyIdx = -1;
+    private int getFirstEmptySlot() {
         for (int i = 0; i < currentLoad.size(); i++) {
             if (currentLoad.get(i) == BallColor.EMPTY) {
-                firstEmptyIdx = i;
-                break;
+                return i;
             }
         }
+        return -1;
+    }
+
+    private void handleSensor(Telemetry telemetry, BallColor color1, BallColor color2, boolean reversed) throws InterruptedException{
+        int firstEmptyIdx = getFirstEmptySlot();
 
         telemetry.addData("Empty slot", firstEmptyIdx);
         telemetry.update();
 
+        if (firstEmptyIdx < 0) return;
+
         boolean cs1Detected = !color1.equals(BallColor.EMPTY);
         boolean cs2Detected = !color2.equals(BallColor.EMPTY);
         BallColor color = cs1Detected ? color1 : color2;
-        if(((cs1Detected || cs2Detected) && !SpindexerReverse) && firstEmptyIdx > -1 && timeIntake.seconds() > 0.3) {
+
+        if((cs1Detected || cs2Detected)) {
             currentLoad.set(firstEmptyIdx, color);
             if(firstEmptyIdx < 2) {
                 // spin to next empty slot
                 nextSlot = INTAKE_SLOT_POS[firstEmptyIdx+1];
                 nextSlot2 = INTAKE_SLOT_POS2[firstEmptyIdx+1];
-                if(!SpindexerReverse){
-                    controlSpindexer(nextSlot);
-                } else {
-                    controlSpindexer(nextSlot2);
-                }
+                controlSpindexer(reversed ? nextSlot2 : nextSlot);
                 sleep(250);
             } else {
                 telemetry.addLine("ALL IN");
@@ -102,18 +103,36 @@ public class SortBall {
                 readyToShoot(false, telemetry);
             }
         }
-        if(gamepad.left_stick_x < 0){
-            SpindexerReverse = false;
-            timeIntake.reset();
-        } else if(gamepad.left_stick_x > 0) {
-            SpindexerReverse = true;
-            timeIntake.reset();
+    }
+
+    public void loadBallsIn(Telemetry telemetry, Gamepad gamepad) throws InterruptedException {
+        if(!spindexerReversed && timeIntake.seconds() > 0.3) {
+            BallColor colorFront1 = colorSensor1.detectBallColor(2000, telemetry);
+            BallColor colorFront2 = colorSensor2.detectBallColor(2000, telemetry);
+            handleSensor(telemetry, colorFront1, colorFront2, false);
         }
-        if(!SpindexerReverse){
+
+        if(spindexerReversed && timeIntake.seconds() > 0.3) {
+            BallColor colorTail1 = colorSensor1.detectBallColor(2000, telemetry);
+            BallColor colorTail2 = colorSensor2.detectBallColor(2000, telemetry);
+            handleSensor(telemetry, colorTail1, colorTail2, true);
+        }
+
+        if(gamepad.left_stick_x > 0 && spindexerReversed) {
+            // chuyển hướng đi tiến
+            spindexerReversed = false;
             controlSpindexer(nextSlot);
-        } else {
-            controlSpindexer(nextSlot2);
+            timeIntake.reset();
         }
+
+        if(gamepad.left_stick_x < 0 && !spindexerReversed){
+            // chuyển hướng đi lùi
+            spindexerReversed = true;
+            controlSpindexer(nextSlot2);
+            timeIntake.reset();
+        }
+
+
     }
 
     public boolean isFull(){
@@ -177,10 +196,16 @@ public class SortBall {
 
         for(int i = 1; i < count + 1; i++) { // xoay them 1 vi tri de ban qua cuoi cung
             controlSpindexer(OUTTAKE_SLOT_POS[bestSpin + i]);
-            if (i < count) releaseBall(bestSpin + i);
+            if (i < count) releaseBall((bestSpin - i + 3) % 3); // (bestSpin - i + 3) % 3 stimulates the backward rotation index
             sleep(360);
         }
-        controlSpindexer(INTAKE_SLOT_POS[0]);
+
+        // spin to next empty slot
+        int firstEmptyIdx = getFirstEmptySlot();
+        nextSlot = INTAKE_SLOT_POS[firstEmptyIdx];
+        nextSlot2 = INTAKE_SLOT_POS2[firstEmptyIdx];
+
+        controlSpindexer(spindexerReversed ? nextSlot2 : nextSlot);
     }
     public void controlSpindexer(double position){
         spindexer1.setPosition(position);
