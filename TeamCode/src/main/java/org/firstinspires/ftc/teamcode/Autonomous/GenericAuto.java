@@ -119,7 +119,8 @@ public class GenericAuto {
 
         currentState = states.get(curPathIdx);
         PathChain currentPath = paths.get(curPathIdx);
-        follower.followPath(currentPath);
+        boolean isPickingUp = currentState == PathState.PICK_UP;
+        follower.followPath(currentPath, isPickingUp ? 0.65 : 1, true);
     }
 
     public void updateFollower(Telemetry telemetry) throws InterruptedException{

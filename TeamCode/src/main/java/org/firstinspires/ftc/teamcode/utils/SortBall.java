@@ -190,21 +190,23 @@ public class SortBall {
         }
     }
 
-    public void spinToShooter(int count) throws InterruptedException{
-        releaseBall(bestSpin);
+    public void spinToShooter(int count, Telemetry telemetry) throws InterruptedException{
+        releaseBall(count-1);
         sleep(360);
 
         for(int i = 1; i < count + 1; i++) { // xoay them 1 vi tri de ban qua cuoi cung
             controlSpindexer(OUTTAKE_SLOT_POS[bestSpin + i]);
-            if (i < count) releaseBall((bestSpin - i + 3) % 3); // (bestSpin - i + 3) % 3 stimulates the backward rotation index
+            if (i < count) releaseBall(count-1-i);
             sleep(360);
         }
 
         // spin to next empty slot
         int firstEmptyIdx = getFirstEmptySlot();
+        telemetry.addData("firstEmptyIdx",firstEmptyIdx);
+        telemetry.update();
+
         nextSlot = INTAKE_SLOT_POS[firstEmptyIdx];
         nextSlot2 = INTAKE_SLOT_POS2[firstEmptyIdx];
-
         controlSpindexer(spindexerReversed ? nextSlot2 : nextSlot);
     }
     public void controlSpindexer(double position){

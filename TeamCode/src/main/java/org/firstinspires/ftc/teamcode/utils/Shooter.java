@@ -60,8 +60,8 @@ public class Shooter {
     int FLYWHEEL_VELOCITY_GAIN_DURATION = 500;
 
     public void shoot(int count, SortBall spindexer, Telemetry telemetry) throws InterruptedException{
-        spindexer.readyToShoot(false, telemetry);
-        sleep(200);
+//        spindexer.readyToShoot(false, telemetry);
+//        sleep(200);
 
         isBusy = true;
 //        double distance = limelight.getAprilTagData().z;
@@ -98,7 +98,7 @@ public class Shooter {
         });
         servoToggler.start();
 
-        spindexer.spinToShooter(count);
+        spindexer.spinToShooter(count, telemetry);
 
         servoToggler.interrupt();
         // END OF CONCURRENT EXECUTION
@@ -107,8 +107,7 @@ public class Shooter {
         sleep(100);
 
         SLoaderOut.setPosition(SLoaderOutHiddenPos);
-        MShooter1.setVelocity(0);
-        MShooter2.setVelocity(0);
+        setMotorVelocity(0, telemetry);
 
         isBusy = false;
         telemetry.addData("Servo angle", SAngle.getPosition());
@@ -129,8 +128,8 @@ public class Shooter {
     }
 
     public void setMotorVelocity(int velocity, Telemetry telemetry){
-        MShooter1.setVelocity(velocity);
-        MShooter2.setVelocity(velocity);
+        MShooter1.setVelocity(-velocity);
+        MShooter2.setVelocity(-velocity);
 
         double curVelocity = MShooter1.getVelocity();
         double error = velocity - curVelocity;
