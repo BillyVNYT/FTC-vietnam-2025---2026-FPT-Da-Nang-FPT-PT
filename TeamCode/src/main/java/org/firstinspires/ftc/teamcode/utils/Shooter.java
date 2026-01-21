@@ -17,7 +17,7 @@ public class Shooter {
     private LimelightHardware limelight;
     public final DcMotorEx MShooter1, MShooter2;
     private final DcMotor MTurnOuttake;
-    private final Servo SAngle;
+    public Servo SAngle;
     private final Servo SLoaderOut;
     private final ServoImplEx SLoaderUp1, SLoaderUp2;
 //    private final LimelightHardware limelight;
