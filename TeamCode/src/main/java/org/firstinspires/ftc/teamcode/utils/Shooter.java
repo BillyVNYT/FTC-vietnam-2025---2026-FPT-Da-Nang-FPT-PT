@@ -14,6 +14,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 
 public class Shooter {
+    private LimelightHardware limelight;
     public final DcMotorEx MShooter1, MShooter2;
     private final DcMotor MTurnOuttake;
     private final Servo SAngle;
@@ -30,7 +31,7 @@ public class Shooter {
 
     boolean isBusy = false;
 
-    int tprShot = 0;
+    int tprShot = 1;
     boolean overwriteShoot;
 
     public Shooter(HardwareMap hardwareMap) {
@@ -41,6 +42,7 @@ public class Shooter {
         MShooter2.setDirection(DcMotorSimple.Direction.REVERSE);
 
         MTurnOuttake = hardwareMap.get(DcMotor.class, "m4");
+        MTurnOuttake.setDirection(DcMotorSimple.Direction.REVERSE);
 
         PIDFCoefficients pidf = new PIDFCoefficients(P, 0, D, F);
         MShooter1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
@@ -54,7 +56,7 @@ public class Shooter {
         SLoaderOut = hardwareMap.get(Servo.class, "s9");
         SLoaderOut.setPosition(SLoaderOutHiddenPos);
 
-//        limelight = new LimelightHardware(hardwareMap);
+        limelight = new LimelightHardware(hardwareMap);
     }
 
     int FLYWHEEL_VELOCITY_GAIN_DURATION = 500;
@@ -137,19 +139,6 @@ public class Shooter {
         telemetry.addLine("---------------------------");
     }
 
-//    public void trackAprilTag(Telemetry telemetry){
-//        if(limelight.getAprilTagData().id < 20) return;
-//
-//        double error = limelight.getAprilTagData().x;
-//
-//        if(error >= 5 || error <= -5){
-//            MTurnOuttake.setPower(error*Kp);
-//        } else MTurnOuttake.setPower(0);
-//
-//        telemetry.addData("Tx", error);
-//        telemetry.addLine("---------------------------");
-//    }
-
     public boolean isBusy(){
         return isBusy;
     }
@@ -166,5 +155,20 @@ public class Shooter {
     public void updateOuttakeAngle(double rx, Telemetry telemetry){
         MTurnOuttake.setPower(rx);
     }
+    public void HoldShooter(int id, Telemetry telemetry){
+        limelight.changePipeline(0);
+        ApriltagData data = limelight.getAprilTagData();
+        if(data.id == id) {
+            telemetry.addData("distance", data.z);
 
+            double Tx = limelight.getAprilTagData().x;
+            if (Math.abs(Tx) > 1) {
+                MTurnOuttake.setPower(Tx * 0.04);
+            } else {
+                MTurnOuttake.setPower(0);
+            }
+            telemetry.addData("Tx", Tx);
+            telemetry.update();
+        }
+    }
 }
