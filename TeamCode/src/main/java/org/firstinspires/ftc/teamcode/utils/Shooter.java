@@ -138,6 +138,8 @@ public class Shooter {
     }
 
 //    public void trackAprilTag(Telemetry telemetry){
+//        if(limelight.getAprilTagData().id < 20) return;
+//
 //        double error = limelight.getAprilTagData().x;
 //
 //        if(error >= 5 || error <= -5){

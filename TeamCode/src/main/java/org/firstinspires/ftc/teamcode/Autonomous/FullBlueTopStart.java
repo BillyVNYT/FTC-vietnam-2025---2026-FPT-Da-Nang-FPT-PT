@@ -11,9 +11,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 @Configurable // Panels
 public class FullBlueTopStart extends LinearOpMode {
 
-    Pose startPose = new Pose(27.48929159802308, 127.79571663920923, Math.toRadians(180));
+    Pose startPose = new Pose(64, 80, Math.toRadians(180));
     Pose goalPose = new Pose(26.787, 128.303);
-    Pose[] startToTopZonePoses = {goalPose, topZonePose};
+    Pose[] startToTopZonePoses = {new Pose(64, 80), topZonePose};
 
     PathPoses[] pathPoses = {
             new PathPoses(Math.toRadians(180), startToTopZonePoses, GenericAuto.PathState.START),

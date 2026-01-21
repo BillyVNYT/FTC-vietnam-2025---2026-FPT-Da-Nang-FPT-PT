@@ -18,9 +18,9 @@ public class SortBall {
         PURPLE,
         EMPTY
     }
-    double[] INTAKE_SLOT_POS = {0.2467, 0.1194, 0};
-    double[] INTAKE_SLOT_POS2 = {0.0711, 0.1772, 0.2667};
-    double[] OUTTAKE_SLOT_POS = {0.0865 , 0.2106, 0.333, 0.4544, 0.7072, 0.8339, 0.9528};
+    public double[] INTAKE_SLOT_POS = {0.2467, 0.1194, 0};
+    public double[] INTAKE_SLOT_POS2 = {0.0711, 0.1772, 0.2667};
+    public double[] OUTTAKE_SLOT_POS = {0.0865 , 0.2106, 0.333, 0.4544, 0.7072, 0.8339, 0.9528};
     int bestSpin = 0;
 
     private final List<BallColor> currentLoad = new ArrayList<>();
@@ -89,14 +89,14 @@ public class SortBall {
         boolean cs2Detected = !color2.equals(BallColor.EMPTY);
         BallColor color = cs1Detected ? color1 : color2;
 
-        if((cs1Detected || cs2Detected)) {
+        if((cs1Detected || cs2Detected)&&(colorSensor1.getClear()>2000||colorSensor2.getClear()>1500)) {
             currentLoad.set(firstEmptyIdx, color);
             if(firstEmptyIdx < 2) {
                 // spin to next empty slot
                 nextSlot = INTAKE_SLOT_POS[firstEmptyIdx+1];
                 nextSlot2 = INTAKE_SLOT_POS2[firstEmptyIdx+1];
                 controlSpindexer(reversed ? nextSlot2 : nextSlot);
-                sleep(200);
+                sleep(300);
             } else {
                 telemetry.addLine("ALL IN");
                 telemetry.update();
@@ -106,15 +106,15 @@ public class SortBall {
     }
 
     public void autoLoadBallsIn(Telemetry telemetry) throws InterruptedException {
-        BallColor colorFront1 = colorSensor1.detectBallColor(1200, telemetry);
-        BallColor colorFront2 = colorSensor2.detectBallColor(1200, telemetry);
+        BallColor colorFront1 = colorSensor1.detectBallColor(2000, telemetry);
+        BallColor colorFront2 = colorSensor2.detectBallColor(1500, telemetry);
         handleSensor(telemetry, colorFront1, colorFront2, false);
     }
 
     public void loadBallsIn(Telemetry telemetry, Gamepad gamepad) throws InterruptedException {
         if(!spindexerReversed && timeIntake.seconds() > 0.3) {
-            BallColor colorFront1 = colorSensor1.detectBallColor(1200, telemetry);
-            BallColor colorFront2 = colorSensor2.detectBallColor(1200, telemetry);
+            BallColor colorFront1 = colorSensor1.detectBallColor(2000, telemetry);
+            BallColor colorFront2 = colorSensor2.detectBallColor(1500, telemetry);
             handleSensor(telemetry, colorFront1, colorFront2, false);
         }
 

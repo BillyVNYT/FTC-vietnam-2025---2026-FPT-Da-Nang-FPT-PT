@@ -108,8 +108,9 @@ public class GenericAuto {
                     spindexer.autoLoadBallsIn(telemetry);
                     return;
                 }
-
-                sleep(500);
+                spindexer.controlSpindexer(spindexer.INTAKE_SLOT_POS[2]);
+                sleep(1000);
+                spindexer.readyToShoot(false, telemetry);
                 intake.stop();
                 goToNextPath();
                 break;
@@ -133,7 +134,7 @@ public class GenericAuto {
         currentState = states.get(curPathIdx);
         PathChain currentPath = paths.get(curPathIdx);
         boolean isPickingUp = currentState == PathState.PICK_UP;
-        follower.followPath(currentPath, isPickingUp ? 0.5 : 1, true);
+        follower.followPath(currentPath, isPickingUp ? 0.55 : 1, true);
     }
 
     public void updateFollower(Telemetry telemetry) throws InterruptedException{
@@ -144,7 +145,5 @@ public class GenericAuto {
         panelsTelemetry.debug("Path Index", curPathIdx);
         panelsTelemetry.update(telemetry);
     }
-    
-    
     
 }
