@@ -32,6 +32,7 @@ public class SortBall {
 
     ElapsedTime timeIntake = new ElapsedTime();
     double nextSlot = INTAKE_SLOT_POS[0], nextSlot2 = INTAKE_SLOT_POS2[0];
+    int baseClearCS1, baseClearCS2;
     public SortBall(List<BallColor> obeliskData, HardwareMap hardwareMap) {
         this.obeliskData = obeliskData;
         colorSensor1 = hardwareMap.get(ColorSensor.class, "cs");
@@ -47,6 +48,8 @@ public class SortBall {
         currentLoad.add(BallColor.EMPTY);
         currentLoad.add(BallColor.EMPTY);
         currentLoad.add(BallColor.EMPTY);
+        baseClearCS1 = colorSensor1.getClear();
+        baseClearCS2 = colorSensor2.getClear();
     }
 
 
@@ -87,14 +90,31 @@ public class SortBall {
 
         boolean cs1Detected = !color1.equals(BallColor.EMPTY);
         boolean cs2Detected = !color2.equals(BallColor.EMPTY);
+        int delta1 = colorSensor1.getClear() - baseClearCS1;
+        int delta2 = colorSensor2.getClear() - baseClearCS2;
         BallColor color = cs1Detected ? color1 : color2;
+        BallColor chosenColor = BallColor.EMPTY;
 
-        if((cs1Detected || cs2Detected)&&(colorSensor1.getClear()>2000||colorSensor2.getClear()>1500)) {
-            currentLoad.set(firstEmptyIdx, color);
-            if(firstEmptyIdx < 2) {
-                // spin to next empty slot
-                nextSlot = INTAKE_SLOT_POS[firstEmptyIdx+1];
-                nextSlot2 = INTAKE_SLOT_POS2[firstEmptyIdx+1];
+        if (cs1Detected && !cs2Detected) {
+            chosenColor = color1;
+        }
+        else if (cs2Detected && !cs1Detected) {
+            chosenColor = color2;
+        }
+        else if (cs1Detected && cs2Detected) {
+            if (delta1 > delta2 && delta1 > 2000) {
+                chosenColor = color1;
+            } else if (delta2 > delta1 && delta2 > 1500) {
+                chosenColor = color2;
+            }
+        }
+
+        if (chosenColor != BallColor.EMPTY) {
+            currentLoad.set(firstEmptyIdx, chosenColor);
+
+            if (firstEmptyIdx < 2) {
+                nextSlot  = INTAKE_SLOT_POS[firstEmptyIdx + 1];
+                nextSlot2 = INTAKE_SLOT_POS2[firstEmptyIdx + 1];
                 controlSpindexer(reversed ? nextSlot2 : nextSlot);
                 sleep(300);
             } else {
@@ -137,8 +157,6 @@ public class SortBall {
             controlSpindexer(nextSlot2);
             timeIntake.reset();
         }
-
-
     }
 
     public boolean isFull(){
