@@ -31,7 +31,7 @@ public class Shooter {
     double SLoaderOutVisiblePos = 0.182;
     boolean MTurnOuttakeReverse = false;
 
-    boolean isBusy = false;
+    volatile boolean isBusy = false;
 
     int tprShot = 1;
     boolean overwriteShoot;
@@ -65,21 +65,21 @@ public class Shooter {
 
     public void shoot(int count, SortBall spindexer, Telemetry telemetry) throws InterruptedException{
         isBusy = true;
-//        double distance = limelight.getAprilTagData().z;
-        double distance = 150;
-        if(distance <= 95){
-            SAngle.setPosition(servoPositions[2]);
-            tprShot = (int) (1435.084*Math.pow(distance, 0.06423677));
-        } else if (distance <= 200){
-            SAngle.setPosition(servoPositions[1]);
-            tprShot = (int) (1027.532*Math.pow(distance, 0.1454576));
+        double distance = limelight.getAprilTagData().z;
+//        double distance = 150;
+        if(distance <= 140){
+            SAngle.setPosition(calculateAngle(distance));
+            tprShot = 2100;
+        } else if (distance <= 240){
+            SAngle.setPosition(calculateAngle(distance));
+            tprShot = 2600;
         } else {
-            SAngle.setPosition(servoPositions[0]);
-            tprShot = (int) (22.15773*Math.pow(distance, 0.8496951));
+            SAngle.setPosition(calculateAngle(distance));
+            tprShot = 3100;
         }
 
 //        setMotorVelocity(tprShot, telemetry);
-        setMotorVelocity(2200, telemetry);
+        setMotorVelocity(tprShot, telemetry);
         sleep(FLYWHEEL_VELOCITY_GAIN_DURATION);
 
         // load balls
@@ -90,11 +90,17 @@ public class Shooter {
 
         // START OF CONCURRENT EXECUTION OF SERVO LOADER UP AND SPINDEXER
         Thread servoToggler = new Thread(() -> {
-            while (isBusy && !Thread.currentThread().isInterrupted()) {
-                SLoaderUp1.setPosition(0.0);
-                SLoaderUp2.setPosition(0.0);
-                SLoaderUp1.setPosition(0.1);
-                SLoaderUp2.setPosition(0.1);
+            try {
+                while (isBusy) {
+                    SLoaderUp1.setPosition(0.0);
+                    SLoaderUp2.setPosition(0.0);
+                    Thread.sleep(120);
+
+                    SLoaderUp1.setPosition(0.1);
+                    SLoaderUp2.setPosition(0.1);
+                    Thread.sleep(120);
+                }
+            } catch (InterruptedException e) {
             }
         });
         servoToggler.start();
@@ -145,15 +151,6 @@ public class Shooter {
         return isBusy;
     }
 
-    public void updateServoAngle(double angle, Telemetry telemetry){
-        double currentAngle = SAngle.getPosition();
-        double pos = Math.max(0, Math.min(1, currentAngle + angle));
-        SAngle.setPosition(pos);
-
-        telemetry.addData("Pos", pos);
-        telemetry.addLine("---------------------------");
-    }
-
     public void updateOuttakeAngle(double rx, Telemetry telemetry){
         MTurnOuttake.setPower(rx);
     }
@@ -183,5 +180,8 @@ public class Shooter {
             telemetry.addData("Tx", Tx);
             telemetry.update();
         }
+    }
+    public double calculateAngle(double dis){
+        return 1*dis+5;
     }
 }
