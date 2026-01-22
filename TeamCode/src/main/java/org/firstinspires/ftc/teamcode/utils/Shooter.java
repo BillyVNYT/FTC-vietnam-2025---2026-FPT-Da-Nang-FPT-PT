@@ -11,12 +11,13 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 
 public class Shooter {
     private LimelightHardware limelight;
     public final DcMotorEx MShooter1, MShooter2;
-    private final DcMotor MTurnOuttake;
+    private final DcMotorEx MTurnOuttake;
     public Servo SAngle;
     private final Servo SLoaderOut;
     private final ServoImplEx SLoaderUp1, SLoaderUp2;
@@ -28,6 +29,7 @@ public class Shooter {
     double[] servoPositions = {0.8492, 0.6389, 0};
     double SLoaderOutHiddenPos = 0.03;
     double SLoaderOutVisiblePos = 0.182;
+    boolean MTurnOuttakeReverse = false;
 
     boolean isBusy = false;
 
@@ -41,7 +43,7 @@ public class Shooter {
         MShooter2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MShooter2.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        MTurnOuttake = hardwareMap.get(DcMotor.class, "m4");
+        MTurnOuttake = hardwareMap.get(DcMotorEx.class, "m4");
         MTurnOuttake.setDirection(DcMotorSimple.Direction.REVERSE);
 
         PIDFCoefficients pidf = new PIDFCoefficients(P, 0, D, F);
@@ -160,12 +162,23 @@ public class Shooter {
         ApriltagData data = limelight.getAprilTagData();
         if(data.id == id) {
             telemetry.addData("distance", data.z);
-
             double Tx = limelight.getAprilTagData().x;
             if (Math.abs(Tx) > 1) {
-                MTurnOuttake.setPower(Tx * 0.04);
+                double power = Tx*0.04;
+                if(power > 0.5) { power = 0.5; };
+                if(!MTurnOuttakeReverse) {
+                    MTurnOuttake.setPower(power);
+                } else {
+                    MTurnOuttake.setPower(-power);
+                }
             } else {
                 MTurnOuttake.setPower(0);
+                MTurnOuttakeReverse = false;
+            }
+            double current = MTurnOuttake.getCurrent(CurrentUnit.AMPS);
+
+            if (current > 7) {
+                MTurnOuttakeReverse = true;
             }
             telemetry.addData("Tx", Tx);
             telemetry.update();
