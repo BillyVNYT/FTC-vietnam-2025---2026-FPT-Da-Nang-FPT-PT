@@ -49,7 +49,7 @@ public class MainRed extends LinearOpMode {
             driveTrain.drivetrainControlBasic(gamepad2);
 //
 //            manualControl2.controlTurnOutTake(telemetry);
-            manualControl2.updateShooterAngleServo(telemetry);
+//            manualControl2.updateShooterAngleServo(telemetry);
             manualControl2.toggleFlywheel(telemetry);
 
             manualControl2.shootBall(telemetry);

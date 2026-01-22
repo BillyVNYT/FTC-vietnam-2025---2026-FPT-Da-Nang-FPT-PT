@@ -61,14 +61,14 @@ public class ManualControl2 {
         }
     }
 
-    public void updateShooterAngleServo(Telemetry telemetry){
-        if(gamepad2.left_trigger > 0.2){
-            shooter.updateServoAngle(-gamepad2.left_trigger, telemetry);
-        }
-        if(gamepad2.right_trigger > 0.2){
-            shooter.updateServoAngle(gamepad2.right_trigger, telemetry);
-        }
-    }
+//    public void updateShooterAngleServo(Telemetry telemetry){
+//        if(gamepad2.left_trigger > 0.2){
+//            shooter.updateServoAngle(-gamepad2.left_trigger, telemetry);
+//        }
+//        if(gamepad2.right_trigger > 0.2){
+//            shooter.updateServoAngle(gamepad2.right_trigger, telemetry);
+//        }
+//    }
 
     public void shootPurpleBall(Telemetry telemetry) throws InterruptedException {
         if(!gamepad2.rightBumperWasPressed()) return;

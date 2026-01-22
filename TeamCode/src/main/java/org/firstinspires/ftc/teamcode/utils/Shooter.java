@@ -50,6 +50,7 @@ public class Shooter {
         MShooter1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
 
         SAngle = hardwareMap.get(Servo.class, "s3");
+        SAngle.setDirection(Servo.Direction.REVERSE);
         SAngle.setPosition(0.8492);
 
         SLoaderUp1 = hardwareMap.get(ServoImplEx.class, "s10");
@@ -182,6 +183,9 @@ public class Shooter {
         }
     }
     public double calculateAngle(double dis){
-        return 1*dis+5;
+        return 0;
+    }
+    public void updateServoAngle(double degree){
+        SAngle.setPosition(0.03638079*degree - 0.8736323);
     }
 }
