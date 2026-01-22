@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import com.qualcomm.hardware.limelightvision.LLResultTypes.FiducialResult;
 
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+
 import java.util.List;
 
 
@@ -43,7 +45,7 @@ public class LimelightHardware {
         if(result != null && result.isValid()) {
             List<FiducialResult> fiducials = result.getFiducialResults();
             for (FiducialResult fiducial : fiducials) {
-                double distance = 62 * Math.pow(fiducial.getTargetPoseCameraSpace().getPosition().y, 0.92);
+                double distance = fiducial.getTargetPoseCameraSpace().getPosition().z*166.67;
 
                 apriltagData = new ApriltagData(result.getTx(), result.getTy(),
                         distance, result.getTa(), fiducial.getFiducialId());

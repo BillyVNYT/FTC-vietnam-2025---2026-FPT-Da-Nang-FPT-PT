@@ -25,7 +25,14 @@ public class Shooter {
     double P = 10;
     double D = 2;
     double F = 0.01030;
-    double Kp = 1;
+    double[][] hoodTable = {
+            {150, 0.6256},
+            {180, 0.7294},
+            {210, 0.5389},
+            {220, 0.7339},
+            {230, 0.7906},
+            {265, 0.6389}
+    };
     double[] servoPositions = {0.8492, 0.6389, 0};
     double SLoaderOutHiddenPos = 0.03;
     double SLoaderOutVisiblePos = 0.182;
@@ -70,13 +77,13 @@ public class Shooter {
 //        double distance = 150;
         if(distance <= 140){
             SAngle.setPosition(calculateAngle(distance));
-            tprShot = 2100;
+            tprShot = 2000;
         } else if (distance <= 240){
             SAngle.setPosition(calculateAngle(distance));
-            tprShot = 2600;
+            tprShot = 2300;
         } else {
             SAngle.setPosition(calculateAngle(distance));
-            tprShot = 3100;
+            tprShot = 2500;
         }
 
 //        setMotorVelocity(tprShot, telemetry);
@@ -159,7 +166,6 @@ public class Shooter {
         limelight.changePipeline(0);
         ApriltagData data = limelight.getAprilTagData();
         if(data.id == id) {
-            telemetry.addData("distance", data.z);
             double Tx = limelight.getAprilTagData().x;
             if (Math.abs(Tx) > 1) {
                 double power = Tx*0.04;
@@ -179,13 +185,38 @@ public class Shooter {
                 MTurnOuttakeReverse = true;
             }
             telemetry.addData("Tx", Tx);
-            telemetry.update();
+            telemetry.addData("distance", data.z);
         }
     }
     public double calculateAngle(double dis){
-        return 0;
+//        if (dis <= hoodTable[0][0])
+//            return hoodTable[0][1];
+//
+//        if (dis >= hoodTable[hoodTable.length - 1][0])
+//            return hoodTable[hoodTable.length - 1][1];
+//
+//        for (int i = 0; i < hoodTable.length - 1; i++) {
+//            double x0 = hoodTable[i][0];
+//            double y0 = hoodTable[i][1];
+//            double x1 = hoodTable[i + 1][0];
+//            double y1 = hoodTable[i + 1][1];
+//
+//            if (dis >= x0 && dis <= x1) {
+//                double t = (dis - x0) / (x1 - x0);
+//                return y0 + t * (y1 - y0);
+//            }
+//        }
+//
+//        return hoodTable[0][1];
+        double a = -1.5015e-05;
+        double b =  0.0064733;
+        double c = -0.0007812;
+
+        double pos = a * dis * dis + b * dis + c;
+
+        return Math.max(0.0, Math.min(1.0, pos));
     }
-    public void updateServoAngle(double degree){
+    public void updateServoAngle(double degree, Telemetry telemetry){
         SAngle.setPosition(0.03638079*degree - 0.8736323);
     }
 }
