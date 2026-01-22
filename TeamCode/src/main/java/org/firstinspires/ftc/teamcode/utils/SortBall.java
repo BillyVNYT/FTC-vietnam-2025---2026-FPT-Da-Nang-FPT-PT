@@ -221,7 +221,7 @@ public class SortBall {
         for(int i = 1; i < count + 1; i++) { // xoay them 1 vi tri de ban qua cuoi cung
             controlSpindexer(OUTTAKE_SLOT_POS[bestSpin + i]);
             if (i < count) releaseBall(count-1-i);
-            sleep(360);
+            sleep(400);
         }
 
         // spin to next empty slot

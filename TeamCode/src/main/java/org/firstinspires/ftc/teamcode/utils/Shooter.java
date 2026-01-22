@@ -77,10 +77,10 @@ public class Shooter {
 //        double distance = 150;
         if(distance <= 140){
             SAngle.setPosition(calculateAngle(distance));
-            tprShot = 2000;
+            tprShot = 2300;
         } else if (distance <= 240){
             SAngle.setPosition(calculateAngle(distance));
-            tprShot = 2300;
+            tprShot = 2600;
         } else {
             SAngle.setPosition(calculateAngle(distance));
             tprShot = 2500;
@@ -210,9 +210,11 @@ public class Shooter {
 //        return hoodTable[0][1];
         double a = -1.5015e-05;
         double b =  0.0064733;
-        double c = -0.0007812;
+        double c = -0.0007912;
 
-        double pos = a * dis * dis + b * dis + c;
+        double offset = 0.0965; // chỉnh cao lên
+
+        double pos = a * dis * dis + b * dis + c - offset;
 
         return Math.max(0.0, Math.min(1.0, pos));
     }
