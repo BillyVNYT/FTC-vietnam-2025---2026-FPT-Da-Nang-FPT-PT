@@ -100,4 +100,7 @@ public class ManualControl2 {
         }
     }
 
+    public void holdShooter(int goalId, Telemetry telemetry) {
+        shooter.HoldShooter(goalId, telemetry, true);
+    }
 }

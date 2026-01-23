@@ -30,39 +30,12 @@ import org.firstinspires.ftc.teamcode.utils.Shooter;
 //     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 @TeleOp
 public class MainRed extends LinearOpMode {
-    private DriveTrain driveTrain;
-    private ManualControl2 manualControl2;
-    private Shooter shooter;
     @Override
     public void runOpMode() throws InterruptedException {
-        driveTrain = new DriveTrain(hardwareMap);
-        manualControl2 = new ManualControl2(hardwareMap, gamepad2);
-        shooter = new Shooter(hardwareMap);
-
-        for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
-            module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
-        }
-
+        MainRobot robot = new MainRobot(24, hardwareMap, gamepad2);
         waitForStart();
         while (opModeIsActive()){
-//            driveTrain.drivetrainControlAdvanced(gamepad1);
-            driveTrain.drivetrainControlBasic(gamepad2);
-//
-//            manualControl2.controlTurnOutTake(telemetry);
-            manualControl2.updateShooterAngleServo(telemetry);
-            manualControl2.toggleFlywheel(telemetry);
-            new Thread(() -> {
-                try {
-                    manualControl2.shootBall(telemetry);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }).start();
-            manualControl2.controlIntakeShaft(telemetry);
-
-            manualControl2.shootPurpleBall(telemetry);
-            manualControl2.shootGreenBall(telemetry);
-            shooter.HoldShooter(24, telemetry, false);
+            robot.opMode(telemetry);
         }
     }
 }

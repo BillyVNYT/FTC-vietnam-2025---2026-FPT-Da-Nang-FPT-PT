@@ -22,7 +22,7 @@ public class Shooter {
     public Servo SAngle;
     private final Servo SLoaderOut;
     private final ServoImplEx SLoaderUp1, SLoaderUp2;
-//    private final LimelightHardware limelight;
+
     double P = 6;
     double I = 0;
     double D = 0;
@@ -35,7 +35,6 @@ public class Shooter {
             {230, 0.7906},
             {265, 0.6389}
     };
-    double[] servoPositions = {0.8492, 0.6389, 0};
     double SLoaderOutHiddenPos = 0.03;
     double SLoaderOutVisiblePos = 0.182;
     boolean MTurnOuttakeReverse = false;
@@ -76,19 +75,16 @@ public class Shooter {
     public void shoot(int count, SortBall spindexer, Telemetry telemetry) throws InterruptedException{
         isBusy = true;
         double distance = limelight.getAprilTagData(telemetry).z;
-//        double distance = 150;
+        SAngle.setPosition(calculateAngle(distance, spindexer.is_lastBall, telemetry));
+
         if(distance <= 165){
-            SAngle.setPosition(calculateAngle(distance, spindexer.is_lastBall, telemetry));
             tprShot = 2000;
         } else if (distance <= 240){
-            SAngle.setPosition(calculateAngle(distance, spindexer.is_lastBall, telemetry));
             tprShot = 2600;
         } else {
-            SAngle.setPosition(calculateAngle(distance, spindexer.is_lastBall, telemetry));
             tprShot = 3000;
         }
 
-//        setMotorVelocity(tprShot, telemetry);
         setMotorVelocity(tprShot, telemetry);
         sleep(FLYWHEEL_VELOCITY_GAIN_DURATION);
 
@@ -205,41 +201,17 @@ public class Shooter {
         }
     }
     public double calculateAngle(double dis, boolean is_lastBall, Telemetry telemetry){
-//        if (dis <= hoodTable[0][0])
-//            return hoodTable[0][1];
-//
-//        if (dis >= hoodTable[hoodTable.length - 1][0])
-//            return hoodTable[hoodTable.length - 1][1];
-//
-//        for (int i = 0; i < hoodTable.length - 1; i++) {
-//            double x0 = hoodTable[i][0];
-//            double y0 = hoodTable[i][1];
-//            double x1 = hoodTable[i + 1][0];
-//            double y1 = hoodTable[i + 1][1];
-//
-//            if (dis >= x0 && dis <= x1) {
-//                double t = (dis - x0) / (x1 - x0);
-//                return y0 + t * (y1 - y0);
-//            }
-//        }
-//
-//        return hoodTable[0][1];
         double a = -1.5015e-05;
         double b =  0.0064733;
         double c = -0.0007912;
 
         double offset = 0.275; // chỉnh cao lên
-        if(is_lastBall){
-            telemetry.addLine("IS LAST BALL");
-        } else {
-            telemetry.addLine("NOT LAST BALL");
-        }
-        telemetry.update();
+        if(is_lastBall){}
 
         double pos = a * dis * dis + b * dis + c - offset;
-
         return Math.max(0.0, Math.min(1.0, pos));
     }
+
     public void updateServoAngle(double degree, Telemetry telemetry){
         SAngle.setPosition(0.03638079*degree - 0.8736323);
     }
