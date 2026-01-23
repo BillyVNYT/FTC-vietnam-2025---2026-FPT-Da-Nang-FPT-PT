@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+import org.firstinspires.ftc.teamcode.TeleOp.MainBlue;
 
 
 public class Shooter {
@@ -22,9 +23,10 @@ public class Shooter {
     private final Servo SLoaderOut;
     private final ServoImplEx SLoaderUp1, SLoaderUp2;
 //    private final LimelightHardware limelight;
-    double P = 10;
-    double D = 2;
-    double F = 0.01030;
+    double P = 6;
+    double I = 0;
+    double D = 0;
+    double F = 0.0085;
     double[][] hoodTable = {
             {150, 0.6256},
             {180, 0.7294},
@@ -48,12 +50,12 @@ public class Shooter {
         MShooter2 = hardwareMap.get(DcMotorEx.class, "m1");
         MShooter1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MShooter2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        MShooter2.setDirection(DcMotorSimple.Direction.REVERSE);
+        MShooter1.setDirection(DcMotorSimple.Direction.REVERSE);
 
         MTurnOuttake = hardwareMap.get(DcMotorEx.class, "m4");
         MTurnOuttake.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        PIDFCoefficients pidf = new PIDFCoefficients(P, 0, D, F);
+        PIDFCoefficients pidf = new PIDFCoefficients(P, I, D, F);
         MShooter1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
 
         SAngle = hardwareMap.get(Servo.class, "s3");
@@ -73,17 +75,17 @@ public class Shooter {
 
     public void shoot(int count, SortBall spindexer, Telemetry telemetry) throws InterruptedException{
         isBusy = true;
-        double distance = limelight.getAprilTagData().z;
+        double distance = limelight.getAprilTagData(telemetry).z;
 //        double distance = 150;
-        if(distance <= 140){
-            SAngle.setPosition(calculateAngle(distance));
-            tprShot = 2300;
+        if(distance <= 165){
+            SAngle.setPosition(calculateAngle(distance, spindexer.is_lastBall, telemetry));
+            tprShot = 2000;
         } else if (distance <= 240){
-            SAngle.setPosition(calculateAngle(distance));
+            SAngle.setPosition(calculateAngle(distance, spindexer.is_lastBall, telemetry));
             tprShot = 2600;
         } else {
-            SAngle.setPosition(calculateAngle(distance));
-            tprShot = 2500;
+            SAngle.setPosition(calculateAngle(distance, spindexer.is_lastBall, telemetry));
+            tprShot = 3000;
         }
 
 //        setMotorVelocity(tprShot, telemetry);
@@ -133,8 +135,8 @@ public class Shooter {
     public void toggleFlywheel(Telemetry telemetry) {
         int maxShooterVelocity = 2200;
         if(!overwriteShoot) {
-            MShooter1.setVelocity(-maxShooterVelocity);
-            MShooter2.setVelocity(-maxShooterVelocity);
+            MShooter1.setVelocity(maxShooterVelocity);
+            MShooter2.setVelocity(maxShooterVelocity);
         } else {
             MShooter1.setVelocity(0);
             MShooter2.setVelocity(0);
@@ -143,8 +145,8 @@ public class Shooter {
     }
 
     public void setMotorVelocity(int velocity, Telemetry telemetry){
-        MShooter1.setVelocity(-velocity);
-        MShooter2.setVelocity(-velocity);
+        MShooter1.setVelocity(velocity);
+        MShooter2.setVelocity(velocity);
 
         double curVelocity = MShooter1.getVelocity();
         double error = velocity - curVelocity;
@@ -162,33 +164,47 @@ public class Shooter {
     public void updateOuttakeAngle(double rx, Telemetry telemetry){
         MTurnOuttake.setPower(rx);
     }
-    public void HoldShooter(int id, Telemetry telemetry){
+    public void HoldShooter(int id, Telemetry telemetry, boolean reverseMotor){
+        if(reverseMotor) MTurnOuttake.setDirection(DcMotorSimple.Direction.REVERSE);
+        else MTurnOuttake.setDirection(DcMotorSimple.Direction.FORWARD);
         limelight.changePipeline(0);
-        ApriltagData data = limelight.getAprilTagData();
-        if(data.id == id) {
-            double Tx = limelight.getAprilTagData().x;
-            if (Math.abs(Tx) > 1) {
-                double power = Tx*0.04;
-                if(power > 0.5) { power = 0.5; };
-                if(!MTurnOuttakeReverse) {
-                    MTurnOuttake.setPower(power);
+        ApriltagData data = limelight.getAprilTagData(telemetry);
+        if(data != null){
+            telemetry.update();
+            if(data.id == id) {
+                double Tx = limelight.getAprilTagData(telemetry).x;
+                if (Math.abs(Tx) > 1) {
+                    double power = Tx*0.04;
+                    if(power > 0.5) { power = 0.5; };
+                    if(!MTurnOuttakeReverse) {
+                        MTurnOuttake.setPower(power);
+                    } else {
+                        MTurnOuttake.setPower(-power);
+                    }
                 } else {
-                    MTurnOuttake.setPower(-power);
+                    MTurnOuttake.setPower(0);
+                    MTurnOuttakeReverse = false;
                 }
-            } else {
-                MTurnOuttake.setPower(0);
-                MTurnOuttakeReverse = false;
-            }
-            double current = MTurnOuttake.getCurrent(CurrentUnit.AMPS);
+                double current = MTurnOuttake.getCurrent(CurrentUnit.AMPS);
 
-            if (current > 7) {
-                MTurnOuttakeReverse = true;
+                if (current > 7) {
+                    MTurnOuttakeReverse = true;
+                }
+                double curVelocity = MShooter1.getVelocity();
+                double error = 2600 - curVelocity;
+
+                telemetry.addData("curTargetVelocity", 2600);
+                telemetry.addData("curVelocity", curVelocity);
+                telemetry.addData("error", error);
+                telemetry.addLine("---------------------------");
+                telemetry.addData("Tx", Tx);
+                telemetry.addData("distance", data.z);
             }
-            telemetry.addData("Tx", Tx);
-            telemetry.addData("distance", data.z);
+        } else {
+            MTurnOuttake.setPower(0);
         }
     }
-    public double calculateAngle(double dis){
+    public double calculateAngle(double dis, boolean is_lastBall, Telemetry telemetry){
 //        if (dis <= hoodTable[0][0])
 //            return hoodTable[0][1];
 //
@@ -212,7 +228,13 @@ public class Shooter {
         double b =  0.0064733;
         double c = -0.0007912;
 
-        double offset = 0.0965; // chỉnh cao lên
+        double offset = 0.275; // chỉnh cao lên
+        if(is_lastBall){
+            telemetry.addLine("IS LAST BALL");
+        } else {
+            telemetry.addLine("NOT LAST BALL");
+        }
+        telemetry.update();
 
         double pos = a * dis * dis + b * dis + c - offset;
 

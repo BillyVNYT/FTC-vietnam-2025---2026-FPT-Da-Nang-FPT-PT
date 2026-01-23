@@ -63,9 +63,9 @@ public class ManualControl2 {
 
     public void updateShooterAngleServo(Telemetry telemetry){
         if(gamepad2.dpad_up){
-            shooter.SAngle.setPosition(shooter.SAngle.getPosition()+0.0002);
+            shooter.SAngle.setPosition(shooter.SAngle.getPosition()+0.0008);
         } else if(gamepad2.dpad_down){
-            shooter.SAngle.setPosition(shooter.SAngle.getPosition()-0.0002);
+            shooter.SAngle.setPosition(shooter.SAngle.getPosition()-0.0008);
         }
         telemetry.addData("Pos", shooter.SAngle.getPosition());
         telemetry.update();

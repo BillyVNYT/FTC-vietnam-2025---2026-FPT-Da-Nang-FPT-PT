@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import com.qualcomm.hardware.limelightvision.LLResultTypes.FiducialResult;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 import java.util.List;
@@ -38,20 +39,24 @@ public class LimelightHardware {
         limelight.pipelineSwitch(tab);
         limelight.reloadPipeline();
     }
-    public ApriltagData getAprilTagData(){
+    public ApriltagData getAprilTagData(Telemetry telemetry){
         LLResult result = limelight.getLatestResult();
         ApriltagData apriltagData = new ApriltagData(0, 0, 0,0, 0);
 
         if(result != null && result.isValid()) {
             List<FiducialResult> fiducials = result.getFiducialResults();
             for (FiducialResult fiducial : fiducials) {
-                double distance = fiducial.getTargetPoseCameraSpace().getPosition().z*166.67;
-
+                double distance = 0;
+                if(fiducial.getFiducialId() == 24|| fiducial.getFiducialId() == 20){
+                    distance = 557.1429*fiducial.getTargetPoseCameraSpace().getPosition().y + 46.57143;;
+                }
+                telemetry.update();
                 apriltagData = new ApriltagData(result.getTx(), result.getTy(),
                         distance, result.getTa(), fiducial.getFiducialId());
+                return apriltagData;
             }
         }
-        return apriltagData;
+        return null;
     }
     public double getTx(int Id){
         LLResult result = limelight.getLatestResult();

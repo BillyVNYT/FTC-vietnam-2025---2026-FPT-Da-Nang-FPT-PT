@@ -22,6 +22,7 @@ public class SortBall {
     public double[] INTAKE_SLOT_POS2 = {0.0711, 0.1772, 0.2667};
     public double[] OUTTAKE_SLOT_POS = {0.0865 , 0.2106, 0.333, 0.4544, 0.7072, 0.8339, 0.9528};
     int bestSpin = 0;
+    public boolean is_lastBall = false;
 
     private final List<BallColor> currentLoad = new ArrayList<>();
     List<BallColor> obeliskData;
@@ -221,7 +222,10 @@ public class SortBall {
         for(int i = 1; i < count + 1; i++) { // xoay them 1 vi tri de ban qua cuoi cung
             controlSpindexer(OUTTAKE_SLOT_POS[bestSpin + i]);
             if (i < count) releaseBall(count-1-i);
-            sleep(400);
+            if(i == count){
+                is_lastBall = true;
+            }
+            sleep(500);
         }
 
         // spin to next empty slot
