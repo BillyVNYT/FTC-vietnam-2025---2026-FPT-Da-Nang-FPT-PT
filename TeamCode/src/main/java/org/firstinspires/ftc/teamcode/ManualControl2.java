@@ -25,20 +25,24 @@ public class ManualControl2 {
         shooter = new Shooter(hardwareMap);
         intake = new Intake(hardwareMap);
         gamepad2 = gamepad;
+
         motif = new Motif(hardwareMap);
         spindexer = new SortBall(motif.getSampleMotif(), hardwareMap);
     }
 
     public void controlTurnOutTake(Telemetry telemetry) {
-        double rx = gamepad2.right_stick_x;
-        shooter.updateOuttakeAngle(rx, telemetry);
+        if(gamepad2.dpad_left) {
+            shooter.updateOuttakeAngle(-0.5, telemetry);
+        } else if(gamepad2.dpad_right) {
+            shooter.updateOuttakeAngle(0.5, telemetry);
+        } else shooter.updateOuttakeAngle(0, telemetry);
+
     }
 
     public void shootBall(Telemetry telemetry) throws InterruptedException{
         if(gamepad2.crossWasPressed() && !shooter.isBusy()){
-            spindexer.readyToShoot();
-            sleep(300);
-
+            spindexer.readyToShoot(false, telemetry);
+            sleep(200);
             shooter.shoot(3, spindexer, telemetry);
         }
     }
@@ -52,21 +56,19 @@ public class ManualControl2 {
         }
 
         if(intakeActive) {
-            spindexer.loadBallsIn(telemetry);
-
-            if(spindexer.isFull()) {
-                intake.stop();
-            }
+            spindexer.loadBallsIn(telemetry, gamepad2);
+            if (spindexer.isFull()) intake.stop();
         }
     }
 
     public void updateShooterAngleServo(Telemetry telemetry){
-        if(gamepad2.left_trigger > 0.2){
-            shooter.updateServoAngle(-gamepad2.left_trigger, telemetry);
+        if(gamepad2.dpad_up){
+            shooter.SAngle.setPosition(shooter.SAngle.getPosition()+0.0008);
+        } else if(gamepad2.dpad_down){
+            shooter.SAngle.setPosition(shooter.SAngle.getPosition()-0.0008);
         }
-        if(gamepad2.right_trigger > 0.2){
-            shooter.updateServoAngle(gamepad2.right_trigger, telemetry);
-        }
+        telemetry.addData("Pos", shooter.SAngle.getPosition());
+        telemetry.update();
     }
 
     public void shootPurpleBall(Telemetry telemetry) throws InterruptedException {
@@ -92,9 +94,10 @@ public class ManualControl2 {
         }
     }
 
-    public void toggleFlywheel() {
+    public void toggleFlywheel(Telemetry telemetry) {
         if(gamepad2.circleWasPressed()){
-            shooter.toggleFlywheel();
+            shooter.toggleFlywheel(telemetry);
         }
     }
+
 }

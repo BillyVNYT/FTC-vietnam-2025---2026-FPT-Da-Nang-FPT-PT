@@ -1,10 +1,13 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.utils.DriveTrain;
 import org.firstinspires.ftc.teamcode.ManualControl2;
+import org.firstinspires.ftc.teamcode.utils.Shooter;
 
 //                       _oo0oo_
 //                      o8888888o
@@ -29,11 +32,16 @@ import org.firstinspires.ftc.teamcode.ManualControl2;
 public class MainRed extends LinearOpMode {
     private DriveTrain driveTrain;
     private ManualControl2 manualControl2;
-
+    private Shooter shooter;
     @Override
     public void runOpMode() throws InterruptedException {
         driveTrain = new DriveTrain(hardwareMap);
         manualControl2 = new ManualControl2(hardwareMap, gamepad2);
+        shooter = new Shooter(hardwareMap);
+
+        for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
+            module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+        }
 
         waitForStart();
         while (opModeIsActive()){
@@ -42,13 +50,19 @@ public class MainRed extends LinearOpMode {
 //
 //            manualControl2.controlTurnOutTake(telemetry);
             manualControl2.updateShooterAngleServo(telemetry);
-            manualControl2.toggleFlywheel();
-
-            manualControl2.shootBall(telemetry);
+            manualControl2.toggleFlywheel(telemetry);
+            new Thread(() -> {
+                try {
+                    manualControl2.shootBall(telemetry);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }).start();
             manualControl2.controlIntakeShaft(telemetry);
 
-//            manualControl2.shootPurpleBall(telemetry);
-//            manualControl2.shootGreenBall(telemetry);
+            manualControl2.shootPurpleBall(telemetry);
+            manualControl2.shootGreenBall(telemetry);
+            shooter.HoldShooter(24, telemetry, false);
         }
     }
 }

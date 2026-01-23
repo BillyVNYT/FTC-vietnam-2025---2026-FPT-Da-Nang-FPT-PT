@@ -15,7 +15,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
-            .mass(15)
+            .mass(16)
             .forwardZeroPowerAcceleration(-32.4181803122647)
             .lateralZeroPowerAcceleration(-53.25190569981471)
             .translationalPIDFCoefficients(new PIDFCoefficients(0.25, 0.00025, 0.005, 0.0001))
@@ -28,10 +28,10 @@ public class Constants {
     public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);
     public static MecanumConstants driveConstants = new MecanumConstants()
             .maxPower(1)
-            .rightFrontMotorName("m1")
-            .rightRearMotorName("m2")
-            .leftRearMotorName("m3")
-            .leftFrontMotorName("m4")
+            .rightFrontMotorName("m2")
+            .rightRearMotorName("m3")
+            .leftRearMotorName("m7")
+            .leftFrontMotorName("m6")
             .leftFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
             .leftRearMotorDirection(DcMotorSimple.Direction.FORWARD)
             .rightFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
@@ -39,8 +39,8 @@ public class Constants {
             .xVelocity(64.57876903369694)
             .yVelocity(51.72019384627498);
     public static TwoWheelConstants localizerConstants = new TwoWheelConstants()
-            .forwardEncoder_HardwareMapName("m1")
-            .strafeEncoder_HardwareMapName("m4")
+            .forwardEncoder_HardwareMapName("m2")
+            .strafeEncoder_HardwareMapName("m3")
             .IMU_HardwareMapName("imu")
 //            .strafeEncoderDirection(Encoder.REVERSE)
             .forwardEncoderDirection(Encoder.REVERSE)

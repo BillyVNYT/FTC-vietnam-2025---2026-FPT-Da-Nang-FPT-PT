@@ -1,12 +1,8 @@
-package org.firstinspires.ftc.teamcode.utils;
+package org.firstinspires.ftc.teamcode.Tuning;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
-
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 @TeleOp
 public class TestShooter extends LinearOpMode{
@@ -45,8 +41,8 @@ public class TestShooter extends LinearOpMode{
 //            setMotorVelocity(2436,telemetry);
 //            telemetry.update();
 //        }
-          MShooter2=hardwareMap.get(DcMotor.class,"m5");
-          MShooter1=hardwareMap.get(DcMotor.class,"m6");
+          MShooter2=hardwareMap.get(DcMotor.class,"m0");
+          MShooter1=hardwareMap.get(DcMotor.class,"m1");
           MShooter1.setDirection(DcMotorSimple.Direction.REVERSE);
           waitForStart();
           while(opModeIsActive()){

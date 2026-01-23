@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.utils;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,8 +20,9 @@ public class Motif {
         return obelisk21;
     }
 
-    public List<SortBall.BallColor> getMotif() {
-        int id = limelight.getAprilTagData().id;
+    public List<SortBall.BallColor> getMotif(Telemetry telemetry) {
+        int id = limelight.getAprilTagData(telemetry).id;
+
         switch (id) {
             case 21:
                 return obelisk21;

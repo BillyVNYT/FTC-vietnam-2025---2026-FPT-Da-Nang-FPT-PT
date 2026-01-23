@@ -16,31 +16,31 @@ public class DriveTrain {
     DcMotor LeftBackDrive;
     IMU imu;
     public DriveTrain(HardwareMap hardwareMap){
-        RightFrontDrive = hardwareMap.get(DcMotor.class, "m1");
-        RightBackDrive = hardwareMap.get(DcMotor.class, "m2");
-        LeftFrontDrive = hardwareMap.get(DcMotor.class, "m3");
-        LeftBackDrive = hardwareMap.get(DcMotor.class, "m4");
+        RightFrontDrive = hardwareMap.get(DcMotor.class, "m2");
+        RightBackDrive = hardwareMap.get(DcMotor.class, "m3");
+        LeftFrontDrive = hardwareMap.get(DcMotor.class, "m6");
+        LeftBackDrive = hardwareMap.get(DcMotor.class, "m7");
 
-        LeftBackDrive.setDirection(DcMotorSimple.Direction.REVERSE);
-        RightBackDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+        LeftFrontDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+        RightFrontDrive.setDirection(DcMotorSimple.Direction.REVERSE);
 
         IMU imu = hardwareMap.get(IMU.class, "imu");
         // Adjust the orientation parameters to match your robot
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
                 RevHubOrientationOnRobot.UsbFacingDirection.UP));
         imu.initialize(parameters);
     }
 
     public void drivetrainControlBasic(Gamepad gamepad1){
-        double y = (-gamepad1.left_stick_y - gamepad1.right_stick_y);
+        double y = gamepad1.left_stick_y + gamepad1.right_stick_y;
         double x = gamepad1.left_stick_x;
         double rx = gamepad1.right_stick_x;
 
-        LeftFrontDrive.setPower(y + x + rx);
-        LeftBackDrive.setPower(y - x - rx);
-        RightFrontDrive.setPower(y - x + rx);
-        RightBackDrive.setPower(y + x - rx);
+        LeftFrontDrive.setPower(y + x - rx);
+        LeftBackDrive.setPower(y - x + rx);
+        RightFrontDrive.setPower(y - x - rx);
+        RightBackDrive.setPower(y + x + rx);
     }
 
     public void noTurnDrivetrainControl(Gamepad gamepad1){

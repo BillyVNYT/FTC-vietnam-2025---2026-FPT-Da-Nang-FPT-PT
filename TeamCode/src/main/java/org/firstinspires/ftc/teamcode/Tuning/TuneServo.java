@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Tuning;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -24,18 +24,18 @@ public class TuneServo extends LinearOpMode {
 
     private void tunePosition() {
         if (gamepad1.right_bumper && pos < 1) {
-            pos += 0.0002;
+            pos += 0.002;
             servo.setPosition(pos);
         }
         if (gamepad1.left_bumper && pos > 0) {
-            pos -= 0.0002;
+            pos -= 0.002;
             servo.setPosition(pos);
         }
     }
 
     @Override
     public void runOpMode() throws InterruptedException {
-        servo = hardwareMap.servo.get("s1");
+        servo = hardwareMap.servo.get("s9");
         servo.setPosition(0);
         waitForStart();
 

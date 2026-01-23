@@ -21,24 +21,23 @@ public class ColorSensor extends I2cDeviceSynchDevice<I2cDeviceSynch> {
         int g = getGreen();
         int c = getClear();
 
-        double rRatio = (double) r / c;
+        double rRatio = (double) r /c;
         double gRatio = (double) g / c;
 
-        telemetry.addLine(String.format("Red: %d, Green: %d, Clear: %d", r, g, c));
-        telemetry.addLine(String.format("Red Ratio: %f, Green Ratio: %f", rRatio, gRatio));
+
+        telemetry.addLine(String.format("Red: %.2f, Green: %.2f, Clear: %d", rRatio, gRatio, c));
 
         if(c < cValue) return SortBall.BallColor.EMPTY;
 
-        if (gRatio > rRatio) {
+        if (gRatio - rRatio > 0.1) {
             telemetry.addLine("Detected Green Ball");
             return SortBall.BallColor.GREEN;
-        } else if (rRatio > gRatio) {
+        } else if (rRatio - gRatio > 0.1) {
             telemetry.addLine("Detected Purple Ball");
             return SortBall.BallColor.PURPLE;
         }
         return SortBall.BallColor.EMPTY;
     }
-
     public enum Register {
         ENABLE(0x00),
         ATIME(0x01),
