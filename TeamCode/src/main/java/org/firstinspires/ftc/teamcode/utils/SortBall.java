@@ -19,14 +19,14 @@ public class SortBall {
         EMPTY
     }
     public double[] INTAKE_SLOT_POS = {0.2467, 0.1194, 0};
-    public double[] INTAKE_SLOT_POS2 = {0.0711, 0.1772, 0.2667};
+    public double[] INTAKE_SLOT_POS2 = {0.0711, 0.1772, 0.3006};
     public double[] OUTTAKE_SLOT_POS = {0.0865 , 0.2106, 0.333, 0.4544, 0.7072, 0.8339, 0.9528};
     int bestSpin = 0;
     public boolean is_lastBall = false;
 
     private final List<BallColor> currentLoad = new ArrayList<>();
     List<BallColor> obeliskData;
-    ColorSensor colorSensor1, colorSensor2;
+    ColorSensor colorSensor1, colorSensor2, colorSensor3, colorSensor4;
 //    ColorSensor colorSensor3, colorSensor4;
     Servo spindexer1, spindexer2;
     boolean spindexerReversed = false;
@@ -38,6 +38,8 @@ public class SortBall {
         this.obeliskData = obeliskData;
         colorSensor1 = hardwareMap.get(ColorSensor.class, "cs");
         colorSensor2 = hardwareMap.get(ColorSensor.class, "cs2");
+        colorSensor3 = hardwareMap.get(ColorSensor.class, "cs3");
+        colorSensor4 = hardwareMap.get(ColorSensor.class, "cs4");
 
         spindexer1 = hardwareMap.get(Servo.class, "s0");
         spindexer2 = hardwareMap.get(Servo.class, "s1");
@@ -134,15 +136,15 @@ public class SortBall {
 
     public void loadBallsIn(Telemetry telemetry, Gamepad gamepad) throws InterruptedException {
         if(!spindexerReversed && timeIntake.seconds() > 0.3) {
-            BallColor colorFront1 = colorSensor1.detectBallColor(2000, telemetry);
-            BallColor colorFront2 = colorSensor2.detectBallColor(1500, telemetry);
+            BallColor colorFront1 = colorSensor1.detectBallColor(2200, telemetry);
+            BallColor colorFront2 = colorSensor2.detectBallColor(2200, telemetry);
             handleSensor(telemetry, colorFront1, colorFront2, false);
         }
 
         if(spindexerReversed && timeIntake.seconds() > 0.3) {
-            BallColor colorTail1 = colorSensor1.detectBallColor(1200, telemetry);
-            BallColor colorTail2 = colorSensor2.detectBallColor(1200, telemetry);
-            handleSensor(telemetry, colorTail1, colorTail2, true);
+            BallColor colorTail3 = colorSensor3.detectBallColor(2200, telemetry);
+            BallColor colorTail4 = colorSensor4.detectBallColor(2200, telemetry);
+            handleSensor(telemetry, colorTail3, colorTail4, true);
         }
 
         if(gamepad.left_stick_x < 0 && spindexerReversed) {
