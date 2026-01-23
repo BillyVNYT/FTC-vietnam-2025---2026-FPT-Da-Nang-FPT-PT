@@ -1,45 +1,64 @@
 package org.firstinspires.ftc.teamcode;
+
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.utils.Intake;
-import org.firstinspires.ftc.teamcode.utils.Shooter;
 import org.firstinspires.ftc.teamcode.utils.Lifter;
-import org.firstinspires.ftc.teamcode.utils.SortBall;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import org.firstinspires.ftc.teamcode.utils.Motif;
+import org.firstinspires.ftc.teamcode.utils.Shooter28668;
 
 public class ManualControl {
-    Shooter shooter;
+
+    Shooter28668 shooter;
     Lifter lifter;
-    SortBall spindexer;
-    Gamepad Gamepad1;
+    Gamepad gamepad2;
     Intake intake;
-    List<SortBall.BallColor> samples;
+    Motif motif;
 
-
-    public ManualControl(HardwareMap hardwareMap) {
-        lifter = new Lifter(hardwareMap);
-        shooter = new Shooter(hardwareMap);
+    public ManualControl(HardwareMap hardwareMap, Gamepad gamepad) {
+//        lifter = new Lifter(hardwareMap);
+        shooter = new Shooter28668(hardwareMap, intake);
         intake = new Intake(hardwareMap);
-
-        samples = new ArrayList<>();
-        samples.add(SortBall.BallColor.PURPLE);
-        samples.add(SortBall.BallColor.PURPLE);
-        samples.add(SortBall.BallColor.GREEN);
-
-        spindexer = new SortBall(samples, hardwareMap);
+        gamepad2 = gamepad;
+        motif = new Motif(hardwareMap);
     }
 
-    public void controlLifter() {
-        if (Gamepad1.dpadUpWasPressed()) {
-            lifter.lift();
-        } else if (Gamepad1.dpadDownWasPressed()) {
-            lifter.lower();
+    public void shootBall(Telemetry telemetry) throws InterruptedException{
+        if(gamepad2.crossWasPressed() && !shooter.isBusy()){
+            shooter.shoot(telemetry);
         }
     }
 
+    public void toggleIntake(){
+        boolean intakeActive = intake.isActive();
+        if(gamepad2.triangleWasPressed() && !shooter.isBusy()) {
+            if(intakeActive) intake.stop();
+            else intake.start();
+        }
+    }
 
+    public void updateShooterAngleServo(Telemetry telemetry){
+        if(gamepad2.dpad_up){
+            shooter.SAngle.setPosition(shooter.SAngle.getPosition()+0.0008);
+        } else if(gamepad2.dpad_down){
+            shooter.SAngle.setPosition(shooter.SAngle.getPosition()-0.0008);
+        }
+        telemetry.addData("Pos", shooter.SAngle.getPosition());
+        telemetry.update();
+    }
+
+    public void toggleFlywheel() {
+        if(gamepad2.circleWasPressed()){
+            shooter.toggleFlywheel();
+        }
+    }
+    public void holdShooter(int goalId, Telemetry telemetry) {
+        shooter.holdShooter(goalId, telemetry, true);
+    }
+
+    public void checkTunnelFull() {
+        shooter.checkTunnelFull();
+    }
 }
