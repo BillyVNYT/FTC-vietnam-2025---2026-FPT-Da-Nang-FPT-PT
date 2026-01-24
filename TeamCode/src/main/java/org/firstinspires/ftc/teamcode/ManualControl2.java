@@ -39,6 +39,10 @@ public class ManualControl2 {
 
     }
 
+    public void holdShooter(int id,Telemetry telemetry) {
+        shooter.HoldShooter(id, telemetry, true);
+    }
+
     public void shootBall(Telemetry telemetry) throws InterruptedException{
         if(gamepad2.crossWasPressed() && !shooter.isBusy()){
             spindexer.readyToShoot(false, telemetry);

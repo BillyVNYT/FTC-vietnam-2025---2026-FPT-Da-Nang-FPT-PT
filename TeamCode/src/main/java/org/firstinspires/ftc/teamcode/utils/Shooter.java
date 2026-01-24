@@ -75,21 +75,37 @@ public class Shooter {
     }
 
     int FLYWHEEL_VELOCITY_GAIN_DURATION = 500;
+    double angleFormula(double distance, int tpr, Telemetry telemetry) {
+        double velocity = (double) tpr / 28 * 2 * Math.PI * 0.04;
+        telemetry.addData("velocity", velocity);
+        double d = distance/100;
+        double g = 9.81;
+        double h = 1.15;
+        double tanAngle = (Math.pow(velocity,2) - Math.sqrt(Math.pow(velocity,4) - g * (g*Math.pow(d,2) + 2*h*Math.pow(velocity,2)))) / (g*d);
+        double angle = Math.toDegrees(Math.atan(tanAngle));
+        double servoAngle = 90 - angle;
+        telemetry.addData("angle", angle);
+        double servoPos = 0.04*servoAngle - 1.4;
+        telemetry.addData("servoPos", servoPos);
+        telemetry.update();
+        return servoPos;
+    }
 
     public void shoot(int count, SortBall spindexer, Telemetry telemetry) throws InterruptedException{
         isBusy = true;
         double distance = limelight.getAprilTagData(telemetry).z;
-//        double distance = 150;
-        if(distance <= 165){
-            SAngle.setPosition(calculateAngle(distance, spindexer.is_lastBall, telemetry));
-            tprShot = 2000;
-        } else if (distance <= 240){
-            SAngle.setPosition(calculateAngle(distance, spindexer.is_lastBall, telemetry));
-            tprShot = 2600;
+
+        if(distance <= 100){
+            tprShot = 1200;
+        } else if (distance <= 200){
+            tprShot = 1800;
         } else {
-            SAngle.setPosition(calculateAngle(distance, spindexer.is_lastBall, telemetry));
             tprShot = 3000;
         }
+
+        telemetry.addData("distance", distance);
+        double servoPos = angleFormula(distance, tprShot, telemetry);
+        SAngle.setPosition(Math.max(0,Math.min(1,servoPos)));
 
 //        setMotorVelocity(tprShot, telemetry);
         setMotorVelocity(tprShot, telemetry);
@@ -194,6 +210,9 @@ public class Shooter {
             }
 
             telemetry.addData("Tx", Tx);
+            telemetry.addData("distance", data.z);
+            telemetry.addData("angle", angleFormula(data.z, 2000, telemetry));
+            telemetry.update();
 
         } else {
             // Không thấy tag → dừng hoặc quay chậm tìm tag
@@ -201,7 +220,7 @@ public class Shooter {
             telemetry.addLine("No AprilTag detected");
         }
 
-        telemetry.addData("PositionMTurn", MTurnOuttake.getCurrent(CurrentUnit.AMPS));
+//        telemetry.addData("PositionMTurn", MTurnOuttake.getCurrent(CurrentUnit.AMPS));
     }
     public double calculateAngle(double dis, boolean is_lastBall, Telemetry telemetry){
 //        if (dis <= hoodTable[0][0])

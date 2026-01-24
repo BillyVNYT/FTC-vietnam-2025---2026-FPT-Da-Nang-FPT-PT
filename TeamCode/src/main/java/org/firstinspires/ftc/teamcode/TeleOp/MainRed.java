@@ -32,12 +32,10 @@ import org.firstinspires.ftc.teamcode.utils.Shooter;
 public class MainRed extends LinearOpMode {
     private DriveTrain driveTrain;
     private ManualControl2 manualControl2;
-    private Shooter shooter;
     @Override
     public void runOpMode() throws InterruptedException {
         driveTrain = new DriveTrain(hardwareMap);
         manualControl2 = new ManualControl2(hardwareMap, gamepad2);
-        shooter = new Shooter(hardwareMap);
 
         for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
@@ -62,7 +60,7 @@ public class MainRed extends LinearOpMode {
 
             manualControl2.shootPurpleBall(telemetry);
             manualControl2.shootGreenBall(telemetry);
-            shooter.HoldShooter(24, telemetry, false);
+            manualControl2.holdShooter(24, telemetry);
         }
     }
 }
