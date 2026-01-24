@@ -29,10 +29,10 @@ public class ColorSensor extends I2cDeviceSynchDevice<I2cDeviceSynch> {
 
         if(c < cValue) return SortBall.BallColor.EMPTY;
 
-        if (gRatio - rRatio > 0.1) {
+        if (gRatio - rRatio > 0.025) {
             telemetry.addLine("Detected Green Ball");
             return SortBall.BallColor.GREEN;
-        } else if (rRatio - gRatio > 0.1) {
+        } else if (rRatio - gRatio > 0.025) {
             telemetry.addLine("Detected Purple Ball");
             return SortBall.BallColor.PURPLE;
         }

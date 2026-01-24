@@ -34,8 +34,10 @@ public class SortBall {
     ElapsedTime timeIntake = new ElapsedTime();
     double nextSlot = INTAKE_SLOT_POS[0], nextSlot2 = INTAKE_SLOT_POS2[0];
     int baseClearCS1, baseClearCS2;
-    public SortBall(List<BallColor> obeliskData, HardwareMap hardwareMap) {
+    Shooter shooter;
+    public SortBall(List<BallColor> obeliskData, HardwareMap hardwareMap, Shooter shooter) {
         this.obeliskData = obeliskData;
+        this.shooter = shooter;
         colorSensor1 = hardwareMap.get(ColorSensor.class, "cs");
         colorSensor2 = hardwareMap.get(ColorSensor.class, "cs2");
         colorSensor3 = hardwareMap.get(ColorSensor.class, "cs3");
@@ -65,8 +67,10 @@ public class SortBall {
     }
 
     public void readyToShoot(boolean sort, Telemetry telemetry) {
-        if (!sort) controlSpindexer(OUTTAKE_SLOT_POS[0]);
-        else {
+        if (!sort) {
+            controlSpindexer(OUTTAKE_SLOT_POS[0]);
+            shooter.setMotorVelocity(1300, telemetry);
+        } else {
             List<BallColor> reversedLoad = currentLoad.subList(0, 3);
             Collections.reverse(reversedLoad);
             bestSpin = getBestSpin(reversedLoad, telemetry);
@@ -135,13 +139,13 @@ public class SortBall {
     }
 
     public void loadBallsIn(Telemetry telemetry, Gamepad gamepad) throws InterruptedException {
-        if(!spindexerReversed && timeIntake.seconds() > 0.3) {
+        if(!spindexerReversed && timeIntake.seconds() > 0.5) {
             BallColor colorFront1 = colorSensor1.detectBallColor(2200, telemetry);
             BallColor colorFront2 = colorSensor2.detectBallColor(2200, telemetry);
             handleSensor(telemetry, colorFront1, colorFront2, false);
         }
 
-        if(spindexerReversed && timeIntake.seconds() > 0.3) {
+        if(spindexerReversed && timeIntake.seconds() > 0.5) {
             BallColor colorTail3 = colorSensor3.detectBallColor(2200, telemetry);
             BallColor colorTail4 = colorSensor4.detectBallColor(2200, telemetry);
             handleSensor(telemetry, colorTail3, colorTail4, true);

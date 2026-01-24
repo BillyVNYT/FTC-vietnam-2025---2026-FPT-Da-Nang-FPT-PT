@@ -46,6 +46,15 @@ public class Shooter {
 
     int tprShot = 1;
     boolean overwriteShoot;
+    double kP = 0.015;
+    double kI = 0.000;
+    double kD = 0.003;
+    double kF = 0.0;
+
+    // PID state
+    double integral = 0;
+    double lastError = 0;
+    long lastTime = 0;
 
     public Shooter(HardwareMap hardwareMap) {
         MShooter1 = hardwareMap.get(DcMotorEx.class, "m0");
@@ -82,10 +91,10 @@ public class Shooter {
 //        double distance = 150;
         if(distance <= 165){
             SAngle.setPosition(calculateAngle(distance, spindexer.is_lastBall, telemetry));
-            tprShot = 2000;
+            tprShot = 1800;
         } else if (distance <= 240){
             SAngle.setPosition(calculateAngle(distance, spindexer.is_lastBall, telemetry));
-            tprShot = 2600;
+            tprShot = 1800;
         } else {
             SAngle.setPosition(calculateAngle(distance, spindexer.is_lastBall, telemetry));
             tprShot = 3000;
@@ -179,29 +188,53 @@ public class Shooter {
 
         if (data != null && data.id == id) {
 
-            double Tx = data.x;
+            double error = data.x; // Tx
+            long now = System.nanoTime();
 
-            if (Math.abs(Tx) > 1) {
-                double power = Tx * 0.02;
-                power = Math.max(-0.5, Math.min(0.5, power));
+            double dt = (lastTime == 0) ? 0 : (now - lastTime) / 1e9;
+            lastTime = now;
+
+            // Deadband để tránh rung
+            if (Math.abs(error) < 0.5) {
+                integral = 0;
+                MTurnOuttake.setPower(0);
+            } else {
+
+                // Integral
+                integral += error * dt;
+                integral = Math.max(-20, Math.min(20, integral)); // anti-windup
+
+                // Derivative
+                double derivative = (dt > 0) ? (error - lastError) / dt : 0;
+                lastError = error;
+
+                // PIDF output
+                double output =
+                        kP * error +
+                                kI * integral +
+                                kD * derivative +
+                                kF * Math.signum(error);
+
+                // Giới hạn công suất
+                output = Math.max(-0.6, Math.min(0.6, output));
 
                 MTurnOuttake.setPower(
-                        MTurnOuttakeReverse ? -power : power
+                        MTurnOuttakeReverse ? -output : output
                 );
-            } else {
-                MTurnOuttake.setPower(0);
-                MTurnOuttakeReverse = false;
             }
 
-            telemetry.addData("Tx", Tx);
+            telemetry.addData("Tx", error);
+            telemetry.addData("PID Out", lastError);
 
         } else {
-            // Không thấy tag → dừng hoặc quay chậm tìm tag
+            // Mất tag → giữ nguyên hoặc dừng
+            integral = 0;
+            lastError = 0;
             MTurnOuttake.setPower(0);
             telemetry.addLine("No AprilTag detected");
         }
 
-        telemetry.addData("PositionMTurn", MTurnOuttake.getCurrent(CurrentUnit.AMPS));
+        telemetry.addData("MotorCurrent", MTurnOuttake.getCurrent(CurrentUnit.AMPS));
     }
     public double calculateAngle(double dis, boolean is_lastBall, Telemetry telemetry){
 //        if (dis <= hoodTable[0][0])
@@ -227,7 +260,7 @@ public class Shooter {
         double b =  0.0064733;
         double c = -0.0007912;
 
-        double offset = 0.28; // chỉnh cao lên
+        double offset = 0.1335; // chỉnh cao lên
         telemetry.update();
 
         double pos = a * dis * dis + b * dis + c - offset;

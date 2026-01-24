@@ -30,7 +30,7 @@ public class ManualControl {
         samples.add(SortBall.BallColor.PURPLE);
         samples.add(SortBall.BallColor.GREEN);
 
-        spindexer = new SortBall(samples, hardwareMap);
+        spindexer = new SortBall(samples, hardwareMap, shooter);
     }
 
     public void controlLifter() {

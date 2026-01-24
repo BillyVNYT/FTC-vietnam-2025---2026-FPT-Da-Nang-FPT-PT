@@ -27,7 +27,7 @@ public class ManualControl2 {
         gamepad2 = gamepad;
 
         motif = new Motif(hardwareMap);
-        spindexer = new SortBall(motif.getSampleMotif(), hardwareMap);
+        spindexer = new SortBall(motif.getSampleMotif(), hardwareMap, shooter);
     }
 
     public void controlTurnOutTake(Telemetry telemetry) {

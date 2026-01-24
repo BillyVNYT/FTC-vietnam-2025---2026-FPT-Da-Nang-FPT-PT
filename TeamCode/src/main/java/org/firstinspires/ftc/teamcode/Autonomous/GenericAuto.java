@@ -52,7 +52,7 @@ public class GenericAuto {
         intake = new Intake(hardwareMap);
         shooter = new Shooter(hardwareMap);
         motif = new Motif(hardwareMap);
-        spindexer = new SortBall(motif.getSampleMotif(), hardwareMap);
+        spindexer = new SortBall(motif.getSampleMotif(), hardwareMap, shooter);
 
         buildPaths(follower, pathPoses);
 
