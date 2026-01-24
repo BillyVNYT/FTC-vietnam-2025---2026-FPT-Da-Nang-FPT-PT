@@ -19,6 +19,7 @@ public class ManualControl2 {
     Gamepad gamepad2;
     Intake intake;
     Motif motif;
+    boolean readyToShot = false;
 
     public ManualControl2(HardwareMap hardwareMap, Gamepad gamepad) {
 //        lifter = new Lifter(hardwareMap);
@@ -60,7 +61,17 @@ public class ManualControl2 {
             if (spindexer.isFull()) intake.stop();
         }
     }
-
+    public void updateReadyToShot(Telemetry telemetry){
+        if(gamepad2.squareWasPressed()){
+            if(!readyToShot) {
+                spindexer.readyToShoot(false, telemetry);
+                readyToShot = true;
+            } else {
+                shooter.setMotorVelocity(0, telemetry);
+                readyToShot = false;
+            }
+        }
+    }
     public void updateShooterAngleServo(Telemetry telemetry){
         if(gamepad2.dpad_up){
             shooter.SAngle.setPosition(shooter.SAngle.getPosition()+0.0008);

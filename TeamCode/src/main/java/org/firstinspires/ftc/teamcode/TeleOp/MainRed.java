@@ -59,7 +59,7 @@ public class MainRed extends LinearOpMode {
                 }
             }).start();
             manualControl2.controlIntakeShaft(telemetry);
-
+            manualControl2.updateReadyToShot(telemetry);
             manualControl2.shootPurpleBall(telemetry);
             manualControl2.shootGreenBall(telemetry);
             shooter.HoldShooter(24, telemetry, true);

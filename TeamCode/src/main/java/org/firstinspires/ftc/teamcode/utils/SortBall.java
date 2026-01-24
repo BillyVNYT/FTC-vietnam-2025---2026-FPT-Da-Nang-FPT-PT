@@ -1,12 +1,14 @@
 package org.firstinspires.ftc.teamcode.utils;
 import static java.lang.Thread.sleep;
 
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,6 +37,7 @@ public class SortBall {
     double nextSlot = INTAKE_SLOT_POS[0], nextSlot2 = INTAKE_SLOT_POS2[0];
     int baseClearCS1, baseClearCS2;
     Shooter shooter;
+    DistanceSensor dis1, dis2;
     public SortBall(List<BallColor> obeliskData, HardwareMap hardwareMap, Shooter shooter) {
         this.obeliskData = obeliskData;
         this.shooter = shooter;
@@ -42,6 +45,9 @@ public class SortBall {
         colorSensor2 = hardwareMap.get(ColorSensor.class, "cs2");
         colorSensor3 = hardwareMap.get(ColorSensor.class, "cs3");
         colorSensor4 = hardwareMap.get(ColorSensor.class, "cs4");
+
+        dis1 = hardwareMap.get(DistanceSensor.class, "ds");
+        dis2 = hardwareMap.get(DistanceSensor.class, "ds2");
 
         spindexer1 = hardwareMap.get(Servo.class, "s0");
         spindexer2 = hardwareMap.get(Servo.class, "s1");
@@ -87,68 +93,68 @@ public class SortBall {
         return -1;
     }
 
-    private void handleSensor(Telemetry telemetry, BallColor color1, BallColor color2, boolean reversed) throws InterruptedException{
-        int firstEmptyIdx = getFirstEmptySlot();
+    private void handleSensor(Telemetry telemetry, BallColor color1, BallColor color2, boolean reversed, DistanceSensor distance) throws InterruptedException{
+        if(distance.getDistance(DistanceUnit.MM) < 40) {
+            int firstEmptyIdx = getFirstEmptySlot();
 
-        telemetry.addData("Empty slot", firstEmptyIdx);
-        telemetry.update();
+            telemetry.addData("Empty slot", firstEmptyIdx);
+            telemetry.update();
 
-        if (firstEmptyIdx < 0) return;
+            if (firstEmptyIdx < 0) return;
 
-        boolean cs1Detected = !color1.equals(BallColor.EMPTY);
-        boolean cs2Detected = !color2.equals(BallColor.EMPTY);
-        int delta1 = colorSensor1.getClear() - baseClearCS1;
-        int delta2 = colorSensor2.getClear() - baseClearCS2;
-        BallColor color = cs1Detected ? color1 : color2;
-        BallColor chosenColor = BallColor.EMPTY;
+            boolean cs1Detected = !color1.equals(BallColor.EMPTY);
+            boolean cs2Detected = !color2.equals(BallColor.EMPTY);
+            int delta1 = colorSensor1.getClear() - baseClearCS1;
+            int delta2 = colorSensor2.getClear() - baseClearCS2;
+            BallColor color = cs1Detected ? color1 : color2;
+            BallColor chosenColor = BallColor.EMPTY;
 
-        if (cs1Detected && !cs2Detected) {
-            chosenColor = color1;
-        }
-        else if (cs2Detected && !cs1Detected) {
-            chosenColor = color2;
-        }
-        else if (cs1Detected && cs2Detected) {
-            if (delta1 > delta2 && delta1 > 2000) {
+            if (cs1Detected && !cs2Detected) {
                 chosenColor = color1;
-            } else if (delta2 > delta1 && delta2 > 1500) {
+            } else if (cs2Detected && !cs1Detected) {
                 chosenColor = color2;
+            } else if (cs1Detected && cs2Detected) {
+                if (delta1 > delta2 && delta1 > 2000) {
+                    chosenColor = color1;
+                } else if (delta2 > delta1 && delta2 > 1500) {
+                    chosenColor = color2;
+                }
             }
-        }
 
-        if (chosenColor != BallColor.EMPTY) {
-            currentLoad.set(firstEmptyIdx, chosenColor);
+            if (chosenColor != BallColor.EMPTY) {
+                currentLoad.set(firstEmptyIdx, chosenColor);
 
-            if (firstEmptyIdx < 2) {
-                nextSlot  = INTAKE_SLOT_POS[firstEmptyIdx + 1];
-                nextSlot2 = INTAKE_SLOT_POS2[firstEmptyIdx + 1];
-                controlSpindexer(reversed ? nextSlot2 : nextSlot);
-                sleep(300);
-            } else {
-                telemetry.addLine("ALL IN");
-                telemetry.update();
-                readyToShoot(false, telemetry);
+                if (firstEmptyIdx < 2) {
+                    nextSlot = INTAKE_SLOT_POS[firstEmptyIdx + 1];
+                    nextSlot2 = INTAKE_SLOT_POS2[firstEmptyIdx + 1];
+                    controlSpindexer(reversed ? nextSlot2 : nextSlot);
+                    sleep(300);
+                } else {
+                    telemetry.addLine("ALL IN");
+                    telemetry.update();
+                    readyToShoot(false, telemetry);
+                }
             }
         }
     }
 
     public void autoLoadBallsIn(Telemetry telemetry) throws InterruptedException {
         BallColor colorFront1 = colorSensor1.detectBallColor(2000, telemetry);
-        BallColor colorFront2 = colorSensor2.detectBallColor(1500, telemetry);
-        handleSensor(telemetry, colorFront1, colorFront2, false);
+        BallColor colorFront2 = colorSensor2.detectBallColor(2200, telemetry);
+        handleSensor(telemetry, colorFront1, colorFront2, false, dis1);
     }
 
     public void loadBallsIn(Telemetry telemetry, Gamepad gamepad) throws InterruptedException {
         if(!spindexerReversed && timeIntake.seconds() > 0.5) {
             BallColor colorFront1 = colorSensor1.detectBallColor(2200, telemetry);
             BallColor colorFront2 = colorSensor2.detectBallColor(2200, telemetry);
-            handleSensor(telemetry, colorFront1, colorFront2, false);
+            handleSensor(telemetry, colorFront1, colorFront2, false, dis1);
         }
 
         if(spindexerReversed && timeIntake.seconds() > 0.5) {
             BallColor colorTail3 = colorSensor3.detectBallColor(2200, telemetry);
             BallColor colorTail4 = colorSensor4.detectBallColor(2200, telemetry);
-            handleSensor(telemetry, colorTail3, colorTail4, true);
+            handleSensor(telemetry, colorTail3, colorTail4, true, dis2);
         }
 
         if(gamepad.left_stick_x < 0 && spindexerReversed) {
