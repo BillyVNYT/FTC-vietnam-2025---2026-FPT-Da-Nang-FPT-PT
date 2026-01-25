@@ -25,8 +25,8 @@ public class Shooter {
 //    private final LimelightHardware limelight;
     double P = 6;
     double I = 0;
-    double D = 0;
-    double F = 0.0085;
+    double D = 8;
+    double F = 3;
     double[][] hoodTable = {
             {150, 0.6256},
             {180, 0.7294},

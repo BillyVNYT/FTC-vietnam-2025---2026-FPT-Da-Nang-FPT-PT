@@ -42,27 +42,30 @@ public class MainRed extends LinearOpMode {
         for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
-
         waitForStart();
+        Thread shooterThread = new Thread(() -> {
+            try {
+                while (true){
+                    manualControl2.shootBall(telemetry);
+                }
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        });
         while (opModeIsActive()){
 //            driveTrain.drivetrainControlAdvanced(gamepad1);
-            driveTrain.drivetrainControlBasic(gamepad2);
-//
+//            driveTrain.drivetrainControlBasic(gamepad2);
+//            shooterThread.start();
 //            manualControl2.controlTurnOutTake(telemetry);
-            manualControl2.updateShooterAngleServo(telemetry);
+//            manualControl2.updateShooterAngleServo(telemetry);
             manualControl2.toggleFlywheel(telemetry);
-            new Thread(() -> {
-                try {
-                    manualControl2.shootBall(telemetry);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }).start();
-            manualControl2.controlIntakeShaft(telemetry);
-            manualControl2.updateReadyToShot(telemetry);
-            manualControl2.shootPurpleBall(telemetry);
-            manualControl2.shootGreenBall(telemetry);
+//            manualControl2.controlIntakeShaft(telemetry);
+//            manualControl2.updateReadyToShot(telemetry);
+//            manualControl2.shootPurpleBall(telemetry);
+//            manualControl2.shootGreenBall(telemetry);
             shooter.HoldShooter(24, telemetry, true);
+            telemetry.addData("error", 2200-shooter.MShooter1.getVelocity());
+            telemetry.update();
         }
     }
 }

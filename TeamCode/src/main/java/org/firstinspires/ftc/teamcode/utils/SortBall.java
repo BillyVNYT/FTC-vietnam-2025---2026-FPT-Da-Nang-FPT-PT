@@ -94,11 +94,11 @@ public class SortBall {
     }
 
     private void handleSensor(Telemetry telemetry, BallColor color1, BallColor color2, boolean reversed, DistanceSensor distance) throws InterruptedException{
-        if(distance.getDistance(DistanceUnit.MM) < 40) {
+        telemetry.addData("distance", distance.getDistance(DistanceUnit.MM));
+        if(distance.getDistance(DistanceUnit.MM) < 150) {
             int firstEmptyIdx = getFirstEmptySlot();
 
             telemetry.addData("Empty slot", firstEmptyIdx);
-            telemetry.update();
 
             if (firstEmptyIdx < 0) return;
 
@@ -128,7 +128,6 @@ public class SortBall {
                     nextSlot = INTAKE_SLOT_POS[firstEmptyIdx + 1];
                     nextSlot2 = INTAKE_SLOT_POS2[firstEmptyIdx + 1];
                     controlSpindexer(reversed ? nextSlot2 : nextSlot);
-                    sleep(300);
                 } else {
                     telemetry.addLine("ALL IN");
                     telemetry.update();
