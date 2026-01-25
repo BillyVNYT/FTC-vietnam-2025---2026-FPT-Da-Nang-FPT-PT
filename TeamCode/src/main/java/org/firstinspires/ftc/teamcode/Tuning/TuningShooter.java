@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Tuning;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.utils.LimelightHardware;
 import org.firstinspires.ftc.teamcode.utils.Shooter;
 import org.firstinspires.ftc.teamcode.utils.SortBall;
 
@@ -13,15 +14,16 @@ public class TuningShooter extends LinearOpMode {
     int rpm = 2800;
     int velocity = (rpm*28)/60;
     boolean ShooterRun = true;
+    LimelightHardware limelightHardware;
     @Override
     public void runOpMode() throws InterruptedException {
         shooter = new Shooter(hardwareMap);
-
+        limelightHardware = new LimelightHardware(hardwareMap);
         waitForStart();
         while (opModeIsActive()){
-            if(gamepad1.dpadRightWasPressed() && !ShooterRun) {
-                shooter.setMotorVelocity(2300, telemetry);
-            } else if(gamepad1.dpadLeftWasPressed() && ShooterRun){
+            if(gamepad1.dpadRightWasPressed()) {
+                shooter.setMotorVelocity(1800, telemetry);
+            } else if(gamepad1.dpadLeftWasPressed()){
                 shooter.setMotorVelocity(0, telemetry);
             }
             if(gamepad1.dpad_up){

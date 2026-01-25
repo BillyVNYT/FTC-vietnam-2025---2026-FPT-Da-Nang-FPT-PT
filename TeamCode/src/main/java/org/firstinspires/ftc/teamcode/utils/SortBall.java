@@ -75,7 +75,7 @@ public class SortBall {
     public void readyToShoot(boolean sort, Telemetry telemetry) {
         if (!sort) {
             controlSpindexer(OUTTAKE_SLOT_POS[0]);
-            shooter.setMotorVelocity(1300, telemetry);
+            shooter.setMotorVelocity(700, telemetry);
         } else {
             List<BallColor> reversedLoad = currentLoad.subList(0, 3);
             Collections.reverse(reversedLoad);

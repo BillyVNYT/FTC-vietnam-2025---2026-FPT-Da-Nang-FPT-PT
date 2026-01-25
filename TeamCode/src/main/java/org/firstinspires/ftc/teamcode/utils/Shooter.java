@@ -25,7 +25,7 @@ public class Shooter {
 //    private final LimelightHardware limelight;
     double P = 6;
     double I = 0;
-    double D = 8;
+    double D = 1;
     double F = 3;
     double[][] hoodTable = {
             {150, 0.6256},
@@ -72,7 +72,6 @@ public class Shooter {
 
         SAngle = hardwareMap.get(Servo.class, "s3");
         SAngle.setDirection(Servo.Direction.REVERSE);
-        SAngle.setPosition(0.8492);
 
         SLoaderUp1 = hardwareMap.get(ServoImplEx.class, "s10");
         SLoaderUp2 = hardwareMap.get(ServoImplEx.class, "s11");
@@ -89,12 +88,12 @@ public class Shooter {
         isBusy = true;
         double distance = limelight.getAprilTagData(telemetry).z;
 //        double distance = 150;
-        if(distance <= 165){
-            tprShot = 1400;
+        if(distance <= 100){
+            tprShot = 800;
         } else if (distance <= 240){
-            tprShot = 1700;
+            tprShot = 1100;
         } else {
-            tprShot = 2000;
+            tprShot = 1300;
         }
 //        SAngle.setPosition(calculateAngle(distance, spindexer.is_lastBall, telemetry));
         SAngle.setPosition(calculateAngle(distance, spindexer.is_lastBall, telemetry));
@@ -216,6 +215,7 @@ public class Shooter {
             }
 
             telemetry.addData("Tx", error);
+            telemetry.addData("distance", data.z);
             telemetry.addData("PID Out", lastError);
 
         } else {
@@ -252,7 +252,7 @@ public class Shooter {
         double b =  0.0064733;
         double c = -0.0007912;
 
-        double offset = 0.15; // chỉnh cao lên
+        double offset = 0.5; // chỉnh cao lên
         telemetry.update();
 
         double pos = a * dis * dis + b * dis + c - offset;
