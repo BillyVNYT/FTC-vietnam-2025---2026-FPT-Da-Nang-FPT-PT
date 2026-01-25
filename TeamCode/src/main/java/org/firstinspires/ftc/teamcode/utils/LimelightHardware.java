@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.utils;
 
+import static java.lang.Math.pow;
+
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -48,7 +50,7 @@ public class LimelightHardware {
             for (FiducialResult fiducial : fiducials) {
                 double distance = 0;
                 if(fiducial.getFiducialId() == 24|| fiducial.getFiducialId() == 20){
-                    distance = 186*fiducial.getTargetPoseCameraSpace().getPosition().z-38.5;;
+                    distance = 155.4876*pow(fiducial.getTargetPoseCameraSpace().getPosition().z, 1.132202);
                 }
                 telemetry.update();
                 apriltagData = new ApriltagData(result.getTx(), result.getTy(),
