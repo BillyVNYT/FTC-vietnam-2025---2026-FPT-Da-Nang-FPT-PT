@@ -46,10 +46,10 @@ public class Shooter {
 
     int tprShot = 1;
     boolean overwriteShoot;
-    double kP = 0.015;
+    double kP = 0.04;
     double kI = 0.000;
     double kD = 0.003;
-    double kF = 0.0;
+    double kF = 0.002;
 
     // PID state
     double integral = 0;
@@ -90,16 +90,14 @@ public class Shooter {
         double distance = limelight.getAprilTagData(telemetry).z;
 //        double distance = 150;
         if(distance <= 165){
-            SAngle.setPosition(calculateAngle(distance, spindexer.is_lastBall, telemetry));
-            tprShot = 1800;
+            tprShot = 1400;
         } else if (distance <= 240){
-            SAngle.setPosition(calculateAngle(distance, spindexer.is_lastBall, telemetry));
-            tprShot = 1800;
+            tprShot = 1700;
         } else {
-            SAngle.setPosition(calculateAngle(distance, spindexer.is_lastBall, telemetry));
-            tprShot = 3000;
+            tprShot = 2000;
         }
-
+//        SAngle.setPosition(calculateAngle(distance, spindexer.is_lastBall, telemetry));
+        SAngle.setPosition(calculateAngle(distance, spindexer.is_lastBall, telemetry));
 //        setMotorVelocity(tprShot, telemetry);
         setMotorVelocity(tprShot, telemetry);
         sleep(FLYWHEEL_VELOCITY_GAIN_DURATION);
@@ -112,17 +110,11 @@ public class Shooter {
 
         // START OF CONCURRENT EXECUTION OF SERVO LOADER UP AND SPINDEXER
         Thread servoToggler = new Thread(() -> {
-            try {
-                while (isBusy) {
-                    SLoaderUp1.setPosition(0.0);
-                    SLoaderUp2.setPosition(0.0);
-                    Thread.sleep(120);
-
-                    SLoaderUp1.setPosition(0.1);
-                    SLoaderUp2.setPosition(0.1);
-                    Thread.sleep(120);
-                }
-            } catch (InterruptedException e) {
+            while (isBusy) {
+                SLoaderUp1.setPosition(0.0);
+                SLoaderUp2.setPosition(0.0);
+                SLoaderUp1.setPosition(0.1);
+                SLoaderUp2.setPosition(0.1);
             }
         });
         servoToggler.start();
@@ -195,7 +187,7 @@ public class Shooter {
             lastTime = now;
 
             // Deadband để tránh rung
-            if (Math.abs(error) < 0.5) {
+            if (Math.abs(error) < 1) {
                 integral = 0;
                 MTurnOuttake.setPower(0);
             } else {
@@ -260,13 +252,28 @@ public class Shooter {
         double b =  0.0064733;
         double c = -0.0007912;
 
-        double offset = 0.1335; // chỉnh cao lên
+        double offset = 0.15; // chỉnh cao lên
         telemetry.update();
 
         double pos = a * dis * dis + b * dis + c - offset;
 
         return Math.max(0.0, Math.min(1.0, pos));
     }
+//    double angleFormula(double distance, int tpr, Telemetry telemetry) {
+//        double velocity = (double) tpr / 28 * 2 * Math.PI * 0.04;
+//        telemetry.addData("velocity", velocity);
+//        double d = distance/100;
+//        double g = 9.81;
+//        double h = 1;
+//        double tanAngle = (Math.pow(velocity,2) - Math.sqrt(Math.pow(velocity,4) - g * (g*Math.pow(d,2) + 2*h*Math.pow(velocity,2)))) / (g*d);
+//        double angle = Math.toDegrees(Math.atan(tanAngle));
+//        double servoAngle = 90 - angle;
+//        telemetry.addData("angle", angle);
+//        double servoPos = 0.04*servoAngle-1.4;
+//        telemetry.addData("servoPos", servoPos);
+//        telemetry.update();
+//        return servoPos;
+//    }
     public void updateServoAngle(double degree, Telemetry telemetry){
         SAngle.setPosition(0.03638079*degree - 0.8736323);
     }

@@ -52,20 +52,20 @@ public class MainRed extends LinearOpMode {
                 throw new RuntimeException(e);
             }
         });
+        shooterThread.start();
         while (opModeIsActive()){
 //            driveTrain.drivetrainControlAdvanced(gamepad1);
-//            driveTrain.drivetrainControlBasic(gamepad2);
-//            shooterThread.start();
-//            manualControl2.controlTurnOutTake(telemetry);
-//            manualControl2.updateShooterAngleServo(telemetry);
+            driveTrain.drivetrainControlBasic(gamepad2);
+            manualControl2.controlTurnOutTake(telemetry);
+            manualControl2.updateShooterAngleServo(telemetry);
             manualControl2.toggleFlywheel(telemetry);
-//            manualControl2.controlIntakeShaft(telemetry);
-//            manualControl2.updateReadyToShot(telemetry);
+            manualControl2.controlIntakeShaft(telemetry);
+            manualControl2.updateReadyToShot(telemetry);
 //            manualControl2.shootPurpleBall(telemetry);
 //            manualControl2.shootGreenBall(telemetry);
             shooter.HoldShooter(24, telemetry, true);
-            telemetry.addData("error", 2200-shooter.MShooter1.getVelocity());
-            telemetry.update();
+//            telemetry.addData("error", 2200-shooter.MShooter1.getVelocity());
+//            telemetry.update();
         }
     }
 }
