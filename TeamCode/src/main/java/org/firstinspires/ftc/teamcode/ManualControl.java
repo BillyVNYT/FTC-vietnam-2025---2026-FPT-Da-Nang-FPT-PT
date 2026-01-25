@@ -7,11 +7,11 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.utils.Intake;
 import org.firstinspires.ftc.teamcode.utils.Lifter;
 import org.firstinspires.ftc.teamcode.utils.Motif;
-import org.firstinspires.ftc.teamcode.utils.Shooter28668;
+import org.firstinspires.ftc.teamcode.utils.ShooterFPT2;
 
 public class ManualControl {
 
-    Shooter28668 shooter;
+    ShooterFPT2 shooter;
     Lifter lifter;
     Gamepad gamepad2;
     Intake intake;
@@ -19,7 +19,7 @@ public class ManualControl {
 
     public ManualControl(HardwareMap hardwareMap, Gamepad gamepad) {
 //        lifter = new Lifter(hardwareMap);
-        shooter = new Shooter28668(hardwareMap, intake);
+        shooter = new ShooterFPT2(hardwareMap, intake);
         intake = new Intake(hardwareMap);
         gamepad2 = gamepad;
         motif = new Motif(hardwareMap);

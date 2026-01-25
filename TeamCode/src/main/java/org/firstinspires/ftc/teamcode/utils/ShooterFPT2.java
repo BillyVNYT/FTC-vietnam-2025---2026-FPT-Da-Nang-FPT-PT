@@ -15,7 +15,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-public class Shooter28668 {
+public class ShooterFPT2 {
     private LimelightHardware limelight;
     public final DcMotorEx MShooter1, MShooter2;
     private final DcMotorEx MTurnOuttake;
@@ -35,7 +35,7 @@ public class Shooter28668 {
     boolean isFull = false;
     ElapsedTime timer = new ElapsedTime();
 
-    public Shooter28668(HardwareMap hardwareMap, Intake intake) {
+    public ShooterFPT2(HardwareMap hardwareMap, Intake intake) {
         MShooter1 = hardwareMap.get(DcMotorEx.class, "m0");
         MShooter2 = hardwareMap.get(DcMotorEx.class, "m1");
         MShooter1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);

@@ -11,12 +11,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 import java.util.List;
 
-
 class ApriltagData{
-    double x;
-    double y;
-    double z;
-    double area;
+    public double x;
+    public double y;
+    public double z;
+    public double area;
     public int id;
     public ApriltagData(double x, double y, double z, double area, int id){
         this.x = x;

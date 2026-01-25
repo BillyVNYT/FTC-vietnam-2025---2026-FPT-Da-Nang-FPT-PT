@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Autonomous;
+package org.firstinspires.ftc.teamcode.Autonomous.FPT2;
 
 import static java.lang.Thread.sleep;
 
@@ -15,18 +15,20 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Autonomous.GenericAuto;
+import org.firstinspires.ftc.teamcode.Autonomous.PathPoses;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.utils.Intake;
-import org.firstinspires.ftc.teamcode.utils.Shooter28668;
+import org.firstinspires.ftc.teamcode.utils.ShooterFPT2;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class GenericAuto28668 {
+public class GenericAutoFPT2 {
 
     private final TelemetryManager panelsTelemetry;
     public Follower follower;
-    public Shooter28668 shooter;
+    public ShooterFPT2 shooter;
     private final Intake intake;
     private final List<PathChain> paths = new ArrayList<>();
     private final List<GenericAuto.PathState> states = new ArrayList<>();;
@@ -34,14 +36,14 @@ public class GenericAuto28668 {
     private int curPathIdx = 0;
     boolean  shotTriggered = false;
 
-    public GenericAuto28668(Telemetry telemetry, HardwareMap hardwareMap, Pose startPose, PathPoses[] pathPoses) {
+    public GenericAutoFPT2(Telemetry telemetry, HardwareMap hardwareMap, Pose startPose, PathPoses[] pathPoses) {
         panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
         panelsTelemetry.debug("Status", "Initialized");
 
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startPose);
         intake = new Intake(hardwareMap);
-        shooter = new Shooter28668(hardwareMap, intake);
+        shooter = new ShooterFPT2(hardwareMap, intake);
 
         buildPaths(follower, pathPoses);
 
