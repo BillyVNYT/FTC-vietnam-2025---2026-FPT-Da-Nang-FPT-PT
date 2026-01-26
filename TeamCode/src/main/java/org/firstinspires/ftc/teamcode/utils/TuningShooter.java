@@ -1,11 +1,7 @@
-package org.firstinspires.ftc.teamcode.Tuning;
+package org.firstinspires.ftc.teamcode.utils;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
-import org.firstinspires.ftc.teamcode.utils.LimelightHardware;
-import org.firstinspires.ftc.teamcode.utils.Shooter;
-import org.firstinspires.ftc.teamcode.utils.SortBall;
 
 @TeleOp
 public class TuningShooter extends LinearOpMode {
@@ -34,6 +30,7 @@ public class TuningShooter extends LinearOpMode {
             if(gamepad1.circleWasPressed()){
 //                shooter.shoot(3, shooter.spindexer, telemetry);
             }
+            telemetry.addData("dis", limelightHardware.getAprilTagData(telemetry).z);
             telemetry.addData("Pos", shooter.SAngle.getPosition());
             telemetry.update();
         }
