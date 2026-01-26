@@ -33,14 +33,14 @@ public class Constants {
             .leftRearMotorName("m7")
             .leftFrontMotorName("m6")
             .leftFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
-            .leftRearMotorDirection(DcMotorSimple.Direction.FORWARD)
-            .rightFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
+            .leftRearMotorDirection(DcMotorSimple.Direction.REVERSE)
+            .rightFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
             .rightRearMotorDirection(DcMotorSimple.Direction.REVERSE)
             .xVelocity(64.57876903369694)
             .yVelocity(51.72019384627498);
     public static TwoWheelConstants localizerConstants = new TwoWheelConstants()
-            .forwardEncoder_HardwareMapName("m2")
-            .strafeEncoder_HardwareMapName("m3")
+            .forwardEncoder_HardwareMapName("m3")
+            .strafeEncoder_HardwareMapName("m2")
             .IMU_HardwareMapName("imu")
 //            .strafeEncoderDirection(Encoder.REVERSE)
             .forwardEncoderDirection(Encoder.REVERSE)
@@ -48,7 +48,7 @@ public class Constants {
             .strafePodX(-6.9862204724)
             .IMU_Orientation(
                     new RevHubOrientationOnRobot(
-                            RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
+                            RevHubOrientationOnRobot.LogoFacingDirection.FORWARD,
                             RevHubOrientationOnRobot.UsbFacingDirection.UP
                     )
             );

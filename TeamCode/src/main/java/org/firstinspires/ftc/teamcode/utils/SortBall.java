@@ -38,9 +38,10 @@ public class SortBall {
     int baseClearCS1, baseClearCS2;
     Shooter shooter;
     DistanceSensor dis1, dis2;
-    public SortBall(List<BallColor> obeliskData, HardwareMap hardwareMap, Shooter shooter) {
-        this.obeliskData = obeliskData;
+
+    public SortBall(HardwareMap hardwareMap, Shooter shooter) {
         this.shooter = shooter;
+
         colorSensor1 = hardwareMap.get(ColorSensor.class, "cs");
         colorSensor2 = hardwareMap.get(ColorSensor.class, "cs2");
         colorSensor3 = hardwareMap.get(ColorSensor.class, "cs3");
@@ -66,6 +67,10 @@ public class SortBall {
 
     public List<BallColor> getCurrentLoad() {
         return currentLoad;
+    }
+
+    public void setObeliskData(List<BallColor> obeliskData) {
+        this.obeliskData = obeliskData;
     }
 
     private void releaseBall(int idx) {
