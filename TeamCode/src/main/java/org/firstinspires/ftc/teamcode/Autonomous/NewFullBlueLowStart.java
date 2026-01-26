@@ -19,7 +19,7 @@ public class NewFullBlueLowStart extends LinearOpMode{
     GenericAuto auto;
     @Override
     public void runOpMode() throws InterruptedException {
-        auto = new GenericAuto(telemetry, hardwareMap, StartBluePose, pathPoses);
+        auto = new GenericAuto(telemetry, hardwareMap, StartBluePose, pathPoses,20);
         telemetry.addLine("Initialized, waiting for start");
         telemetry.update();
         while (opModeIsActive() && !isStopRequested()) {

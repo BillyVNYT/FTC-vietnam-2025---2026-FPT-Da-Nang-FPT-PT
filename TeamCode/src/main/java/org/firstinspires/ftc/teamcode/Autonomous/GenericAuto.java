@@ -56,7 +56,7 @@ public class GenericAuto {
         intake = new Intake(hardwareMap);
         shooter = new Shooter(hardwareMap);
         motif = new Motif(hardwareMap);
-        spindexer = new SortBall(hardwareMap);
+        spindexer = new SortBall(hardwareMap, shooter);
         this.goalId = goalId;
 
         buildPaths(follower, pathPoses);
