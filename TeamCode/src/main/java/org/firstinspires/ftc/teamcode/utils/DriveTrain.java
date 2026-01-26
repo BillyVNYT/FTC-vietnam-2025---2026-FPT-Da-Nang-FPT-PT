@@ -16,10 +16,10 @@ public class DriveTrain {
     DcMotor LeftBackDrive;
     IMU imu;
     public DriveTrain(HardwareMap hardwareMap){
-        RightFrontDrive = hardwareMap.get(DcMotor.class, "m2");
+        RightFrontDrive = hardwareMap.get(DcMotor.class, "m4");
         RightBackDrive = hardwareMap.get(DcMotor.class, "m3");
-        LeftFrontDrive = hardwareMap.get(DcMotor.class, "m6");
-        LeftBackDrive = hardwareMap.get(DcMotor.class, "m7");
+        LeftFrontDrive = hardwareMap.get(DcMotor.class, "m1");
+        LeftBackDrive = hardwareMap.get(DcMotor.class, "m2");
 
         LeftFrontDrive.setDirection(DcMotorSimple.Direction.REVERSE);
         RightFrontDrive.setDirection(DcMotorSimple.Direction.REVERSE);
