@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Autonomous;
+package org.firstinspires.ftc.teamcode.Autonomous.FPT2;
 
 import static java.lang.Thread.sleep;
 
@@ -15,56 +15,42 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Autonomous.GenericAuto;
+import org.firstinspires.ftc.teamcode.Autonomous.PathPoses;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.utils.Intake;
-import org.firstinspires.ftc.teamcode.utils.Motif;
-import org.firstinspires.ftc.teamcode.utils.Shooter;
-import org.firstinspires.ftc.teamcode.utils.SortBall;
+import org.firstinspires.ftc.teamcode.utils.ShooterFPT2;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class GenericAuto {
-    public enum PathState {
-        PICK_UP,
-        OPEN_GATE,
-        SHOOT,
-        LEAVE,
-        START,
-        SCAN,
-    }
+public class GenericAutoFPT2 {
 
     private final TelemetryManager panelsTelemetry;
     public Follower follower;
-    public Shooter shooter;
-    private final SortBall spindexer;
-    private final Motif motif;
+    public ShooterFPT2 shooter;
     private final Intake intake;
     private final List<PathChain> paths = new ArrayList<>();
-    private final List<PathState> states = new ArrayList<>();;
-    private PathState currentState ;
+    private final List<GenericAuto.PathState> states = new ArrayList<>();;
+    private GenericAuto.PathState currentState ;
     private int curPathIdx = 0;
     boolean  shotTriggered = false;
-    int goalId;
 
-    public GenericAuto(Telemetry telemetry, HardwareMap hardwareMap, Pose startPose, PathPoses[] pathPoses, int goalId) {
+    public GenericAutoFPT2(Telemetry telemetry, HardwareMap hardwareMap, Pose startPose, PathPoses[] pathPoses) {
         panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
         panelsTelemetry.debug("Status", "Initialized");
 
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startPose);
         intake = new Intake(hardwareMap);
-        shooter = new Shooter(hardwareMap);
-        motif = new Motif(hardwareMap);
-        spindexer = new SortBall(hardwareMap);
-        this.goalId = goalId;
+        shooter = new ShooterFPT2(hardwareMap, intake);
 
         buildPaths(follower, pathPoses);
 
         if (!states.isEmpty()) {
             currentState = states.get(0);
             follower.followPath(paths.get(0));
-        } else currentState = PathState.LEAVE;
+        } else currentState = GenericAuto.PathState.LEAVE;
 
         panelsTelemetry.update(telemetry);
 
@@ -72,7 +58,7 @@ public class GenericAuto {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
     }
-    
+
     private void buildPaths(Follower follower, PathPoses[] pathPoses) {
         for (PathPoses pathSegment : pathPoses) {
             Curve curve;
@@ -95,62 +81,31 @@ public class GenericAuto {
 
         switch (currentState) {
             case SHOOT:
-//                boolean locked = shooter.HoldShooter(goalId, telemetry, true);
-//                if (follower.isBusy() || !locked) {
-//                    break;
-//                }
                 if (follower.isBusy()) return;
 
                 if (!shotTriggered) {
-                    shooter.shoot(3, spindexer, telemetry);
+                    shooter.shoot(telemetry);
                     shotTriggered = true;
-                    break;
                 }
-
-                 if (!shooter.isBusy()) {
+                if (!shooter.isBusy()) {
                     shotTriggered = false;
                     intake.start();
                     goToNextPath();
-                 }
+                }
                 break;
 
             case PICK_UP:
                 if (follower.isBusy()) {
-                    spindexer.autoLoadBallsIn(telemetry);
-                    break;
+                    return;
                 }
-
-                spindexer.controlSpindexer(spindexer.INTAKE_SLOT_POS[2]);
-                sleep(1000);
-                spindexer.readyToShoot(false, telemetry);
                 intake.stop();
                 goToNextPath();
                 break;
 
             case START:
                 PathChain currentPath = paths.get(curPathIdx);
-                spindexer.readyToShoot(false, telemetry);
                 follower.followPath(currentPath);
-//                currentState = PathState.SCAN;
-                currentState = PathState.SHOOT;
-                break;
-
-            case SCAN:
-                if (follower.isBusy()) break;
-
-                if (motif.getMotif() == null) {
-                    motif.setMotif(telemetry);
-                } else {
-                    shooter.updateOuttakeAngle(-0.5);
-                    sleep(200);
-                    shooter.updateOuttakeAngle(0);
-                    currentState = PathState.SHOOT;
-                }
-                break;
-
-            case OPEN_GATE:
-                goToNextPath();
-                break;
+                currentState = GenericAuto.PathState.SHOOT;
 
             case LEAVE:
                 panelsTelemetry.addData("done", "leave");
@@ -164,7 +119,7 @@ public class GenericAuto {
 
         currentState = states.get(curPathIdx);
         PathChain currentPath = paths.get(curPathIdx);
-        boolean isPickingUp = currentState == PathState.PICK_UP;
+        boolean isPickingUp = currentState == GenericAuto.PathState.PICK_UP;
         follower.followPath(currentPath, isPickingUp ? 0.55 : 1, true);
     }
 
@@ -176,5 +131,5 @@ public class GenericAuto {
         panelsTelemetry.debug("Path Index", curPathIdx);
         panelsTelemetry.update(telemetry);
     }
-    
+
 }

@@ -1,5 +1,4 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
-
 import com.pedropathing.geometry.Pose;
 
 public class PathPoses {

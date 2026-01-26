@@ -28,15 +28,15 @@ public class ManualControl2 {
         gamepad2 = gamepad;
 
         motif = new Motif(hardwareMap);
-        spindexer = new SortBall(motif.getSampleMotif(), hardwareMap, shooter);
+        spindexer = new SortBall(hardwareMap, shooter);
     }
 
     public void controlTurnOutTake(Telemetry telemetry) {
         if(gamepad2.dpad_left) {
-            shooter.updateOuttakeAngle(-0.5, telemetry);
+            shooter.updateOuttakeAngle(-0.5);
         } else if(gamepad2.dpad_right) {
-            shooter.updateOuttakeAngle(0.5, telemetry);
-        } else shooter.updateOuttakeAngle(0, telemetry);
+            shooter.updateOuttakeAngle(0.5);
+        } else shooter.updateOuttakeAngle(0);
 
     }
 
@@ -118,4 +118,7 @@ public class ManualControl2 {
         }
     }
 
+    public void holdShooter(int goalId, Telemetry telemetry) {
+        shooter.HoldShooter(goalId, telemetry, true);
+    }
 }

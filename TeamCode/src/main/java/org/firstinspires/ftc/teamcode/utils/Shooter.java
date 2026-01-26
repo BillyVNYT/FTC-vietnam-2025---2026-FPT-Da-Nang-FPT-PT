@@ -12,7 +12,8 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-import org.firstinspires.ftc.teamcode.TeleOp.MainBlue;
+
+
 public class Shooter {
     public LimelightHardware limelight;
     public final DcMotorEx MShooter1, MShooter2;
@@ -79,6 +80,7 @@ public class Shooter {
         SLoaderOut.setPosition(SLoaderOutHiddenPos);
 
         limelight = new LimelightHardware(hardwareMap);
+        limelight.changePipeline(0);
     }
 
     int FLYWHEEL_VELOCITY_GAIN_DURATION = 500;
@@ -156,10 +158,10 @@ public class Shooter {
         return isBusy;
     }
 
-    public void updateOuttakeAngle(double rx, Telemetry telemetry){
+    public void updateOuttakeAngle(double rx){
         MTurnOuttake.setPower(rx);
     }
-    public void HoldShooter(int id, Telemetry telemetry, boolean reverseMotor) {
+    public boolean HoldShooter(int id, Telemetry telemetry, boolean reverseMotor) {
 
         MTurnOuttake.setDirection(
                 reverseMotor ? DcMotorSimple.Direction.REVERSE
@@ -168,8 +170,11 @@ public class Shooter {
 
         limelight.changePipeline(0);
         ApriltagData data = limelight.getAprilTagData(telemetry);
-        if (data != null) {
+        boolean locked = false;
 
+        telemetry.addData("MotorCurrent", MTurnOuttake.getCurrent(CurrentUnit.AMPS));
+
+        if (data != null) {
             double error = data.x; // Tx
             long now = System.nanoTime();
 
@@ -180,6 +185,7 @@ public class Shooter {
             if (Math.abs(error) < 0.5) {
                 integral = 0;
                 MTurnOuttake.setPower(0);
+                locked = true;
             } else {
 
                 // Integral
@@ -209,15 +215,22 @@ public class Shooter {
             telemetry.addData("distance", data.z);
             telemetry.addData("PID Out", lastError);
 
+            telemetry.addData("curTargetVelocity", 2600);
+            telemetry.addData("error", error);
+            telemetry.addLine("---------------------------");
+            telemetry.addData("distance", data.z);
+            telemetry.update();
+
+            return locked;
         } else {
             // Mất tag → giữ nguyên hoặc dừng
             integral = 0;
             lastError = 0;
             MTurnOuttake.setPower(0);
             telemetry.addLine("No AprilTag detected");
+            return false;
         }
 
-        telemetry.addData("MotorCurrent", MTurnOuttake.getCurrent(CurrentUnit.AMPS));
     }
     public double calculateAngle(double dis, boolean is_lastBall, Telemetry telemetry){
 //        if (dis <= hoodTable[0][0]) return hoodTable[0][1];
