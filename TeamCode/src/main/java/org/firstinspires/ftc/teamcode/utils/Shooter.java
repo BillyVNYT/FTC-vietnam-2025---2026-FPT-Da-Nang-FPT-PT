@@ -67,6 +67,7 @@ public class Shooter {
         SLoaderOut.setPosition(SLoaderOutHiddenPos);
 
         limelight = new LimelightHardware(hardwareMap);
+        limelight.changePipeline(0);
     }
 
     int FLYWHEEL_VELOCITY_GAIN_DURATION = 500;
@@ -156,47 +157,51 @@ public class Shooter {
         return isBusy;
     }
 
-    public void updateOuttakeAngle(double rx, Telemetry telemetry){
+    public void updateOuttakeAngle(double rx){
         MTurnOuttake.setPower(rx);
     }
-    public void HoldShooter(int id, Telemetry telemetry, boolean reverseMotor){
+    public boolean HoldShooter(int id, Telemetry telemetry, boolean reverseMotor){
         if(reverseMotor) MTurnOuttake.setDirection(DcMotorSimple.Direction.REVERSE);
         else MTurnOuttake.setDirection(DcMotorSimple.Direction.FORWARD);
-        limelight.changePipeline(0);
+
         ApriltagData data = limelight.getAprilTagData(telemetry);
-        if(data != null){
-            telemetry.update();
-            if(data.id == id) {
-                double Tx = limelight.getAprilTagData(telemetry).x;
-                if (Math.abs(Tx) > 1) {
-                    double power = Tx*0.04;
-                    if(power > 0.5) { power = 0.5; };
-                    if(!MTurnOuttakeReverse) {
-                        MTurnOuttake.setPower(power);
-                    } else {
-                        MTurnOuttake.setPower(-power);
-                    }
+        boolean locked = false;
+
+        if(data != null && data.id == id){
+            double Tx = limelight.getAprilTagData(telemetry).x;
+            if (Math.abs(Tx) > 1) {
+                double power = Tx*0.04;
+                if(power > 0.5) { power = 0.5; };
+                if(!MTurnOuttakeReverse) {
+                    MTurnOuttake.setPower(power);
                 } else {
-                    MTurnOuttake.setPower(0);
-                    MTurnOuttakeReverse = false;
+                    MTurnOuttake.setPower(-power);
                 }
-                double current = MTurnOuttake.getCurrent(CurrentUnit.AMPS);
-
-                if (current > 7) {
-                    MTurnOuttakeReverse = true;
-                }
-                double curVelocity = MShooter1.getVelocity();
-                double error = 2600 - curVelocity;
-
-                telemetry.addData("curTargetVelocity", 2600);
-                telemetry.addData("curVelocity", curVelocity);
-                telemetry.addData("error", error);
-                telemetry.addLine("---------------------------");
-                telemetry.addData("Tx", Tx);
-                telemetry.addData("distance", data.z);
+            } else {
+                MTurnOuttake.setPower(0);
+                MTurnOuttakeReverse = false;
+                locked = true;
             }
+
+            double current = MTurnOuttake.getCurrent(CurrentUnit.AMPS);
+            if (current > 7) {
+                MTurnOuttakeReverse = true;
+            }
+            double curVelocity = MShooter1.getVelocity();
+            double error = 2600 - curVelocity;
+
+            telemetry.addData("curTargetVelocity", 2600);
+            telemetry.addData("curVelocity", curVelocity);
+            telemetry.addData("error", error);
+            telemetry.addLine("---------------------------");
+            telemetry.addData("Tx", Tx);
+            telemetry.addData("distance", data.z);
+            telemetry.update();
+
+            return locked;
         } else {
             MTurnOuttake.setPower(0);
+            return false;
         }
     }
     public double calculateAngle(double dis, boolean is_lastBall, Telemetry telemetry){

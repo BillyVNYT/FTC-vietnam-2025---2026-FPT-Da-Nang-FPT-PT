@@ -34,8 +34,8 @@ public class SortBall {
     ElapsedTime timeIntake = new ElapsedTime();
     double nextSlot = INTAKE_SLOT_POS[0], nextSlot2 = INTAKE_SLOT_POS2[0];
     int baseClearCS1, baseClearCS2;
-    public SortBall(List<BallColor> obeliskData, HardwareMap hardwareMap) {
-        this.obeliskData = obeliskData;
+
+    public SortBall(HardwareMap hardwareMap) {
         colorSensor1 = hardwareMap.get(ColorSensor.class, "cs");
         colorSensor2 = hardwareMap.get(ColorSensor.class, "cs2");
 
@@ -56,6 +56,10 @@ public class SortBall {
 
     public List<BallColor> getCurrentLoad() {
         return currentLoad;
+    }
+
+    public void setObeliskData(List<BallColor> obeliskData) {
+        this.obeliskData = obeliskData;
     }
 
     private void releaseBall(int idx) {

@@ -17,20 +17,13 @@ public class SemiAutoControl2 {
     SortBall spindexer;
     Gamepad Gamepad1;
     Intake intake;
-    List<SortBall.BallColor> samples;
-
 
     public SemiAutoControl2(HardwareMap hardwareMap) {
         lifter = new Lifter(hardwareMap);
         shooter = new Shooter(hardwareMap);
         intake = new Intake(hardwareMap);
 
-        samples = new ArrayList<>();
-        samples.add(SortBall.BallColor.PURPLE);
-        samples.add(SortBall.BallColor.PURPLE);
-        samples.add(SortBall.BallColor.GREEN);
-
-        spindexer = new SortBall(samples, hardwareMap);
+        spindexer = new SortBall(hardwareMap);
     }
 
     public void controlLifter() {
