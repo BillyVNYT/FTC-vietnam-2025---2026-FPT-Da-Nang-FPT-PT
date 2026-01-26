@@ -14,8 +14,6 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.utils.ApriltagData;
 import org.firstinspires.ftc.teamcode.TeleOp.MainBlue;
-
-
 public class Shooter {
     public LimelightHardware limelight;
     public final DcMotorEx MShooter1, MShooter2;
@@ -26,15 +24,16 @@ public class Shooter {
 //    private final LimelightHardware limelight;
     double P = 6;
     double I = 0;
-    double D = 8;
+    double D = 1;
     double F = 3;
     double[][] hoodTable = {
-            {150, 0.6256},
-            {180, 0.7294},
-            {210, 0.5389},
-            {220, 0.7339},
-            {230, 0.7906},
-            {265, 0.6389}
+            {93.0,  0.6922},
+            {111.0, 0.8344},
+            {121.0, 0.9089},
+            {133.0, 0.9267},
+            {141.0, 0.9606},
+            {154.0, 1.0},
+            {161.0, 1.0}
     };
     double[] servoPositions = {0.8492, 0.6389, 0};
     double SLoaderOutHiddenPos = 0.03;
@@ -47,10 +46,10 @@ public class Shooter {
 
     int tprShot = 1;
     boolean overwriteShoot;
-    double kP = 0.015;
-    double kI = 0.000;
-    double kD = 0.003;
-    double kF = 0.0;
+    double kP = 0.065;
+    double kI = 0.0001;
+    double kD = 0.015;
+    double kF = 0;
 
     // PID state
     double integral = 0;
@@ -73,7 +72,6 @@ public class Shooter {
 
         SAngle = hardwareMap.get(Servo.class, "s3");
         SAngle.setDirection(Servo.Direction.REVERSE);
-        SAngle.setPosition(0.8492);
 
         SLoaderUp1 = hardwareMap.get(ServoImplEx.class, "s10");
         SLoaderUp2 = hardwareMap.get(ServoImplEx.class, "s11");
@@ -86,63 +84,48 @@ public class Shooter {
 
     int FLYWHEEL_VELOCITY_GAIN_DURATION = 500;
 
-    public void shoot(int count, SortBall spindexer, Telemetry telemetry) throws InterruptedException{
+    public void shoot(int count, SortBall spindexer, Telemetry telemetry) throws InterruptedException {
         isBusy = true;
-        double distance = limelight.getAprilTagData(telemetry).z;
-//        double distance = 150;
-        if(distance <= 165){
-            SAngle.setPosition(calculateAngle(distance, spindexer.is_lastBall, telemetry));
-            tprShot = 1800;
-        } else if (distance <= 240){
-            SAngle.setPosition(calculateAngle(distance, spindexer.is_lastBall, telemetry));
-            tprShot = 1800;
-        } else {
-            SAngle.setPosition(calculateAngle(distance, spindexer.is_lastBall, telemetry));
-            tprShot = 3000;
-        }
 
-//        setMotorVelocity(tprShot, telemetry);
+        // 1. Kiểm tra Null an toàn cho Limelight
+        ApriltagData data = limelight.getAprilTagData(telemetry);
+        double distance = (data != null) ? data.z : 130.0; // Khoảng cách mặc định nếu mất dấu
+
+        // Tính toán góc và vận tốc
+        tprShot = (distance <= 100) ? 1000 : (distance <= 240) ? 1500 : 2300;
+        SAngle.setPosition(calculateAngle(distance, spindexer.is_lastBall, telemetry));
         setMotorVelocity(tprShot, telemetry);
-        sleep(FLYWHEEL_VELOCITY_GAIN_DURATION);
 
-        // load balls
+        Thread.sleep(FLYWHEEL_VELOCITY_GAIN_DURATION);
+
         SLoaderOut.setPosition(SLoaderOutVisiblePos);
-        sleep(500);
-        SLoaderUp1.setPwmEnable();
-        SLoaderUp2.setPwmEnable();
+        Thread.sleep(500);
 
-        // START OF CONCURRENT EXECUTION OF SERVO LOADER UP AND SPINDEXER
+        // 2. Thread phụ an toàn hơn
         Thread servoToggler = new Thread(() -> {
             try {
-                while (isBusy) {
+                while (isBusy && !Thread.currentThread().isInterrupted()) {
                     SLoaderUp1.setPosition(0.0);
                     SLoaderUp2.setPosition(0.0);
-                    Thread.sleep(120);
-
+                    Thread.sleep(100); // Cho Servo có thời gian di chuyển
                     SLoaderUp1.setPosition(0.1);
                     SLoaderUp2.setPosition(0.1);
-                    Thread.sleep(120);
+                    Thread.sleep(100);
                 }
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
         });
-        servoToggler.start();
 
+        servoToggler.start();
         spindexer.spinToShooter(count, telemetry);
 
-        servoToggler.interrupt();
-        // END OF CONCURRENT EXECUTION
-        SLoaderUp1.setPwmDisable();
-        SLoaderUp2.setPwmDisable();
-        sleep(100);
-
-        SLoaderOut.setPosition(SLoaderOutHiddenPos);
-        setMotorVelocity(0, telemetry);
-
+        // 3. Kết thúc thread đúng cách
         isBusy = false;
-        telemetry.addData("Servo angle", SAngle.getPosition());
-        telemetry.addLine("---------------------------");
-        telemetry.update();
+        servoToggler.join(500); // Chờ thread phụ kết thúc hẳn
+
+        setMotorVelocity(0, telemetry);
+        SLoaderOut.setPosition(SLoaderOutHiddenPos);
     }
 
     public void toggleFlywheel(Telemetry telemetry) {
@@ -186,8 +169,7 @@ public class Shooter {
 
         limelight.changePipeline(0);
         ApriltagData data = limelight.getAprilTagData(telemetry);
-
-        if (data != null && data.id == id) {
+        if (data != null) {
 
             double error = data.x; // Tx
             long now = System.nanoTime();
@@ -225,6 +207,7 @@ public class Shooter {
             }
 
             telemetry.addData("Tx", error);
+            telemetry.addData("distance", data.z);
             telemetry.addData("PID Out", lastError);
 
         } else {
@@ -238,36 +221,48 @@ public class Shooter {
         telemetry.addData("MotorCurrent", MTurnOuttake.getCurrent(CurrentUnit.AMPS));
     }
     public double calculateAngle(double dis, boolean is_lastBall, Telemetry telemetry){
-//        if (dis <= hoodTable[0][0])
-//            return hoodTable[0][1];
-//
-//        if (dis >= hoodTable[hoodTable.length - 1][0])
-//            return hoodTable[hoodTable.length - 1][1];
+//        if (dis <= hoodTable[0][0]) return hoodTable[0][1];
+//        // Nếu khoảng cách lớn hơn điểm cao nhất
+//        if (dis >= hoodTable[hoodTable.length - 1][0]) return hoodTable[hoodTable.length - 1][1];
 //
 //        for (int i = 0; i < hoodTable.length - 1; i++) {
-//            double x0 = hoodTable[i][0];
-//            double y0 = hoodTable[i][1];
-//            double x1 = hoodTable[i + 1][0];
-//            double y1 = hoodTable[i + 1][1];
+//            if (dis >= hoodTable[i][0] && dis <= hoodTable[i+1][0]) {
+//                // Công thức nội suy tuyến tính: y = y1 + (x - x1) * (y2 - y1) / (x2 - x1)
+//                double x1 = hoodTable[i][0];
+//                double y1 = hoodTable[i][1];
+//                double x2 = hoodTable[i+1][0];
+//                double y2 = hoodTable[i+1][1];
 //
-//            if (dis >= x0 && dis <= x1) {
-//                double t = (dis - x0) / (x1 - x0);
-//                return y0 + t * (y1 - y0);
+//                return (y1 + (dis - x1) * (y2 - y1) / (x2 - x1))-0.15;
 //            }
 //        }
-//
-//        return hoodTable[0][1];
-        double a = -1.5015e-05;
-        double b =  0.0064733;
-        double c = -0.0007912;
+//        return 0.95;
+        double a =  -0.635812;
+        double b =  0.02004009;
+        double c = 0.00006141738;
 
-        double offset = 0.1335; // chỉnh cao lên
+        double offset = 0.275; // chỉnh cao lên
         telemetry.update();
 
-        double pos = a * dis * dis + b * dis + c - offset;
+        double pos = -0.635812 + 0.02004009 * dis - 0.00006141738 * Math.pow(dis, 2);
 
-        return Math.max(0.0, Math.min(1.0, pos));
+        return Math.max(0.0, Math.min(1.0, pos))-offset;
     }
+//    double angleFormula(double distance, int tpr, Telemetry telemetry) {
+//        double velocity = (double) tpr / 28 * 2 * Math.PI * 0.04;
+//        telemetry.addData("velocity", velocity);
+//        double d = distance/100;
+//        double g = 9.81;
+//        double h = 1;
+//        double tanAngle = (Math.pow(velocity,2) - Math.sqrt(Math.pow(velocity,4) - g * (g*Math.pow(d,2) + 2*h*Math.pow(velocity,2)))) / (g*d);
+//        double angle = Math.toDegrees(Math.atan(tanAngle));
+//        double servoAngle = 90 - angle;
+//        telemetry.addData("angle", angle);
+//        double servoPos = 0.04*servoAngle-1.4;
+//        telemetry.addData("servoPos", servoPos);
+//        telemetry.update();
+//        return servoPos;
+//    }
     public void updateServoAngle(double degree, Telemetry telemetry){
         SAngle.setPosition(0.03638079*degree - 0.8736323);
     }

@@ -26,6 +26,9 @@ public class Intake {
         intake.setPower(0);
         active = false;
     }
-
+    public void reverse(){
+        intake.setPower(-1);
+        active = true;
+    }
 
 }

@@ -42,8 +42,17 @@ public class MainBlue extends LinearOpMode {
         for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
-
+        Thread shooterThread = new Thread(() -> {
+            try {
+                while (true){
+                    manualControl2.shootBall(telemetry);
+                }
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        });
         waitForStart();
+        shooterThread.start();
         while (opModeIsActive()){
 //            driveTrain.drivetrainControlAdvanced(gamepad1);
             driveTrain.drivetrainControlBasic(gamepad2);
@@ -51,13 +60,6 @@ public class MainBlue extends LinearOpMode {
 //            manualControl2.controlTurnOutTake(telemetry);
             manualControl2.updateShooterAngleServo(telemetry);
             manualControl2.toggleFlywheel(telemetry);
-            new Thread(() -> {
-                try {
-                    manualControl2.shootBall(telemetry);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }).start();
             manualControl2.controlIntakeShaft(telemetry);
 
             manualControl2.shootPurpleBall(telemetry);

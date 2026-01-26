@@ -81,6 +81,13 @@ public class ManualControl2 {
         telemetry.addData("Pos", shooter.SAngle.getPosition());
         telemetry.update();
     }
+    public void updateIntakeReverse(){
+        if(gamepad2.dpad_left){
+            intake.reverse();
+        } else if(gamepad2.dpad_right){
+            intake.stop();
+        }
+    }
 
     public void shootPurpleBall(Telemetry telemetry) throws InterruptedException {
         if(!gamepad2.rightBumperWasPressed()) return;
