@@ -33,9 +33,8 @@ public class MainBlue extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         MainRobot robot = new MainRobot(20, hardwareMap, gamepad2);
-
-        robot.manageShootBallThread(telemetry);
         waitForStart();
+        robot.manageShootBallThread(telemetry);
         while (opModeIsActive()){
             robot.opMode(telemetry);
         }

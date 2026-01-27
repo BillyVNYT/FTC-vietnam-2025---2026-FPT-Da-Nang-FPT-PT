@@ -48,5 +48,4 @@ public class MainRobot {
         manualControl2.shootGreenBall(telemetry);
         manualControl2.holdShooter(goalId, telemetry);
     }
-
 }

@@ -15,11 +15,11 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-public class ShooterFPT2 {
-//    private LimelightHardware limelight;
+public class SafeShoot {
+    //    private LimelightHardware limelight;
     public final DcMotorEx MShooter1, MShooter2;
     private final DcMotorEx MTurnOuttake;
-//    public Servo SAngle, SGate1, SGate2, SBackKick;
+    //    public Servo SAngle, SGate1, SGate2, SBackKick;
     double SAngleLowest = 0.8492, SBackKickOff = 0, SBackKickOn = 0.9;
     double SGate1Close = 0.03, SGate1Open = 0.182, SGate2Close = 0.03, SGate2Open = 0.182;
     double P = 6, I = 0, D = 0, F = 0.0085;
@@ -30,12 +30,12 @@ public class ShooterFPT2 {
     int FLYWHEEL_VELOCITY_GAIN_DURATION = 200;
     int THREE_BALLS_SHOOTING_DURATION = 1000;
     int MIN_TPR = 2000;
-//    private final DistanceSensor DSensor;
+    //    private final DistanceSensor DSensor;
     private final IntakeFPT2 intake;
     boolean isFull = false;
     ElapsedTime timer = new ElapsedTime();
 
-    public ShooterFPT2(HardwareMap hardwareMap, IntakeFPT2 intake) {
+    public SafeShoot(HardwareMap hardwareMap, IntakeFPT2 intake) {
         MShooter1 = hardwareMap.get(DcMotorEx.class, "m6");
         MShooter2 = hardwareMap.get(DcMotorEx.class, "m7");
         MShooter1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -71,7 +71,7 @@ public class ShooterFPT2 {
 //            if(timer.seconds() > 2 && !isFull) {
 //                isFull = true;
 //                intake.stop();
-////                setMotorVelocity(MIN_TPR);
+    ////                setMotorVelocity(MIN_TPR);
 //            }
 //        } else if (distance > 5) {
 //            isFull = false;
