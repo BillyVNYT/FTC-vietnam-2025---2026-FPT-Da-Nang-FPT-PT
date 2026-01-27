@@ -158,7 +158,7 @@ public class ShooterFPT2 {
                 MTurnOuttake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 double Tx = limelight.getAprilTagData(telemetry).x;
                 if (Math.abs(Tx) > 0.5) {
-                    double power = Tx * 0.01;
+                    double power = Tx * 0.015;
                     if (power > 0.5) {
                         power = 0.5;
                     }
