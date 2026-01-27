@@ -15,12 +15,13 @@ public class IntakeFPT2 {
     private Servo SHoldball2;
 
     public boolean HoldBall = true;
+    public boolean shoot = false;
 
     public IntakeFPT2(HardwareMap hardwareMap){
         intake = hardwareMap.get(DcMotor.class, "m4");
-        Spush = hardwareMap.get(Servo.class, "s8");
-        SHoldball1 = hardwareMap.get(Servo.class, "s9");
-        SHoldball2 = hardwareMap.get(Servo.class, "s4");
+        Spush = hardwareMap.get(Servo.class, "s10");
+        SHoldball1 = hardwareMap.get(Servo.class, "s11");
+        SHoldball2 = hardwareMap.get(Servo.class, "s5");
         intake.setDirection(DcMotorSimple.Direction.REVERSE);
         Spush.setDirection(Servo.Direction.REVERSE);
         SHoldball2.setDirection(Servo.Direction.REVERSE);
@@ -29,17 +30,19 @@ public class IntakeFPT2 {
         SHoldball2.setPosition(0);
     }
     public void updateIntakeManual(Gamepad gamepad){
-        if(gamepad.left_bumper){
-            HoldBall = true;
-            intake.setPower(1);
-        } else if(gamepad.left_trigger > 0.5) {
-            intake.setPower(-1);
-        } else {
-            intake.setPower(0);
+        if(!shoot) {
+            if (gamepad.left_bumper) {
+                HoldBall = true;
+                intake.setPower(1);
+            } else if (gamepad.left_trigger > 0.5) {
+                intake.setPower(-1);
+            } else {
+                intake.setPower(0);
+            }
         }
     }
     public boolean isActive(){
-        intake.setPower(1);
+        intake.setPower(0.6);
         return false;
     }
     public void stop(){

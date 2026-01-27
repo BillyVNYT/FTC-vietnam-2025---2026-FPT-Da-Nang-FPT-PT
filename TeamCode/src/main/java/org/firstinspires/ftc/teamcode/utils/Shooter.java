@@ -62,7 +62,7 @@ public class Shooter {
         MShooter1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MShooter2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MShooter1.setDirection(DcMotorSimple.Direction.REVERSE);
-
+//
         MTurnOuttake = hardwareMap.get(DcMotorEx.class, "m4");
         MTurnOuttake.setDirection(DcMotorSimple.Direction.REVERSE);
         MTurnOuttake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -70,7 +70,7 @@ public class Shooter {
         PIDFCoefficients pidf = new PIDFCoefficients(P, I, D, F);
         MShooter1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
 
-        SAngle = hardwareMap.get(Servo.class, "s3");
+        SAngle = hardwareMap.get(Servo.class, "s5");
         SAngle.setDirection(Servo.Direction.REVERSE);
 
         SLoaderUp1 = hardwareMap.get(ServoImplEx.class, "s10");

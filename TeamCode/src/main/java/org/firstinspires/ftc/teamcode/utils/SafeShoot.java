@@ -5,24 +5,19 @@ import static java.lang.Thread.sleep;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-
 public class SafeShoot {
     //    private LimelightHardware limelight;
     public final DcMotorEx MShooter1, MShooter2;
-    private final DcMotorEx MTurnOuttake;
-    //    public Servo SAngle, SGate1, SGate2, SBackKick;
+//    private final DcMotorEx MTurnOuttake;
+    public Servo SAngle;
     double SAngleLowest = 0.8492, SBackKickOff = 0, SBackKickOn = 0.9;
     double SGate1Close = 0.03, SGate1Open = 0.182, SGate2Close = 0.03, SGate2Open = 0.182;
-    double P = 6, I = 0, D = 0, F = 0.0085;
+    public double P = 15, I = 0.01, D = 0.01, F = 0.5;
     boolean MTurnOuttakeReverse = false;
     volatile boolean isBusy = false;
     int tprShot = 1;
@@ -42,13 +37,14 @@ public class SafeShoot {
         MShooter2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MShooter1.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        MTurnOuttake = hardwareMap.get(DcMotorEx.class, "m4");
-        MTurnOuttake.setDirection(DcMotorSimple.Direction.REVERSE);
+//        MTurnOuttake = hardwareMap.get(DcMotorEx.class, "m4");
+//        MTurnOuttake.setDirection(DcMotorSimple.Direction.REVERSE);
 
         PIDFCoefficients pidf = new PIDFCoefficients(P, I, D, F);
         MShooter1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
+        MShooter2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
 
-//        SAngle = hardwareMap.get(Servo.class, "s3");
+        SAngle = hardwareMap.get(Servo.class, "s4");
 //        SAngle.setDirection(Servo.Direction.REVERSE);
 //        SAngle.setPosition(SAngleLowest);
 //
@@ -60,6 +56,7 @@ public class SafeShoot {
 //        limelight = new LimelightHardware(hardwareMap);
 //        DSensor = hardwareMap.get(DistanceSensor.class, "ds");
         this.intake = intake;
+        SAngle.setPosition(SAngle.getPosition());
     }
 
 //    public void checkTunnelFull() {
@@ -79,26 +76,17 @@ public class SafeShoot {
 //        }
 //    }
 
-    public void shoot(Telemetry telemetry) throws InterruptedException {
-//        isBusy = true;
-//        double distance = limelight.getAprilTagData(telemetry).z;
-//        SAngle.setPosition(calculateAngle(distance));
-//
-//        if(distance <= 165){
-//            tprShot = MIN_TPR;
-//        } else if (distance <= 240){
-//            tprShot = 1800;
-//        } else {
-//            tprShot = 2500;
-//        }
-
-//        setMotorVelocity(2500);
-        MShooter1.setPower(1);
-        MShooter2.setPower(1);
-        sleep(FLYWHEEL_VELOCITY_GAIN_DURATION);
-
-        intake.isActive();
-//        resetShooterServos();
+    public void shootLevel1() throws InterruptedException {
+        setMotorVelocity(2000);
+        SAngle.setPosition(0.5522);
+    }
+    public void shootLevel2() throws InterruptedException {
+        setMotorVelocity(1625);
+        SAngle.setPosition(0.5517);
+    }
+    public void shootLevel3() throws InterruptedException {
+        setMotorVelocity(3000);
+        SAngle.setPosition(0.3);
     }
 
     public boolean isBusy() {
@@ -123,14 +111,10 @@ public class SafeShoot {
 //        overwriteShoot = !overwriteShoot;
 //    }
 //
-//    public void setMotorVelocity(int velocity){
-//        MShooter1.setVelocity(velocity);
-//        MShooter2.setVelocity(velocity);
-//    }
-//
-//    public boolean isBusy(){
-//        return isBusy;
-//    }
+    public void setMotorVelocity(int velocity){
+        MShooter1.setVelocity(velocity);
+        MShooter2.setVelocity(velocity);
+    }
 //
 //    public double calculateAngle(double dis){
 //        double a = -1.5015e-05;

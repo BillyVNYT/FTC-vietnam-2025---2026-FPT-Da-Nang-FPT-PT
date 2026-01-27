@@ -42,12 +42,12 @@ public class SubRobot {
 
     public void opMode(Telemetry telemetry) throws InterruptedException {
         driveTrain.drivetrainControlBasic(gamepad2);
-//        manualControl.updateShooterAngleServo(telemetry);
+        manualControl.updateShooterAngleServo(telemetry);
 //        manualControl.toggleFlywheel();
         manualControl.shootBall(telemetry);
         manualControl.toggleIntake();
 //
-//        manualControl.holdShooter(goalId, telemetry);
+        manualControl.holdShooter(goalId, telemetry, false);
 //        manualControl.checkTunnelFull();
     }
 }

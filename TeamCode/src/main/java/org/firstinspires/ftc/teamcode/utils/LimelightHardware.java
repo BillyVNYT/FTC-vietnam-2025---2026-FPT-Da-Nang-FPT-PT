@@ -28,7 +28,7 @@ class ApriltagData{
 public class LimelightHardware {
     public Limelight3A limelight;
     public LimelightHardware(HardwareMap hardwareMap){
-        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        limelight = hardwareMap.get(Limelight3A.class, "xuanson");
         limelight.pipelineSwitch(0);
         limelight.setPollRateHz(100);
         limelight.start();
@@ -55,15 +55,5 @@ public class LimelightHardware {
             }
         }
         return null;
-    }
-    public double getTx(int Id){
-        LLResult result = limelight.getLatestResult();
-        if(result != null && result.isValid()){
-            List<FiducialResult> fiducials = result.getFiducialResults();
-            for (FiducialResult fiducial : fiducials) {
-                if(fiducial.getFiducialId() == Id) return result.getTx();
-            }
-        }
-        return 0;
     }
 }
