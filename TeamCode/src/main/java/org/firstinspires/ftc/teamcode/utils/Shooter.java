@@ -23,11 +23,10 @@ public class Shooter {
     private final ServoImplEx SLoaderUp1, SLoaderUp2;
 
     double servoAtLowZone = 0.3667;
-    double P = 36.365;
+    double P = 36.67;
     double I = 0.42;
     double D = 0.06;
     double F = 0.01;
-    double tpr = 1900;
     double[][] hoodTable = {
             {93.0,  0.6922},
             {111.0, 0.8344},
@@ -139,9 +138,14 @@ public class Shooter {
 
         // Tính toán góc và vận tốc
         tprShot = (distance <= 100) ? 1000 : (distance <= 240) ? 1500 : 2300;
-        if(overridedVelocity > 0) tprShot = overridedVelocity;
 
-        SAngle.setPosition(calculateAngle(distance, spindexer.is_lastBall, telemetry));
+        if(overridedVelocity > 0) {
+            tprShot = overridedVelocity;
+            SAngle.setPosition(servoAtLowZone);
+        } else {
+            SAngle.setPosition(calculateAngle(distance, spindexer.is_lastBall, telemetry));
+        }
+
         setMotorVelocity(tprShot, telemetry);
 
         Thread.sleep(FLYWHEEL_VELOCITY_GAIN_DURATION);

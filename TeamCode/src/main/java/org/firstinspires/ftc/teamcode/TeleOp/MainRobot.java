@@ -28,7 +28,7 @@ public class MainRobot {
     public void manageShootBallThread(Telemetry telemetry) {
         Thread shooterThread = new Thread(() -> {
             try {
-                while (true){
+                while (true) {
                     manualControl2.shootBall(telemetry);
                 }
             } catch (InterruptedException e) {

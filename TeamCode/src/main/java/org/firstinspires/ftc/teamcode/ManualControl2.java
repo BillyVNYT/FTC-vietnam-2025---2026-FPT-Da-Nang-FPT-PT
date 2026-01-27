@@ -25,7 +25,7 @@ public class ManualControl2 {
 
     public ManualControl2(HardwareMap hardwareMap, Gamepad gamepad) {
 //        lifter = new Lifter(hardwareMap);
-        shooter = new Shooter(hardwareMap, true);
+        shooter = new Shooter(hardwareMap, false);
         intake = new Intake(hardwareMap);
         gamepad2 = gamepad;
 
