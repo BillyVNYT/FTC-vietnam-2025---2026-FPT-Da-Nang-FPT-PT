@@ -20,7 +20,7 @@ public class SemiAutoControl2 {
 
     public SemiAutoControl2(HardwareMap hardwareMap) {
         lifter = new Lifter(hardwareMap);
-        shooter = new Shooter(hardwareMap);
+        shooter = new Shooter(hardwareMap, false);
         intake = new Intake(hardwareMap);
 
         spindexer = new SortBall(hardwareMap, shooter);

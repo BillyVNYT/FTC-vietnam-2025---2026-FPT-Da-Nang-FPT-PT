@@ -43,10 +43,12 @@ public class MainRobot {
         manualControl2.updateShooterAngleServo(telemetry);
         manualControl2.toggleFlywheel(telemetry);
         manualControl2.controlIntakeShaft(telemetry);
-        manualControl2.updateIntakeReverse();
-        manualControl2.shootPurpleBall(telemetry);
-        manualControl2.shootGreenBall(telemetry);
-        manualControl2.holdShooter(goalId, telemetry);
+
+//        manualControl2.updateIntakeReverse();
+//        manualControl2.shootPurpleBall(telemetry);
+//        manualControl2.shootGreenBall(telemetry);
+//        manualControl2.holdShooter(goalId, telemetry);
+        manualControl2.controlTpr(telemetry);
     }
 
 }

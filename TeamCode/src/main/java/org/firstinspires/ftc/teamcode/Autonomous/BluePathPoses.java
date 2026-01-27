@@ -3,8 +3,8 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 import com.pedropathing.geometry.Pose;
 
 public class BluePathPoses {
-    public static Pose topZonePose = new Pose(48.17855664951552, 96.94421324671876);
-    public static Pose pickupMidPose = new Pose(8.4, 60.67825604909545);
+    public static Pose topZonePose = new Pose(58.17855664951552, 83.94421324671876);
+    public static Pose pickupMidPose = new Pose(8.4, 57.67825604909545);
     public static Pose openGatePose = new Pose(10.122, 63.00580119771699);
     public static Pose pickupTopPose = new Pose(16.335, 84.133);
     public static Pose pickupLowPose = new Pose(8.030805687203792, 52.0);

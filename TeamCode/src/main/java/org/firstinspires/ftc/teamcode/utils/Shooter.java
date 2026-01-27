@@ -56,7 +56,7 @@ public class Shooter {
     double lastError = 0;
     long lastTime = 0;
 
-    public Shooter(HardwareMap hardwareMap) {
+    public Shooter(HardwareMap hardwareMap, boolean holdOuttake) {
         MShooter1 = hardwareMap.get(DcMotorEx.class, "m0");
         MShooter2 = hardwareMap.get(DcMotorEx.class, "m1");
         MShooter1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -64,8 +64,16 @@ public class Shooter {
         MShooter1.setDirection(DcMotorSimple.Direction.REVERSE);
 
         MTurnOuttake = hardwareMap.get(DcMotorEx.class, "m4");
-        MTurnOuttake.setDirection(DcMotorSimple.Direction.REVERSE);
         MTurnOuttake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        MTurnOuttake.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        if(holdOuttake) {
+            MTurnOuttake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            MTurnOuttake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            MTurnOuttake.setTargetPosition(28);
+            MTurnOuttake.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            MTurnOuttake.setPower(0.8);
+        }
 
         PIDFCoefficients pidf = new PIDFCoefficients(P, I, D, F);
         MShooter1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
@@ -85,7 +93,7 @@ public class Shooter {
 
     int FLYWHEEL_VELOCITY_GAIN_DURATION = 500;
 
-    public void shoot(int count, SortBall spindexer, Telemetry telemetry) throws InterruptedException {
+    public void shoot(int count, SortBall spindexer, Telemetry telemetry, int overridedVelocity) throws InterruptedException {
         isBusy = true;
 
         // 1. Kiểm tra Null an toàn cho Limelight
@@ -94,7 +102,9 @@ public class Shooter {
 
         // Tính toán góc và vận tốc
         tprShot = (distance <= 100) ? 1000 : (distance <= 240) ? 1500 : 2300;
-        SAngle.setPosition(calculateAngle(distance, spindexer.is_lastBall, telemetry));
+        if(overridedVelocity > 0) tprShot = overridedVelocity;
+
+//        SAngle.setPosition(calculateAngle(distance, spindexer.is_lastBall, telemetry));
         setMotorVelocity(tprShot, telemetry);
 
         Thread.sleep(FLYWHEEL_VELOCITY_GAIN_DURATION);
@@ -168,7 +178,6 @@ public class Shooter {
                         : DcMotorSimple.Direction.FORWARD
         );
 
-        limelight.changePipeline(0);
         ApriltagData data = limelight.getAprilTagData(telemetry);
         boolean locked = false;
 

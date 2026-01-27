@@ -11,20 +11,20 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 @Configurable // Panels
 public class FullBlueTopStart extends LinearOpMode {
 
-    Pose startPose = new Pose(26.787, 128.303, Math.toRadians(180));
+    Pose startPose = new Pose(26.787, 128.303, Math.toRadians(90));
     Pose goalPose = new Pose(26.787, 128.303);
     Pose[] startToTopZonePoses = {goalPose, topZonePose};
 
     PathPoses[] pathPoses = {
-            new PathPoses(Math.toRadians(180), startToTopZonePoses, GenericAuto.PathState.START),
-            new PathPoses(Math.toRadians(180), topZoneToPickupMidPoses, GenericAuto.PathState.PICK_UP),
-            new PathPoses(Math.toRadians(180), Math.toRadians(145), pickupMidToOpenGatePoses, GenericAuto.PathState.OPEN_GATE),
-            new PathPoses(Math.toRadians(145), Math.toRadians(180), openGateToTopZonePoses, GenericAuto.PathState.SHOOT),
-            new PathPoses(Math.toRadians(180), topZoneToPickupTopPoses, GenericAuto.PathState.PICK_UP),
-            new PathPoses(Math.toRadians(180), pickupTopToTopZonePoses, GenericAuto.PathState.SHOOT),
-            new PathPoses(Math.toRadians(180), topZoneToPickupLowPoses, GenericAuto.PathState.PICK_UP),
-            new PathPoses(Math.toRadians(180), pickupLowToTopZonePoses, GenericAuto.PathState.SHOOT),
-//            new PathPoses(Math.toRadians(180), topZoneToLeavePoses, GenericAuto.PathState.LEAVE)
+            new PathPoses(Math.toRadians(90), startToTopZonePoses, GenericAuto.PathState.START),
+            new PathPoses(Math.toRadians(90), topZoneToPickupMidPoses, GenericAuto.PathState.PICK_UP),
+            new PathPoses(Math.toRadians(90), Math.toRadians(55), pickupMidToOpenGatePoses, GenericAuto.PathState.OPEN_GATE),
+            new PathPoses(Math.toRadians(55), Math.toRadians(90), openGateToTopZonePoses, GenericAuto.PathState.SHOOT),
+            new PathPoses(Math.toRadians(90), topZoneToPickupTopPoses, GenericAuto.PathState.PICK_UP),
+            new PathPoses(Math.toRadians(90), pickupTopToTopZonePoses, GenericAuto.PathState.SHOOT),
+            new PathPoses(Math.toRadians(90), topZoneToPickupLowPoses, GenericAuto.PathState.PICK_UP),
+            new PathPoses(Math.toRadians(90), pickupLowToTopZonePoses, GenericAuto.PathState.SHOOT),
+            new PathPoses(Math.toRadians(90), topZoneToLeavePoses, GenericAuto.PathState.LEAVE)
     };
 
     GenericAuto auto;

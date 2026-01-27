@@ -21,9 +21,11 @@ public class ManualControl2 {
     Motif motif;
     boolean readyToShot = false;
 
+    int overrideShooterVelocity = 3000;
+
     public ManualControl2(HardwareMap hardwareMap, Gamepad gamepad) {
 //        lifter = new Lifter(hardwareMap);
-        shooter = new Shooter(hardwareMap);
+        shooter = new Shooter(hardwareMap, true);
         intake = new Intake(hardwareMap);
         gamepad2 = gamepad;
 
@@ -44,7 +46,7 @@ public class ManualControl2 {
         if(gamepad2.crossWasPressed() && !shooter.isBusy()){
             spindexer.readyToShoot(false, telemetry);
             sleep(200);
-            shooter.shoot(3, spindexer, telemetry);
+            shooter.shoot(3, spindexer, telemetry, overrideShooterVelocity);
         }
     }
 
@@ -79,8 +81,18 @@ public class ManualControl2 {
             shooter.SAngle.setPosition(shooter.SAngle.getPosition()-0.0008);
         }
         telemetry.addData("Pos", shooter.SAngle.getPosition());
+    }
+
+    public void controlTpr(Telemetry telemetry) {
+        if(gamepad2.rightBumperWasPressed()) {
+            overrideShooterVelocity += 100;
+        } else if (gamepad2.leftBumperWasPressed()) {
+            overrideShooterVelocity -= 100;
+        }
+        telemetry.addData("overrideShooterVelocity", overrideShooterVelocity);
         telemetry.update();
     }
+
     public void updateIntakeReverse(){
         if(gamepad2.dpad_left){
             intake.reverse();
@@ -97,7 +109,7 @@ public class ManualControl2 {
             spindexer.spinTargetToShooter(SortBall.BallColor.PURPLE);
             sleep(200);
 
-            shooter.shoot(1, spindexer, telemetry);
+            shooter.shoot(1, spindexer, telemetry, 0);
         }
     }
 
@@ -108,7 +120,7 @@ public class ManualControl2 {
         if (greenIdx > -1 && !shooter.isBusy()) {
             spindexer.spinTargetToShooter(SortBall.BallColor.GREEN);
 
-            shooter.shoot(1, spindexer, telemetry);
+            shooter.shoot(1, spindexer, telemetry, 0);
         }
     }
 

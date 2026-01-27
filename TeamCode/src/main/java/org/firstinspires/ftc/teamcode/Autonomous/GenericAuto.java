@@ -54,9 +54,9 @@ public class GenericAuto {
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startPose);
         intake = new Intake(hardwareMap);
-        shooter = new Shooter(hardwareMap);
+        shooter = new Shooter(hardwareMap, true);
         motif = new Motif(hardwareMap);
-        spindexer = new SortBall(hardwareMap);
+        spindexer = new SortBall(hardwareMap, shooter);
         this.goalId = goalId;
 
         buildPaths(follower, pathPoses);
@@ -78,8 +78,10 @@ public class GenericAuto {
             Curve curve;
             if (pathSegment.poses.length == 2) {
                 curve = new BezierLine(pathSegment.poses[0], pathSegment.poses[1]);
-            } else {
+            } else if (pathSegment.poses.length == 3) {
                 curve = new BezierCurve(pathSegment.poses[0], pathSegment.poses[1], pathSegment.poses[2]);
+            } else {
+                curve = new BezierCurve(pathSegment.poses[0], pathSegment.poses[1], pathSegment.poses[2], pathSegment.poses[3]);
             }
 
             PathBuilder pathBuilder = follower.pathBuilder().addPath(curve);
@@ -95,14 +97,12 @@ public class GenericAuto {
 
         switch (currentState) {
             case SHOOT:
-//                boolean locked = shooter.HoldShooter(goalId, telemetry, true);
-//                if (follower.isBusy() || !locked) {
-//                    break;
-//                }
-                if (follower.isBusy()) return;
+                if (follower.isBusy()) {
+                    break;
+                }
 
                 if (!shotTriggered) {
-                    shooter.shoot(3, spindexer, telemetry);
+                    shooter.shoot(3, spindexer, telemetry, 0);
                     shotTriggered = true;
                     break;
                 }
@@ -128,8 +128,9 @@ public class GenericAuto {
                 break;
 
             case START:
-                PathChain currentPath = paths.get(curPathIdx);
                 spindexer.readyToShoot(false, telemetry);
+                PathChain currentPath = paths.get(curPathIdx);
+
                 follower.followPath(currentPath);
 //                currentState = PathState.SCAN;
                 currentState = PathState.SHOOT;
