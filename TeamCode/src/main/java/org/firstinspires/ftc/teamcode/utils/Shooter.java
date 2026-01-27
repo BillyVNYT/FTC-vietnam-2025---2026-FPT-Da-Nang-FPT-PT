@@ -21,11 +21,13 @@ public class Shooter {
     public Servo SAngle;
     private final Servo SLoaderOut;
     private final ServoImplEx SLoaderUp1, SLoaderUp2;
-//    private final LimelightHardware limelight;
-    double P = 6;
-    double I = 0;
-    double D = 1;
-    double F = 3;
+
+    double servoAtLowZone = 0.3667;
+    double P = 36.365;
+    double I = 0.42;
+    double D = 0.06;
+    double F = 0.01;
+    double tpr = 1900;
     double[][] hoodTable = {
             {93.0,  0.6922},
             {111.0, 0.8344},
@@ -70,13 +72,14 @@ public class Shooter {
         if(holdOuttake) {
             MTurnOuttake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             MTurnOuttake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            MTurnOuttake.setTargetPosition(28);
+            MTurnOuttake.setTargetPosition(171);
             MTurnOuttake.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            MTurnOuttake.setPower(0.8);
+            MTurnOuttake.setPower(1);
         }
 
         PIDFCoefficients pidf = new PIDFCoefficients(P, I, D, F);
         MShooter1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
+        MShooter2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
 
         SAngle = hardwareMap.get(Servo.class, "s3");
         SAngle.setDirection(Servo.Direction.REVERSE);
@@ -91,7 +94,41 @@ public class Shooter {
         limelight.changePipeline(0);
     }
 
+    String[] pidf = {"p", "i", "d", "f"};
+    int curTuneIdx = 0;
+    public String goToNextPidf() {
+        curTuneIdx = (curTuneIdx + 1) % pidf.length;
+        return pidf[curTuneIdx];
+    }
+    public double[] tunePidf(double nextI, Telemetry telemetry) {
+        if(curTuneIdx == 0) {
+            P += nextI;
+        }
+        else if(curTuneIdx == 1) {
+            I += nextI;
+        }
+        else if(curTuneIdx == 2) {
+            D += nextI;
+        }
+        else if(curTuneIdx == 3) {
+            F += nextI;
+        }
+
+        PIDFCoefficients pidf = new PIDFCoefficients(P, I, D, F);
+        MShooter1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
+        MShooter2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
+        double[] arr = {P, I, D, F};
+        return arr;
+
+    }
+
     int FLYWHEEL_VELOCITY_GAIN_DURATION = 500;
+
+    public double[] getVelocity() {
+        double[] arr = {MShooter1.getVelocity(), MShooter2.getVelocity()};
+        return arr;
+    }
+
 
     public void shoot(int count, SortBall spindexer, Telemetry telemetry, int overridedVelocity) throws InterruptedException {
         isBusy = true;
@@ -104,7 +141,7 @@ public class Shooter {
         tprShot = (distance <= 100) ? 1000 : (distance <= 240) ? 1500 : 2300;
         if(overridedVelocity > 0) tprShot = overridedVelocity;
 
-//        SAngle.setPosition(calculateAngle(distance, spindexer.is_lastBall, telemetry));
+        SAngle.setPosition(calculateAngle(distance, spindexer.is_lastBall, telemetry));
         setMotorVelocity(tprShot, telemetry);
 
         Thread.sleep(FLYWHEEL_VELOCITY_GAIN_DURATION);
@@ -162,6 +199,7 @@ public class Shooter {
         telemetry.addData("curVelocity", curVelocity);
         telemetry.addData("error", error);
         telemetry.addLine("---------------------------");
+//        telemetry.update();
     }
 
     public boolean isBusy(){
@@ -242,22 +280,6 @@ public class Shooter {
 
     }
     public double calculateAngle(double dis, boolean is_lastBall, Telemetry telemetry){
-//        if (dis <= hoodTable[0][0]) return hoodTable[0][1];
-//        // Nếu khoảng cách lớn hơn điểm cao nhất
-//        if (dis >= hoodTable[hoodTable.length - 1][0]) return hoodTable[hoodTable.length - 1][1];
-//
-//        for (int i = 0; i < hoodTable.length - 1; i++) {
-//            if (dis >= hoodTable[i][0] && dis <= hoodTable[i+1][0]) {
-//                // Công thức nội suy tuyến tính: y = y1 + (x - x1) * (y2 - y1) / (x2 - x1)
-//                double x1 = hoodTable[i][0];
-//                double y1 = hoodTable[i][1];
-//                double x2 = hoodTable[i+1][0];
-//                double y2 = hoodTable[i+1][1];
-//
-//                return (y1 + (dis - x1) * (y2 - y1) / (x2 - x1))-0.15;
-//            }
-//        }
-//        return 0.95;
         double a =  -0.635812;
         double b =  0.02004009;
         double c = 0.00006141738;

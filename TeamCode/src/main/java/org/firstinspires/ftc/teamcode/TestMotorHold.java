@@ -4,12 +4,13 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @TeleOp(name="Motor Hold Position")
 public class TestMotorHold extends LinearOpMode {
 
-    // Sử dụng DcMotorEx để có các tính năng nâng cao nếu cần sau này
     private DcMotorEx armMotor;
+    boolean reversed = false;
 
     @Override
     public void runOpMode() {
@@ -18,19 +19,18 @@ public class TestMotorHold extends LinearOpMode {
         armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        armMotor.setDirection(DcMotor.Direction.REVERSE);
 
         waitForStart();
+        moveAndHold(armMotor, 140, 1);
 
-        moveAndHold(armMotor, 28, 0.5);
         while (opModeIsActive()) {
-            double power = -gamepad1.left_stick_y * 0.3;
-            armMotor.setPower(power);
+//            armMotor.setPower(0.5*(reversed ? 1 : -1));
+//            sleep(200);
+//            armMotor.setPower(0);
+//            sleep(1000);
+
             telemetry.addData("Encoder hien tai", armMotor.getCurrentPosition());
-
-            if (power > 0 && armMotor.getCurrentPosition() < 0) {
-                telemetry.addLine("Motor dang bi nguoc chieu Encoder -> setDirection REVERSE");
-            }
-
             telemetry.update();
         }
 

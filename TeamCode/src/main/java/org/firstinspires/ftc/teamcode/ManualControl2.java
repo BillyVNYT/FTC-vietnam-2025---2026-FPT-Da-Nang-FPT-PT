@@ -21,7 +21,7 @@ public class ManualControl2 {
     Motif motif;
     boolean readyToShot = false;
 
-    int overrideShooterVelocity = 3000;
+    int overrideShooterVelocity = 2000;
 
     public ManualControl2(HardwareMap hardwareMap, Gamepad gamepad) {
 //        lifter = new Lifter(hardwareMap);
@@ -46,7 +46,7 @@ public class ManualControl2 {
         if(gamepad2.crossWasPressed() && !shooter.isBusy()){
             spindexer.readyToShoot(false, telemetry);
             sleep(200);
-            shooter.shoot(3, spindexer, telemetry, overrideShooterVelocity);
+            shooter.shoot(3, spindexer, telemetry, 0);
         }
     }
 
@@ -89,8 +89,48 @@ public class ManualControl2 {
         } else if (gamepad2.leftBumperWasPressed()) {
             overrideShooterVelocity -= 100;
         }
-        telemetry.addData("overrideShooterVelocity", overrideShooterVelocity);
+        double[] curVelocity = shooter.getVelocity();
+        double error = overrideShooterVelocity - curVelocity[0];
+        double error2 = overrideShooterVelocity - curVelocity[1];
+
+//        telemetry.addData("target", overrideShooterVelocity);
+        telemetry.addData("curVelocity M1", curVelocity[0]);
+        telemetry.addData("error M1", error);
+        telemetry.addLine("---------------------------");
         telemetry.update();
+    }
+
+    public void updateTuneFactor(Telemetry telemetry) {
+        String next = "p";
+        if(gamepad2.squareWasPressed()) {
+            next = shooter.goToNextPidf();
+        }
+        telemetry.addData("Tuning factor", next);
+    }
+
+
+    double[] steps = {0.001, 0.01, 0.1, 1};
+    int stepIdx = 0;
+    public void updateTuneStep(Telemetry telemetry) {
+        if(gamepad2.dpadRightWasPressed()) {
+            stepIdx = (stepIdx + 1) % steps.length;
+        }
+//        telemetry.addData("step", steps[stepIdx]);
+    }
+
+    double[] arr = {0, 0, 0, 0};
+    public void tuneP(Telemetry telemetry) {
+        if (gamepad2.right_trigger > 0.2) {
+            arr = shooter.tunePidf(steps[stepIdx], telemetry);
+
+        }
+        if (gamepad2.left_trigger > 0.2) {
+           arr = shooter.tunePidf(-steps[stepIdx], telemetry);
+        }
+        telemetry.addData("P", arr[0]);
+        telemetry.addData("I", arr[1]);
+        telemetry.addData("D", arr[2]);
+        telemetry.addData("F", arr[3]);
     }
 
     public void updateIntakeReverse(){

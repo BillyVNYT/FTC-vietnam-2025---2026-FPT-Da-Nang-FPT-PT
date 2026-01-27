@@ -102,7 +102,7 @@ public class GenericAuto {
                 }
 
                 if (!shotTriggered) {
-                    shooter.shoot(3, spindexer, telemetry, 0);
+                    shooter.shoot(3, spindexer, telemetry, 1900);
                     shotTriggered = true;
                     break;
                 }
