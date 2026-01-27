@@ -47,7 +47,7 @@ public class SubRobot {
         manualControl.shootBall(telemetry);
         manualControl.toggleIntake();
 //
-        manualControl.holdShooter(goalId, telemetry, false);
+        manualControl.holdShooter(goalId, telemetry, true);
 //        manualControl.checkTunnelFull();
     }
 }
