@@ -13,10 +13,10 @@ public class NewFullRedLowStart extends LinearOpMode{
     PathPoses[] pathPoses = {
             new PathPoses(Math.toRadians(90), RedStartToLowZonePose, GenericAuto.PathState.START),
             new PathPoses(Math.toRadians(90), RedLowZoneToLoadZonePose, GenericAuto.PathState.PICK_UP),
-            new PathPoses(Math.toRadians(90), RedLoadZoneToSemiLoadZonePose, GenericAuto.PathState.OPEN_GATE),
-            new PathPoses(Math.toRadians(90), RedSemiLoadZoneToLoadZonePose, GenericAuto.PathState.OPEN_GATE),
-            new PathPoses(Math.toRadians(90), RedLoadZoneToSemiLoadZonePose, GenericAuto.PathState.OPEN_GATE),
-            new PathPoses(Math.toRadians(90), RedSemiLoadZoneToLoadZonePose, GenericAuto.PathState.OPEN_GATE),
+            new PathPoses(Math.toRadians(90), RedLoadZoneToSemiLoadZonePose, GenericAuto.PathState.PICK_UP),
+            new PathPoses(Math.toRadians(90), RedSemiLoadZoneToLoadZonePose, GenericAuto.PathState.PICK_UP),
+            new PathPoses(Math.toRadians(90), RedLoadZoneToSemiLoadZonePose, GenericAuto.PathState.PICK_UP),
+            new PathPoses(Math.toRadians(90), RedSemiLoadZoneToLoadZonePose, GenericAuto.PathState.PICK_UP),
             new PathPoses(Math.toRadians(90), RedLoadZoneReturnToLowZonePose, GenericAuto.PathState.SHOOT),
             new PathPoses(Math.toRadians(90), RedLowZoneToLeavePose, GenericAuto.PathState.LEAVE)
     };
