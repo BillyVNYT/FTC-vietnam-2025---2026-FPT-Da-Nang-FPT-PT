@@ -7,14 +7,16 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.ManualControl;
 import org.firstinspires.ftc.teamcode.utils.DriveTrain;
+import org.firstinspires.ftc.teamcode.utils.DriveTrainFPT2;
 
 public class SubRobot {
-    private final DriveTrain driveTrain;
+    private final DriveTrainFPT2 driveTrain;
     private final ManualControl manualControl;
     int goalId;
     Gamepad gamepad2;
+
     public SubRobot(int goalId, HardwareMap hardwareMap, Gamepad gamepad2) {
-        driveTrain = new DriveTrain(hardwareMap);
+        driveTrain = new DriveTrainFPT2(hardwareMap);
         manualControl = new ManualControl(hardwareMap, gamepad2);
 
         for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
@@ -25,20 +27,27 @@ public class SubRobot {
         this.gamepad2 = gamepad2;
     }
 
-    public void opMode(Telemetry telemetry) throws InterruptedException {
-        driveTrain.drivetrainControlBasic(gamepad2);
-        manualControl.updateShooterAngleServo(telemetry);
-        manualControl.toggleFlywheel();
-        new Thread(() -> {
+    public void manageShootBallThread(Telemetry telemetry) {
+        Thread shooterThread = new Thread(() -> {
             try {
-                manualControl.shootBall(telemetry);
+                while (true) {
+                    manualControl.shootBall(telemetry);
+                }
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-        }).start();
-        manualControl.toggleIntake();
+        });
+        shooterThread.start();
+    }
 
-        manualControl.holdShooter(goalId, telemetry);
-        manualControl.checkTunnelFull();
+    public void opMode(Telemetry telemetry) throws InterruptedException {
+        driveTrain.drivetrainControlBasic(gamepad2);
+//        manualControl.updateShooterAngleServo(telemetry);
+//        manualControl.toggleFlywheel();
+        manualControl.shootBall(telemetry);
+        manualControl.toggleIntake();
+//
+//        manualControl.holdShooter(goalId, telemetry);
+//        manualControl.checkTunnelFull();
     }
 }

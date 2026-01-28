@@ -23,6 +23,10 @@ public class Motif {
         return motif;
     }
 
+    public List<SortBall.BallColor> getObelisk21() {
+        return obelisk21;
+    }
+
     public void setMotif(Telemetry telemetry) {
         int id = limelight.getAprilTagData(telemetry).id;
         if (id < 21) return;

@@ -19,6 +19,7 @@ import org.firstinspires.ftc.teamcode.Autonomous.GenericAuto;
 import org.firstinspires.ftc.teamcode.Autonomous.PathPoses;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.utils.Intake;
+import org.firstinspires.ftc.teamcode.utils.IntakeFPT2;
 import org.firstinspires.ftc.teamcode.utils.ShooterFPT2;
 
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public class GenericAutoFPT2 {
     private final TelemetryManager panelsTelemetry;
     public Follower follower;
     public ShooterFPT2 shooter;
-    private final Intake intake;
+    private final IntakeFPT2 intake;
     private final List<PathChain> paths = new ArrayList<>();
     private final List<GenericAuto.PathState> states = new ArrayList<>();;
     private GenericAuto.PathState currentState ;
@@ -42,7 +43,7 @@ public class GenericAutoFPT2 {
 
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startPose);
-        intake = new Intake(hardwareMap);
+        intake = new IntakeFPT2(hardwareMap);
         shooter = new ShooterFPT2(hardwareMap, intake);
 
         buildPaths(follower, pathPoses);
@@ -89,7 +90,7 @@ public class GenericAutoFPT2 {
                 }
                 if (!shooter.isBusy()) {
                     shotTriggered = false;
-                    intake.start();
+//                    intake.start();
                     goToNextPath();
                 }
                 break;
@@ -98,7 +99,7 @@ public class GenericAutoFPT2 {
                 if (follower.isBusy()) {
                     return;
                 }
-                intake.stop();
+//                intake.stop();
                 goToNextPath();
                 break;
 

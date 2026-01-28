@@ -47,9 +47,8 @@ public class LimelightHardware {
             for (FiducialResult fiducial : fiducials) {
                 double distance = 0;
                 if(fiducial.getFiducialId() == 24|| fiducial.getFiducialId() == 20){
-                    distance = 557.1429*fiducial.getTargetPoseCameraSpace().getPosition().y + 46.57143;;
+                    distance = 155.4876*Math.pow(fiducial.getTargetPoseCameraSpace().getPosition().z, 1.132202);
                 }
-                telemetry.update();
                 apriltagData = new ApriltagData(result.getTx(), result.getTy(),
                         distance, result.getTa(), fiducial.getFiducialId());
                 return apriltagData;
