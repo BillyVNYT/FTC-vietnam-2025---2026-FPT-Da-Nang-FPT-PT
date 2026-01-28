@@ -29,18 +29,22 @@ public class IntakeFPT2 {
         SHoldball1.setPosition(0);
         SHoldball2.setPosition(0);
     }
-    public void updateIntakeManual(Gamepad gamepad){
+    public void updateIntakeManual(Gamepad gamepad1, Gamepad gamepad2){
         if(!shoot) {
-            if (gamepad.left_bumper) {
+            if (gamepad1.left_bumper || gamepad2.left_bumper) {
                 HoldBall = true;
                 intake.setPower(1);
-            } else if (gamepad.left_trigger > 0.5) {
+            } else if (gamepad1.left_trigger > 0.5 || gamepad2.left_trigger > 0.5) {
+                HoldBall = true;
                 intake.setPower(-1);
             } else {
                 intake.setPower(0);
             }
         }
     }
+
+
+
     public boolean isActive(){
         intake.setPower(0.6);
         return false;

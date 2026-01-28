@@ -16,27 +16,29 @@ public class ManualControl {
     ShooterFPT2 shooter;
     SafeShoot shootSafe;
     IntakeFPT2 intake;
-    Lifter lifter;
+    Gamepad gamepad1;
     Gamepad gamepad2;
     Motif motif;
+    Lifter lifter;
 
-    public ManualControl(HardwareMap hardwareMap, Gamepad gamepad) {
-//        lifter = new Lifter(hardwareMap);
+    public ManualControl(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2) {
         intake = new IntakeFPT2(hardwareMap);
         shooter = new ShooterFPT2(hardwareMap, intake);
         shootSafe = new SafeShoot(hardwareMap, intake);
-        gamepad2 = gamepad;
-//        motif = new Motif(hardwareMap);
+        lifter = new Lifter(hardwareMap);
+        this.gamepad2 = gamepad2;
+        this.gamepad1 = gamepad1;
     }
 
     public void shootBall(Telemetry telemetry) throws InterruptedException{
-        if(gamepad2.cross){
+        if(gamepad2.right_bumper){
             shooter.shoot(telemetry);
+        } else if(gamepad2.right_trigger > 0.5) {
+            shooter.setMotorVelocity(2000);
         } else {
-            shooter.setMotorVelocity(0);
+            shooter.setMotorVelocity(1000);
         }
-
-        if(gamepad2.dpad_up){
+        if(gamepad1.right_bumper){
             intake.shoot = true;
             intake.HoldBall = false;
             intake.checkHoldBall();
@@ -50,31 +52,36 @@ public class ManualControl {
     }
 
     public void toggleIntake(){
-        intake.updateIntakeManual(gamepad2);
+        intake.updateIntakeManual(gamepad1, gamepad2);
         intake.checkHoldBall();
     }
 
     public void updateShooterAngleServo(Telemetry telemetry){
-        if(gamepad2.circle){
-            shootSafe.SAngle.setPosition(shootSafe.SAngle.getPosition()+0.0008);
-        } else if(gamepad2.triangle){
-            shootSafe.SAngle.setPosition(shootSafe.SAngle.getPosition()-0.0008);
+        if(gamepad2.triangle){
+            shootSafe.SAngle.setPosition(shootSafe.SAngle.getPosition()+0.002);
+        } else if(gamepad2.cross){
+            shootSafe.SAngle.setPosition(shootSafe.SAngle.getPosition()-0.002);
         }
-        telemetry.addData("Pos", shootSafe.SAngle.getPosition());
-        telemetry.update();
     }
 
     public void holdShooter(int goalId, Telemetry telemetry, boolean Reverse) {
         shooter.holdShooter(goalId, telemetry, Reverse);
     }
 
-//    public void toggleFlywheel() {
-//        if(gamepad2.circleWasPressed()){
-//            shooter.toggleFlywheel();
+//    public void TurnShooterControl() {
+//        if(gamepad2.dpad_right){
+//            shooter.MTurnOuttake.setPower(0.75);
+//        } else if(gamepad2.dpad_left){
+//            shooter.MTurnOuttake.setPower(-0.75);
+//        } else {
+//            shooter.MTurnOuttake.setPower(0);
 //        }
 //    }
-
-//    public void checkTunnelFull() {
-//        shooter.checkTunnelFull();
-//    }
+    public void lift() {
+        if(gamepad1.dpadUpWasPressed()){
+            lifter.lower();
+        } else if(gamepad1.dpadDownWasPressed()){
+            lifter.lift();
+        }
+    }
 }

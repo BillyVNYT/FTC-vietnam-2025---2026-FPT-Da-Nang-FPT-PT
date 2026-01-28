@@ -20,7 +20,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public class ShooterFPT2 {
     private LimelightHardware limelight;
     public final DcMotorEx MShooter1, MShooter2;
-    private final DcMotorEx MTurnOuttake;
+    public final DcMotorEx MTurnOuttake;
     public Servo SAngle;
     double SAngleLowest = 0.8492, SBackKickOff = 0, SBackKickOn = 0.9;
     double SGate1Close = 0.03, SGate1Open = 0.182, SGate2Close = 0.03, SGate2Open = 0.182;
@@ -37,6 +37,10 @@ public class ShooterFPT2 {
     private final IntakeFPT2 intake;
     boolean isFull = false;
     ElapsedTime timer = new ElapsedTime();
+    double lastError = 0;
+    double integralSum = 0;
+    long lastTime = System.nanoTime();
+    int maxTick = 670, minTick = -621;
 
     public ShooterFPT2(HardwareMap hardwareMap, IntakeFPT2 intake) {
         MShooter1 = hardwareMap.get(DcMotorEx.class, "m6");
@@ -96,7 +100,7 @@ public class ShooterFPT2 {
                 tprShot = MIN_TPR;
                 SAngle.setPosition(calculateAngle(distance, 0.15));
             } else if (distance <= 240) {
-                SAngle.setPosition(calculateAngle(distance, 0.075));
+                SAngle.setPosition(calculateAngle(distance, 0.08));
                 tprShot = 1675;
             } else {
                 tprShot = 2700;
@@ -153,36 +157,42 @@ public class ShooterFPT2 {
         else MTurnOuttake.setDirection(DcMotorSimple.Direction.FORWARD);
         ApriltagData data = limelight.getAprilTagData(telemetry);
 
-        if(data != null){
+        if(data != null && MTurnOuttake.getCurrentPosition() > minTick && MTurnOuttake.getCurrentPosition() < maxTick){
             if(data.id == id) {
                 MTurnOuttake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                double Tx = limelight.getAprilTagData(telemetry).x;
-                if (Math.abs(Tx) > 0.5) {
-                    double power = Tx * 0.0025;
-                    if (power > 0.5) {
-                        power = 0.5;
-                    }
-                    MTurnOuttake.setPower(power);
+                double Tx = data.x+9;
+                long now = System.nanoTime();
+                double dt = (now - lastTime) / 1e9;
+                if (dt <= 0) dt = 0.02;
+                lastTime = now;
+                integralSum += Tx * dt;
+                integralSum = Math.max(-5, Math.min(5, integralSum));
+                double derivative = (Tx - lastError) / dt;
+                double output = 0.000015 * Tx
+                        + 0.0000125 * integralSum
+                        + 0.000025 * derivative;
+                lastError = Tx;
+                output += Math.copySign(0.07, output);
+                if (Math.abs(Tx) > 3) {
+                    MTurnOuttake.setPower(Math.copySign(Math.max(0, Math.min(Math.abs(output), 0.3)), output));
+                    telemetry.addData("output", output);
                 } else {
+//                    MTurnOuttake.setPower(Math.copySign(0.06 * 0.6, output));
                     MTurnOuttake.setPower(0);
                 }
                 double current = MTurnOuttake.getCurrent(CurrentUnit.AMPS);
                 if (current > 7) {
                     MTurnOuttake.setPower(0);
                 }
-
                 telemetry.addLine("---------------------------");
                 telemetry.addData("Tx", Tx);
                 telemetry.addData("distance", data.z);
             } else {
-                MTurnOuttake.setTargetPosition(0);
-                MTurnOuttake.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                MTurnOuttake.setPower(0.2);
+                MTurnOuttake.setPower(0);
             }
         } else {
-            MTurnOuttake.setTargetPosition(0);
-            MTurnOuttake.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            MTurnOuttake.setPower(0.2);
+            MTurnOuttake.setPower(0);
         }
+        telemetry.addData("encoder", MTurnOuttake.getCurrentPosition());
     }
 }

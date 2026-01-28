@@ -32,10 +32,10 @@ public class DriveTrainFPT2 {
         imu.initialize(parameters);
     }
 
-    public void drivetrainControlBasic(Gamepad gamepad1){
-        double y = gamepad1.left_stick_y + gamepad1.right_stick_y;
-        double x = gamepad1.left_stick_x;
-        double rx = gamepad1.right_stick_x;
+    public void drivetrainControlBasic(Gamepad gamepad1, Gamepad gamepad2){
+        double y = (gamepad1.left_stick_y + gamepad1.right_stick_y)+(gamepad2.left_stick_y + gamepad2.right_stick_y);
+        double x = gamepad1.left_stick_x + gamepad2.left_stick_x;
+        double rx = gamepad1.right_stick_x + gamepad2.right_stick_x;
 
         LeftFrontDrive.setPower(y + x - rx);
         LeftBackDrive.setPower(y - x - rx);
