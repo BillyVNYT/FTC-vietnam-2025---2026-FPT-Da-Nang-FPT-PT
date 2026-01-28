@@ -22,9 +22,9 @@ public class Shooter {
     private final Servo SLoaderOut;
     private final ServoImplEx SLoaderUp1, SLoaderUp2;
 
-    double servoAtLowZone = 0.3667;
+    double servoAtLowZone = 0.45;
     double P = 63.36;
-    double I = 0.58;
+    double I = 0.53;
     double D = 0.06;
     double F = 0.01;
     double[][] hoodTable = {
@@ -181,15 +181,17 @@ public class Shooter {
     }
 
     public void toggleFlywheel(Telemetry telemetry) {
-        int maxShooterVelocity = 2200;
-        if(!overwriteShoot) {
-            MShooter1.setVelocity(maxShooterVelocity);
-            MShooter2.setVelocity(maxShooterVelocity);
+        if(MShooter1.getVelocity() < 10) {
+            MShooter1.setVelocity(2000);
+            MShooter2.setVelocity(2000);
+            overwriteShoot = true; // Đồng bộ lại biến
+            telemetry.addLine("Flywheel: ON");
         } else {
             MShooter1.setVelocity(0);
             MShooter2.setVelocity(0);
+            overwriteShoot = false; // Đồng bộ lại biến
+            telemetry.addLine("Flywheel: OFF");
         }
-        overwriteShoot = !overwriteShoot;
     }
 
     public void setMotorVelocity(int velocity, Telemetry telemetry){
@@ -223,7 +225,12 @@ public class Shooter {
         ApriltagData data = limelight.getAprilTagData(telemetry);
         boolean locked = false;
 
+        // Lấy vị trí encoder để check giới hạn
+        int currentPos = MTurnOuttake.getCurrentPosition();
+
         telemetry.addData("MotorCurrent", MTurnOuttake.getCurrent(CurrentUnit.AMPS));
+        // Thêm cái này để m dễ soi vị trí encoder hiện tại
+        telemetry.addData("Outtake Encoder", currentPos);
 
         if (data != null) {
             double error = data.x; // Tx
@@ -257,11 +264,26 @@ public class Shooter {
                 // Giới hạn công suất
                 output = Math.max(-0.6, Math.min(0.6, output));
 
-                MTurnOuttake.setPower(
-                        MTurnOuttakeReverse ? -output : output
-                );
+                // --- LOGIC GIỚI HẠN TAO THÊM VÀO ---
+                double finalPower = MTurnOuttakeReverse ? -output : output;
+
+                // Chặn trên: Nếu vượt maxTurnShooter (1200) và vẫn muốn quay dương
+                if (currentPos >= maxTurnShooter && finalPower > 0) {
+                    finalPower = 0;
+                    integral = 0;
+                    telemetry.addLine("!!! LIMIT REACHED: MAX !!!");
+                }
+                // Chặn dưới: Nếu vượt minTurnShooter (0) và vẫn muốn quay âm
+                else if (currentPos <= minTurnShooter && finalPower < 0) {
+                    finalPower = 0;
+                    integral = 0;
+                    telemetry.addLine("!!! LIMIT REACHED: MIN !!!");
+                }
+
+                MTurnOuttake.setPower(finalPower);
             }
 
+            // --- GIỮ NGUYÊN ĐỐNG TELEMETRY CŨ CỦA MÀY ---
             telemetry.addData("Tx", error);
             telemetry.addData("distance", data.z);
             telemetry.addData("PID Out", lastError);
@@ -270,6 +292,8 @@ public class Shooter {
             telemetry.addData("error", error);
             telemetry.addLine("---------------------------");
             telemetry.addData("distance", data.z);
+            // Tao khuyên thật là nên comment cái update() này lại nếu chạy TeleOp
+            // Nhưng m thích thì t cứ để đấy.
             telemetry.update();
 
             return locked;
@@ -281,7 +305,6 @@ public class Shooter {
             telemetry.addLine("No AprilTag detected");
             return false;
         }
-
     }
     public double calculateAngle(double dis, boolean is_lastBall, Telemetry telemetry){
         double a =  -0.635812;

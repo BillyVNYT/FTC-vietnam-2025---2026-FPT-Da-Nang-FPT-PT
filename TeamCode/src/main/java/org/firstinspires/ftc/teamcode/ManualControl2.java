@@ -22,7 +22,9 @@ public class ManualControl2 {
     boolean readyToShot = false;
 
     int overrideShooterVelocity = 2000;
-
+    // Giả sử mày đã biết khoảng an toàn của motor
+    private final int MAX_POS = 1000;
+    private final int MIN_POS = 0;
     public ManualControl2(HardwareMap hardwareMap, Gamepad gamepad) {
 //        lifter = new Lifter(hardwareMap);
         shooter = new Shooter(hardwareMap, false);

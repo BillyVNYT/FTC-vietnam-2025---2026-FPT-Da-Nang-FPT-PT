@@ -27,11 +27,19 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 public class MainRed extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
+        // 1. Khởi tạo robot
         MainRobot robot = new MainRobot(24, hardwareMap, gamepad2);
+
         waitForStart();
-        robot.manageShootBallThread(telemetry);
-        while (opModeIsActive()){
+
+        robot.startThreads();
+        while (opModeIsActive()) {
+            robot.manageShootBallThread(telemetry);
             robot.opMode(telemetry);
+
+            telemetry.update();
         }
+
+        robot.stopThreads();
     }
 }

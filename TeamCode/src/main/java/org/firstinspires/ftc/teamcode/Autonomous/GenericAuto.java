@@ -126,7 +126,7 @@ public class GenericAuto {
                 }
 
                 spindexer.readyToShoot(false, telemetry);
-                intake.stop();
+//                intake.stop();
                 goToNextPath();
                 break;
 
