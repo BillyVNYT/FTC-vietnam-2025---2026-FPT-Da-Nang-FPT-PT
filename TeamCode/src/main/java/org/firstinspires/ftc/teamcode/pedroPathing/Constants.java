@@ -7,54 +7,53 @@ import com.pedropathing.follower.FollowerConstants;
 import com.pedropathing.ftc.FollowerBuilder;
 import com.pedropathing.ftc.drivetrains.MecanumConstants;
 import com.pedropathing.ftc.localization.Encoder;
+import com.pedropathing.ftc.localization.constants.PinpointConstants;
 import com.pedropathing.ftc.localization.constants.TwoWheelConstants;
 import com.pedropathing.paths.PathConstraints;
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
-            .mass(16)
-            .forwardZeroPowerAcceleration(-32.4181803122647)
-            .lateralZeroPowerAcceleration(-53.25190569981471)
-            .translationalPIDFCoefficients(new PIDFCoefficients(0.25, 0.00025, 0.005, 0.0001))
-            .headingPIDFCoefficients(new PIDFCoefficients(0.75, 0, 0.01, 0.005))
-            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.025, 0, 0.000015, 0.6, 0.01))
-            .centripetalScaling(0.00041);
+            .mass(13)
+            .forwardZeroPowerAcceleration(-44.94889608005421)
+            .lateralZeroPowerAcceleration(-83.57428064999174)
+            .translationalPIDFCoefficients(new PIDFCoefficients(0.345,0,0.01,0.015))
+            .headingPIDFCoefficients(new PIDFCoefficients(1.25,0.0001,0.0045,0.0003))
+            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.025,0,0.00001,0.6,0.01))
+            .centripetalScaling(0.00075);
 
 
 
-    public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);
+
+    public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 0.55, 1);
     public static MecanumConstants driveConstants = new MecanumConstants()
             .maxPower(1)
-            .rightFrontMotorName("m2")
-            .rightRearMotorName("m3")
-            .leftRearMotorName("m7")
-            .leftFrontMotorName("m6")
-            .leftFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
+            .rightFrontMotorName("m3")
+            .rightRearMotorName("m2")
+            .leftRearMotorName("m1")
+            .leftFrontMotorName("m0")
+            .leftFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
             .leftRearMotorDirection(DcMotorSimple.Direction.REVERSE)
             .rightFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
-            .rightRearMotorDirection(DcMotorSimple.Direction.REVERSE)
-            .xVelocity(64.57876903369694)
-            .yVelocity(51.72019384627498);
-    public static TwoWheelConstants localizerConstants = new TwoWheelConstants()
-            .forwardEncoder_HardwareMapName("m3")
-            .strafeEncoder_HardwareMapName("m2")
-            .IMU_HardwareMapName("imu")
-//            .strafeEncoderDirection(Encoder.REVERSE)
-            .forwardEncoderDirection(Encoder.REVERSE)
-            .forwardPodY(6.9862204724)
-            .strafePodX(-6.9862204724)
-            .IMU_Orientation(
-                    new RevHubOrientationOnRobot(
-                            RevHubOrientationOnRobot.LogoFacingDirection.FORWARD,
-                            RevHubOrientationOnRobot.UsbFacingDirection.UP
-                    )
-            );
+            .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD)
+            .xVelocity(73.06723863496555)
+            .yVelocity(56.53036426934669);
+    public static PinpointConstants localizerConstants = new PinpointConstants()
+            .forwardPodY(-3.484352)
+            .strafePodX(2.5645669)
+            .distanceUnit(DistanceUnit.INCH)
+            .hardwareMapName("pinpoint")
+            .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
+            .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.REVERSED)
+            .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD);
     public static Follower createFollower(HardwareMap hardwareMap) {
         return new FollowerBuilder(followerConstants, hardwareMap)
-                .twoWheelLocalizer(localizerConstants)
+                .pinpointLocalizer(localizerConstants)
                 .pathConstraints(pathConstraints)
                 .mecanumDrivetrain(driveConstants)
                 .build();
