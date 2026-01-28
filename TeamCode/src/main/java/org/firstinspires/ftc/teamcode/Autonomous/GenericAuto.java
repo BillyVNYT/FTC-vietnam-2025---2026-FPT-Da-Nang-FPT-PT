@@ -125,9 +125,12 @@ public class GenericAuto {
                     break;
                 }
 
-                spindexer.readyToShoot(false, telemetry);
-//                intake.stop();
-                goToNextPath();
+                PathState nextState = goToNextPath();
+
+                if (nextState != PathState.PICK_UP) {
+                    spindexer.readyToShoot(false, telemetry);
+                    intake.stop();
+                }
                 break;
 
             case START:
@@ -155,7 +158,6 @@ public class GenericAuto {
 
             case OPEN_GATE:
                 if(follower.isBusy()) break;
-
                 goToNextPath();
                 break;
 
@@ -165,14 +167,15 @@ public class GenericAuto {
         }
     }
 
-    private void goToNextPath() {
+    private PathState goToNextPath() {
         curPathIdx++;
-        if (curPathIdx >= paths.size()) return;
+        if (curPathIdx >= paths.size()) return PathState.LEAVE;
 
         currentState = states.get(curPathIdx);
         PathChain currentPath = paths.get(curPathIdx);
         boolean isPickingUp = currentState == PathState.PICK_UP;
         follower.followPath(currentPath, isPickingUp ? 0.55 : 1, true);
+        return currentState;
     }
 
     public void updateFollower(Telemetry telemetry) throws InterruptedException{
