@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 @Autonomous
 @Configurable // Panels
-public class NewFullBlueLowStart extends LinearOpMode{
+public class BlueLowStart extends LinearOpMode{
     PathPoses[] pathPoses = {
             new PathPoses(Math.toRadians(90), BlueStartToLowZonePose, GenericAuto.PathState.START),
             new PathPoses(Math.toRadians(90), BlueLowZoneToLoadZonePose, GenericAuto.PathState.PICK_UP),

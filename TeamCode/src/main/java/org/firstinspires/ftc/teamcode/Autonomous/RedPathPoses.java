@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.pedropathing.geometry.Pose;
 
-public class NewRedPathPoses {
+public class RedPathPoses {
     public static Pose StartRedPose = new Pose(78.10526315789475,7.368421052631579, Math.toRadians(90));
     public static Pose RedLowZonePose = new Pose(81.89473684210526, 16.315789473684173);
     public static Pose RedCp1LowZoneToLoadZone =new Pose(83.15789473684208,10.842105263157883);

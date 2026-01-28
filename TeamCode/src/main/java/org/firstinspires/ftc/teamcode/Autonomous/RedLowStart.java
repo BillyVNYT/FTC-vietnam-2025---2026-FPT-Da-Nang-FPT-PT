@@ -1,16 +1,15 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
 
-import static org.firstinspires.ftc.teamcode.Autonomous.NewRedPathPoses.*;
+import static org.firstinspires.ftc.teamcode.Autonomous.RedPathPoses.*;
 
 import com.bylazar.configurables.annotations.Configurable;
-import com.pedropathing.paths.PathConstraints;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 @Autonomous
 @Configurable // Panels
-public class NewFullRedLowStart extends LinearOpMode{
+public class RedLowStart extends LinearOpMode{
 
     PathPoses[] pathPoses = {
             new PathPoses(Math.toRadians(90), RedStartToLowZonePose, GenericAuto.PathState.START),

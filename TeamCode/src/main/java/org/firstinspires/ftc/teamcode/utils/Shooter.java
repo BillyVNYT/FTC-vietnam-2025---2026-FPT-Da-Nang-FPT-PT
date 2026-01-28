@@ -27,16 +27,6 @@ public class Shooter {
     double I = 0.53;
     double D = 0.06;
     double F = 0.01;
-    double[][] hoodTable = {
-            {93.0,  0.6922},
-            {111.0, 0.8344},
-            {121.0, 0.9089},
-            {133.0, 0.9267},
-            {141.0, 0.9606},
-            {154.0, 1.0},
-            {161.0, 1.0}
-    };
-    double[] servoPositions = {0.8492, 0.6389, 0};
     double SLoaderOutHiddenPos = 0.03;
     double SLoaderOutVisiblePos = 0.182;
     boolean MTurnOuttakeReverse = false;
@@ -223,13 +213,15 @@ public class Shooter {
         );
 
         ApriltagData data = limelight.getAprilTagData(telemetry);
+        if (data.id != id) {
+            telemetry.addLine("No AprilTag detected");
+            return false;
+        }
         boolean locked = false;
 
-        // Lấy vị trí encoder để check giới hạn
         int currentPos = MTurnOuttake.getCurrentPosition();
 
         telemetry.addData("MotorCurrent", MTurnOuttake.getCurrent(CurrentUnit.AMPS));
-        // Thêm cái này để m dễ soi vị trí encoder hiện tại
         telemetry.addData("Outtake Encoder", currentPos);
 
         if (data != null) {
@@ -285,7 +277,6 @@ public class Shooter {
             telemetry.addData("distance", data.z);
             telemetry.addData("PID Out", lastError);
 
-            telemetry.addData("curTargetVelocity", 2600);
             telemetry.addData("error", error);
             telemetry.addLine("---------------------------");
             telemetry.addData("distance", data.z);
