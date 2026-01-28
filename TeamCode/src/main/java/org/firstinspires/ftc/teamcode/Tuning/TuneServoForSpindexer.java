@@ -11,8 +11,10 @@ public class TuneServoForSpindexer extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         spindexer1 = hardwareMap.get(Servo.class, "s0");
         spindexer2 = hardwareMap.get(Servo.class, "s1");
-
         spindexer2.setDirection(Servo.Direction.REVERSE);
+        spindexer1.setDirection(Servo.Direction.REVERSE);
+        spindexer2.setPosition(0);
+        spindexer1.setPosition(0);
         waitForStart();
         while (opModeIsActive()){
             if (gamepad1.right_bumper) {

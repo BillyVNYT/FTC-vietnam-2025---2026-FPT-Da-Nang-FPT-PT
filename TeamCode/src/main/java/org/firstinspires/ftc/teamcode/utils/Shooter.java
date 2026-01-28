@@ -205,39 +205,26 @@ public class Shooter {
     public void updateOuttakeAngle(double rx){
         MTurnOuttake.setPower(rx);
     }
-    public boolean HoldShooter(int id, Telemetry telemetry, boolean reverseMotor) {
-
-        MTurnOuttake.setDirection(
-                reverseMotor ? DcMotorSimple.Direction.REVERSE
-                        : DcMotorSimple.Direction.FORWARD
-        );
-
+    public void HoldShooter(int id, Telemetry telemetry) {
         ApriltagData data = limelight.getAprilTagData(telemetry);
-        if (data.id != id) {
-            telemetry.addLine("No AprilTag detected");
-            return false;
-        }
-        boolean locked = false;
 
         int currentPos = MTurnOuttake.getCurrentPosition();
 
-        telemetry.addData("MotorCurrent", MTurnOuttake.getCurrent(CurrentUnit.AMPS));
-        telemetry.addData("Outtake Encoder", currentPos);
-
         if (data != null) {
+            if (data.id != id) {
+                return;
+            }
+
             double error = data.x; // Tx
             long now = System.nanoTime();
 
             double dt = (lastTime == 0) ? 0 : (now - lastTime) / 1e9;
             lastTime = now;
 
-            // Deadband để tránh rung
             if (Math.abs(error) < 0.5) {
                 integral = 0;
                 MTurnOuttake.setPower(0);
-                locked = true;
             } else {
-
                 // Integral
                 integral += error * dt;
                 integral = Math.max(-20, Math.min(20, integral)); // anti-windup
@@ -273,23 +260,11 @@ public class Shooter {
                 MTurnOuttake.setPower(finalPower);
             }
 
-            telemetry.addData("Tx", error);
-            telemetry.addData("distance", data.z);
-            telemetry.addData("PID Out", lastError);
-
-            telemetry.addData("error", error);
-            telemetry.addLine("---------------------------");
-            telemetry.addData("distance", data.z);
-            telemetry.update();
-
-            return locked;
         } else {
             // Mất tag → giữ nguyên hoặc dừng
             integral = 0;
             lastError = 0;
             MTurnOuttake.setPower(0);
-            telemetry.addLine("No AprilTag detected");
-            return false;
         }
     }
     public double calculateAngle(double dis, boolean is_lastBall, Telemetry telemetry){

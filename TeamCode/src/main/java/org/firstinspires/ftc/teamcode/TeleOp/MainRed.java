@@ -33,8 +33,8 @@ public class MainRed extends LinearOpMode {
         waitForStart();
 
         robot.startThreads();
+        robot.manageShootBallThread(telemetry);
         while (opModeIsActive()) {
-            robot.manageShootBallThread(telemetry);
             robot.opMode(telemetry);
 
             telemetry.update();

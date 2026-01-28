@@ -17,7 +17,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.utils.Intake;
-import org.firstinspires.ftc.teamcode.utils.Motif;
+import org.firstinspires.ftc.teamcode.utils.LimelightHardware;
 import org.firstinspires.ftc.teamcode.utils.Shooter;
 import org.firstinspires.ftc.teamcode.utils.SortBall;
 
@@ -38,7 +38,7 @@ public class GenericAuto {
     public Follower follower;
     public Shooter shooter;
     private final SortBall spindexer;
-    private final Motif motif;
+    private final LimelightHardware limelight;
     private final Intake intake;
     private final List<PathChain> paths = new ArrayList<>();
     private final List<PathState> states = new ArrayList<>();;
@@ -57,7 +57,7 @@ public class GenericAuto {
         follower.setStartingPose(startPose);
         intake = new Intake(hardwareMap);
         shooter = new Shooter(hardwareMap, true);
-        motif = new Motif(hardwareMap);
+        limelight = new LimelightHardware(hardwareMap);
         spindexer = new SortBall(hardwareMap, shooter);
         this.goalId = goalId;
         spindexerReversed = goalId == 24;
@@ -146,8 +146,8 @@ public class GenericAuto {
             case SCAN:
                 if (follower.isBusy()) break;
 
-                if (motif.getMotif() == null) {
-                    motif.setMotif(telemetry);
+                if (limelight.getMotif() == null) {
+                    limelight.getAprilTagData(telemetry);
                 } else {
                     shooter.updateOuttakeAngle(-0.5);
                     sleep(200);

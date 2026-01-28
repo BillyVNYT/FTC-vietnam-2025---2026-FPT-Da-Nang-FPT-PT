@@ -33,7 +33,6 @@ public class MainRobot {
         this.gamepad2 = gamepad2;
     }
 
-    // --- Bật tất cả các Thread phụ lên ---
     public void startThreads() {
         if (isRunning.get()) return;
         isRunning.set(true);
@@ -42,29 +41,26 @@ public class MainRobot {
         driveThread = new Thread(() -> {
             while (isRunning.get() && !Thread.currentThread().isInterrupted()) {
                 driveTrain.drivetrainControlBasic(gamepad2);
-                // Lái xe cần tốc độ cao, ko nên sleep lâu
             }
         });
 
         // 2. Thread cho HoldShooter (Quét AprilTag và chạy PID liên tục)
-        holdShooterThread = new Thread(() -> {
-            while (isRunning.get() && !Thread.currentThread().isInterrupted()) {
-                // Tách riêng PID xoay shooter ra đây để nó bám mục tiêu liên tục
-                // Truyền null vào telemetry để tránh xung đột thread khi ghi log
-                manualControl2.holdShooter(goalId, null);
-                try {
-                    Thread.sleep(10); // Nghỉ 10ms để đỡ tốn CPU
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-            }
-        });
-
+//        holdShooterThread = new Thread(() -> {
+//            while (isRunning.get() && !Thread.currentThread().isInterrupted()) {
+//                // Tách riêng PID xoay shooter ra đây để nó bám mục tiêu liên tục
+//                // Truyền null vào telemetry để tránh xung đột thread khi ghi log
+//                manualControl2.holdShooter(goalId, null);
+//                try {
+//                    Thread.sleep(10); // Nghỉ 10ms để đỡ tốn CPU
+//                } catch (InterruptedException e) {
+//                    Thread.currentThread().interrupt();
+//                }
+//            }
+//        });
+//        holdShooterThread.start();
         driveThread.start();
-        holdShooterThread.start();
     }
 
-    // --- Tắt tất cả Thread ---
     public void stopThreads() {
         isRunning.set(false);
         try {
@@ -75,21 +71,30 @@ public class MainRobot {
         }
     }
 
-    public void manageShootBallThread(Telemetry telemetry) throws InterruptedException {
-        manualControl2.shootBall(telemetry);
+    public void manageShootBallThread(Telemetry telemetry) {
+        Thread shooterThread = new Thread(() -> {
+            try {
+                manualControl2.shootBall(telemetry);
+                while (true) {
+                    manualControl2.shootBall(telemetry);
+                }
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        shooterThread.start();
     }
 
-    // --- Vòng lặp chính (Main Thread) ---
     public void opMode(Telemetry telemetry) throws InterruptedException {
-        // Chỉ để lại những cái xử lý nút nhấn và logic nhẹ
         manualControl2.updateShooterAngleServo(telemetry);
 
-        // Toggle Flywheel để ở đây là chuẩn nhất vì nó bắt sự kiện nhấn nút
         manualControl2.toggleFlywheel(telemetry);
 
         manualControl2.controlIntakeShaft(telemetry);
         manualControl2.updateIntakeReverse();
 
-        // holdShooter đã được ném sang Thread riêng, xóa ở đây cho rảnh máy
+//        manualControl2.holdShooter(goalId, telemetry);
+//        driveTrain.drivetrainControlBasic(gamepad2);
+
     }
 }

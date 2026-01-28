@@ -8,7 +8,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.utils.Intake;
 import org.firstinspires.ftc.teamcode.utils.Lifter;
-import org.firstinspires.ftc.teamcode.utils.Motif;
 import org.firstinspires.ftc.teamcode.utils.Shooter;
 import org.firstinspires.ftc.teamcode.utils.SortBall;
 
@@ -18,7 +17,6 @@ public class ManualControl2 {
     SortBall spindexer;
     Gamepad gamepad2;
     Intake intake;
-    Motif motif;
     boolean readyToShot = false;
 
     int overrideShooterVelocity = 2000;
@@ -30,8 +28,6 @@ public class ManualControl2 {
         shooter = new Shooter(hardwareMap, false);
         intake = new Intake(hardwareMap);
         gamepad2 = gamepad;
-
-        motif = new Motif(hardwareMap);
         spindexer = new SortBall(hardwareMap, shooter);
     }
 
@@ -173,6 +169,6 @@ public class ManualControl2 {
     }
 
     public void holdShooter(int goalId, Telemetry telemetry) {
-        shooter.HoldShooter(goalId, telemetry, true);
+        shooter.HoldShooter(goalId, telemetry);
     }
 }
