@@ -22,7 +22,7 @@ public class SortBall {
     }
     public double[] INTAKE_SLOT_POS = {0.2467, 0.1194, 0};
     public double[] INTAKE_SLOT_POS2 = {0.0711, 0.1772, 0.3006};
-    public double[] OUTTAKE_SLOT_POS = {0.0865 , 0.2106, 0.333, 0.4544, 0.7072, 0.8339, 0.9528};
+    public double[] OUTTAKE_SLOT_POS = {0.0865 , 0.2106, 0.333, 0.7072, 0.8339, 0.9528};
     int bestSpin = 0;
     public boolean is_lastBall = false;
 
@@ -82,13 +82,13 @@ public class SortBall {
             controlSpindexer(OUTTAKE_SLOT_POS[0]);
             shooter.setMotorVelocity(700, telemetry);
         } else {
-            List<BallColor> outLoad = new ArrayList<>(currentLoad);
+            List<BallColor> outLoad = new ArrayList<>();
             outLoad.add(currentLoad.get(0));
             outLoad.add(currentLoad.get(2));
             outLoad.add(currentLoad.get(1));
 
             bestSpin = getBestSpin(outLoad, telemetry);
-            controlSpindexer(bestSpin);
+            controlSpindexer(OUTTAKE_SLOT_POS[bestSpin]);
         }
     }
 
