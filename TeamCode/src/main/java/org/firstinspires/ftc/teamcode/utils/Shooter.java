@@ -23,8 +23,8 @@ public class Shooter {
     private final ServoImplEx SLoaderUp1, SLoaderUp2;
 
     double servoAtLowZone = 0.3667;
-    double P = 36.67;
-    double I = 0.42;
+    double P = 63.36;
+    double I = 0.58;
     double D = 0.06;
     double F = 0.01;
     double[][] hoodTable = {
@@ -71,7 +71,7 @@ public class Shooter {
         if(holdOuttake) {
             MTurnOuttake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             MTurnOuttake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            MTurnOuttake.setTargetPosition(171);
+            MTurnOuttake.setTargetPosition(169);
             MTurnOuttake.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             MTurnOuttake.setPower(1);
         }

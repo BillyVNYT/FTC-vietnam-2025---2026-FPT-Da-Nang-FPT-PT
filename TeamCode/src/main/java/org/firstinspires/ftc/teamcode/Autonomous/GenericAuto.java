@@ -47,6 +47,8 @@ public class GenericAuto {
     boolean  shotTriggered = false;
     int goalId;
 
+    boolean spindexerReversed;
+
     public GenericAuto(Telemetry telemetry, HardwareMap hardwareMap, Pose startPose, PathPoses[] pathPoses, int goalId) {
         panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
         panelsTelemetry.debug("Status", "Initialized");
@@ -58,6 +60,7 @@ public class GenericAuto {
         motif = new Motif(hardwareMap);
         spindexer = new SortBall(hardwareMap, shooter);
         this.goalId = goalId;
+        spindexerReversed = goalId == 24;
 
         buildPaths(follower, pathPoses);
 
@@ -110,24 +113,25 @@ public class GenericAuto {
                  if (!shooter.isBusy()) {
                     shotTriggered = false;
                     intake.start();
+                    double spindexerInitPos = spindexerReversed ? spindexer.INTAKE_SLOT_POS2[0] : spindexer.INTAKE_SLOT_POS[0];
+                    spindexer.controlSpindexer(spindexerInitPos);
                     goToNextPath();
                  }
                 break;
 
             case PICK_UP:
                 if (follower.isBusy()) {
-                    spindexer.autoLoadBallsIn(telemetry);
+                    spindexer.autoLoadBallsIn(telemetry, spindexerReversed);
                     break;
                 }
 
-                spindexer.controlSpindexer(spindexer.INTAKE_SLOT_POS[2]);
-                sleep(1000);
                 spindexer.readyToShoot(false, telemetry);
                 intake.stop();
                 goToNextPath();
                 break;
 
             case START:
+                shooter.toggleFlywheel(telemetry);
                 spindexer.readyToShoot(false, telemetry);
                 PathChain currentPath = paths.get(curPathIdx);
 
@@ -150,6 +154,8 @@ public class GenericAuto {
                 break;
 
             case OPEN_GATE:
+                if(follower.isBusy()) break;
+
                 goToNextPath();
                 break;
 

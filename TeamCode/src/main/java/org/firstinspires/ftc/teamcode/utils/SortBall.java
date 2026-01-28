@@ -149,23 +149,30 @@ public class SortBall {
         }
     }
 
-    public void autoLoadBallsIn(Telemetry telemetry) throws InterruptedException {
-        BallColor colorFront1 = colorSensor1.detectBallColor(2000, telemetry);
-        BallColor colorFront2 = colorSensor2.detectBallColor(2000, telemetry);
-        handleSensor(telemetry, colorFront1, colorFront2, false, dis1);
+    public void autoLoadBallsIn(Telemetry telemetry, boolean reversed) throws InterruptedException {
+        if (!reversed) {
+            BallColor colorFront1 = colorSensor1.detectBallColor(2000, telemetry);
+            BallColor colorFront2 = colorSensor2.detectBallColor(2000, telemetry);
+            handleSensor(telemetry, colorFront1, colorFront2, true, dis1);
+        } else {
+            BallColor colorFront1 = colorSensor3.detectBallColor(2000, telemetry);
+            BallColor colorFront2 = colorSensor4.detectBallColor(2000, telemetry);
+            handleSensor(telemetry, colorFront1, colorFront2, false, dis2);
+        }
+
     }
 
     public void loadBallsIn(Telemetry telemetry, Gamepad gamepad) throws InterruptedException {
         if(!spindexerReversed && timeIntake.seconds() > 0.5) {
-            BallColor colorFront1 = colorSensor1.detectBallColor(1700, telemetry);
-            BallColor colorFront2 = colorSensor2.detectBallColor(1700, telemetry);
+            BallColor colorFront1 = colorSensor1.detectBallColor(2000, telemetry);
+            BallColor colorFront2 = colorSensor2.detectBallColor(2000, telemetry);
 
             handleSensor(telemetry, colorFront1, colorFront2, false, dis1);
         }
 
         if(spindexerReversed && timeIntake.seconds() > 0.5) {
-            BallColor colorTail3 = colorSensor3.detectBallColor(1700, telemetry);
-            BallColor colorTail4 = colorSensor4.detectBallColor(1700, telemetry);
+            BallColor colorTail3 = colorSensor3.detectBallColor(2000, telemetry);
+            BallColor colorTail4 = colorSensor4.detectBallColor(2000, telemetry);
             handleSensor(telemetry, colorTail3, colorTail4, true, dis2);
         }
 
