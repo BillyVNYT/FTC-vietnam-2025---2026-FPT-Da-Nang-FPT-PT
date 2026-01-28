@@ -29,6 +29,9 @@ public class ManualControl {
         if(gamepad2.crossWasPressed() && !shooter.isBusy()){
             shooter.shoot(telemetry);
         }
+        if(gamepad2.triangleWasPressed()&&!shooter.isBusy()){
+            shooter.shootAtLowZone(telemetry);
+        }
     }
 
     public void toggleIntake(){

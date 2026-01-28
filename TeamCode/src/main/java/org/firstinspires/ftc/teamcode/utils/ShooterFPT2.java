@@ -81,7 +81,7 @@ public class ShooterFPT2 {
 
     public void shoot(Telemetry telemetry) throws InterruptedException {
         isBusy = true;
-        double distance = limelight.getAprilTagData(telemetry).z;
+        double  distance = limelight.getAprilTagData(telemetry).z;
         SAngle.setPosition(calculateAngle(distance));
 
         if(distance <= 165){
@@ -106,6 +106,15 @@ public class ShooterFPT2 {
         setMotorVelocity(0);
         intake.stop();
 
+        isBusy = false;
+    }
+    public void shootAtLowZone(Telemetry telemetry) throws InterruptedException {
+        isBusy = true;
+        tprShot=2200;
+        SAngle.setPosition(0.8);
+        setMotorVelocity(tprShot);
+        sleep(FLYWHEEL_VELOCITY_GAIN_DURATION);
+        intake.start();
         isBusy = false;
     }
 

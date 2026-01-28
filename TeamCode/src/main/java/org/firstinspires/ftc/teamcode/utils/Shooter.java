@@ -121,13 +121,71 @@ public class Shooter {
 
         SLoaderOut.setPosition(SLoaderOutHiddenPos);
         setMotorVelocity(0, telemetry);
+        spindexer.spinToShooter(count, telemetry);
 
+        servoToggler.interrupt();
+        // END OF CONCURRENT EXECUTION
+        SLoaderUp1.setPwmDisable();
+        SLoaderUp2.setPwmDisable();
+        sleep(100);
         isBusy = false;
         telemetry.addData("Servo angle", SAngle.getPosition());
         telemetry.addLine("---------------------------");
         telemetry.update();
     }
+    public void LowzoneShoot(int count, SortBall spindexer, Telemetry telemetry) throws InterruptedException{
+        isBusy = true;
 
+        tprShot = 3000;
+        SAngle.setPosition(1);
+        setMotorVelocity(tprShot, telemetry);
+        sleep(FLYWHEEL_VELOCITY_GAIN_DURATION);
+
+        // load balls
+        SLoaderOut.setPosition(SLoaderOutVisiblePos);
+        sleep(500);
+        SLoaderUp1.setPwmEnable();
+        SLoaderUp2.setPwmEnable();
+
+        // START OF CONCURRENT EXECUTION OF SERVO LOADER UP AND SPINDEXER
+        Thread servoToggler = new Thread(() -> {
+            try {
+                while (isBusy) {
+                    SLoaderUp1.setPosition(0.0);
+                    SLoaderUp2.setPosition(0.0);
+                    Thread.sleep(120);
+
+                    SLoaderUp1.setPosition(0.1);
+                    SLoaderUp2.setPosition(0.1);
+                    Thread.sleep(120);
+                }
+            } catch (InterruptedException e) {
+            }
+        });
+        servoToggler.start();
+
+        spindexer.spinToShooter(count, telemetry);
+
+        servoToggler.interrupt();
+        // END OF CONCURRENT EXECUTION
+        SLoaderUp1.setPwmDisable();
+        SLoaderUp2.setPwmDisable();
+        sleep(100);
+
+        SLoaderOut.setPosition(SLoaderOutHiddenPos);
+        setMotorVelocity(0, telemetry);
+        spindexer.spinToShooter(count, telemetry);
+
+        servoToggler.interrupt();
+        // END OF CONCURRENT EXECUTION
+        SLoaderUp1.setPwmDisable();
+        SLoaderUp2.setPwmDisable();
+        sleep(100);
+        isBusy = false;
+        telemetry.addData("Servo angle", SAngle.getPosition());
+        telemetry.addLine("---------------------------");
+        telemetry.update();
+    }
     public void toggleFlywheel(Telemetry telemetry) {
         int maxShooterVelocity = 2200;
         if(!overwriteShoot) {
