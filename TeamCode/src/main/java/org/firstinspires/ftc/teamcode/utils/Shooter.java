@@ -264,7 +264,6 @@ public class Shooter {
                 // Giới hạn công suất
                 output = Math.max(-0.6, Math.min(0.6, output));
 
-                // --- LOGIC GIỚI HẠN TAO THÊM VÀO ---
                 double finalPower = MTurnOuttakeReverse ? -output : output;
 
                 // Chặn trên: Nếu vượt maxTurnShooter (1200) và vẫn muốn quay dương
@@ -273,7 +272,6 @@ public class Shooter {
                     integral = 0;
                     telemetry.addLine("!!! LIMIT REACHED: MAX !!!");
                 }
-                // Chặn dưới: Nếu vượt minTurnShooter (0) và vẫn muốn quay âm
                 else if (currentPos <= minTurnShooter && finalPower < 0) {
                     finalPower = 0;
                     integral = 0;
@@ -283,7 +281,6 @@ public class Shooter {
                 MTurnOuttake.setPower(finalPower);
             }
 
-            // --- GIỮ NGUYÊN ĐỐNG TELEMETRY CŨ CỦA MÀY ---
             telemetry.addData("Tx", error);
             telemetry.addData("distance", data.z);
             telemetry.addData("PID Out", lastError);
@@ -292,8 +289,6 @@ public class Shooter {
             telemetry.addData("error", error);
             telemetry.addLine("---------------------------");
             telemetry.addData("distance", data.z);
-            // Tao khuyên thật là nên comment cái update() này lại nếu chạy TeleOp
-            // Nhưng m thích thì t cứ để đấy.
             telemetry.update();
 
             return locked;
