@@ -103,6 +103,12 @@ public class GenericAutoFPT2 {
                 goToNextPath();
                 break;
 
+            case OPEN_GATE:
+                if(follower.isBusy()) break;
+                goToNextPath();
+                break;
+
+
             case START:
                 PathChain currentPath = paths.get(curPathIdx);
                 follower.followPath(currentPath);
