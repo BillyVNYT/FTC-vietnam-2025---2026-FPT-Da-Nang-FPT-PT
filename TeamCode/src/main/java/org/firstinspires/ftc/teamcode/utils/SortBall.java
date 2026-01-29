@@ -20,9 +20,11 @@ public class SortBall {
         PURPLE,
         EMPTY
     }
-    public double[] INTAKE_SLOT_POS = {0.3189, 0.1628, 0};
+    public double[] INTAKE_SLOT_POS = {0.331, 0.1750, 0.0125};
     public double[] INTAKE_SLOT_POS2 = {0.3994, 0.2628, 0.0983};
-    public double[] OUTTAKE_SLOT_POS = {0.0865 , 0.2106, 0.333, 0.7072, 0.8339, 0.9528};
+//    public double[] OUTTAKE_SLOT_POS = {0.0865 , 0.2106, 0.333, 0.7072, 0.8339, 0.9528};
+    public double[] OUTTAKE_SLOT_POS = {0.3667 , 0.2011, 0.0429, 0.7072, 0.8339, 0.9528};
+
     int bestSpin = 0;
     public boolean is_lastBall = false;
 
