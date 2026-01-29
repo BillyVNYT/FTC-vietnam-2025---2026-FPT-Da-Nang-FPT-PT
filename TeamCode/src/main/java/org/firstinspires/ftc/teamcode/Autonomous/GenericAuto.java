@@ -36,10 +36,6 @@ public class GenericAuto {
 
     private final TelemetryManager panelsTelemetry;
     public Follower follower;
-    public Shooter shooter;
-    private final SortBall spindexer;
-    private final Motif motif;
-    private final Intake intake;
     private final List<PathChain> paths = new ArrayList<>();
     private final List<PathState> states = new ArrayList<>();;
     private PathState currentState ;
@@ -53,10 +49,6 @@ public class GenericAuto {
 
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startPose);
-        intake = new Intake(hardwareMap);
-        shooter = new Shooter(hardwareMap);
-        motif = new Motif(hardwareMap);
-        spindexer = new SortBall(hardwareMap, shooter);
         this.goalId = goalId;
 
         buildPaths(follower, pathPoses);
@@ -67,10 +59,6 @@ public class GenericAuto {
         } else currentState = PathState.LEAVE;
 
         panelsTelemetry.update(telemetry);
-
-        for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
-            module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
-        }
     }
     
     private void buildPaths(Follower follower, PathPoses[] pathPoses) {
@@ -95,62 +83,35 @@ public class GenericAuto {
 
         switch (currentState) {
             case SHOOT:
-//                boolean locked = shooter.HoldShooter(goalId, telemetry, true);
-//                if (follower.isBusy() || !locked) {
-//                    break;
-//                }
-                if (follower.isBusy()) return;
-
-                if (!shotTriggered) {
-                    shooter.shoot(3, spindexer, telemetry);
-                    shotTriggered = true;
-                    break;
-                }
-
-                 if (!shooter.isBusy()) {
-                    shotTriggered = false;
-                    intake.start();
+                if (!follower.isBusy()){
                     goToNextPath();
-                 }
-                break;
+                    break;
+                };
 
             case PICK_UP:
-                if (follower.isBusy()) {
-                    spindexer.autoLoadBallsIn(telemetry);
+                if (!follower.isBusy()) {
+                    goToNextPath();
                     break;
                 }
-
-                spindexer.controlSpindexer(spindexer.INTAKE_SLOT_POS[2]);
-                sleep(1000);
-                spindexer.readyToShoot(false, telemetry);
-                intake.stop();
-                goToNextPath();
-                break;
 
             case START:
                 PathChain currentPath = paths.get(curPathIdx);
-                spindexer.readyToShoot(false, telemetry);
                 follower.followPath(currentPath);
 //                currentState = PathState.SCAN;
                 currentState = PathState.SHOOT;
                 break;
 
             case SCAN:
-                if (follower.isBusy()) break;
-
-                if (motif.getMotif() == null) {
-                    motif.setMotif(telemetry);
-                } else {
-                    shooter.updateOuttakeAngle(-0.5);
-                    sleep(200);
-                    shooter.updateOuttakeAngle(0);
-                    currentState = PathState.SHOOT;
-                }
-                break;
+                if (!follower.isBusy()){
+                    goToNextPath();
+                    break;
+                };
 
             case OPEN_GATE:
-                goToNextPath();
-                break;
+                if(!follower.isBusy()) {
+                    goToNextPath();
+                    break;
+                }
 
             case LEAVE:
                 panelsTelemetry.addData("done", "leave");

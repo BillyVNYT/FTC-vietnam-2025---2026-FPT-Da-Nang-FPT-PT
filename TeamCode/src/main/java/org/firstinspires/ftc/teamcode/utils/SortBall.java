@@ -42,10 +42,10 @@ public class SortBall {
     public SortBall(HardwareMap hardwareMap, Shooter shooter) {
         this.shooter = shooter;
 
-        colorSensor1 = hardwareMap.get(ColorSensor.class, "cs");
-        colorSensor2 = hardwareMap.get(ColorSensor.class, "cs2");
-        colorSensor3 = hardwareMap.get(ColorSensor.class, "cs3");
-        colorSensor4 = hardwareMap.get(ColorSensor.class, "cs4");
+//        colorSensor1 = hardwareMap.get(ColorSensor.class, "cs");
+//        colorSensor2 = hardwareMap.get(ColorSensor.class, "cs2");
+//        colorSensor3 = hardwareMap.get(ColorSensor.class, "cs3");
+//        colorSensor4 = hardwareMap.get(ColorSensor.class, "cs4");
 
         dis1 = hardwareMap.get(DistanceSensor.class, "ds");
         dis2 = hardwareMap.get(DistanceSensor.class, "ds2");
