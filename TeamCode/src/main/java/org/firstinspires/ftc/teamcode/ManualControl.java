@@ -65,7 +65,13 @@ public class ManualControl {
     }
 
     public void holdShooter(int goalId, Telemetry telemetry, boolean Reverse) {
-        shooter.holdShooter(goalId, telemetry, Reverse);
+        if(gamepad2.dpad_right){
+            shooter.MTurnOuttake.setPower(0.5);
+        } else if(gamepad2.dpad_left){
+            shooter.MTurnOuttake.setPower(-0.5);
+        } else {
+            shooter.holdShooter(goalId, telemetry, Reverse);
+        }
     }
 
 //    public void TurnShooterControl() {
