@@ -87,9 +87,7 @@ public class MainRobot {
 
     public void opMode(Telemetry telemetry) throws InterruptedException {
         manualControl2.updateShooterAngleServo(telemetry);
-
         manualControl2.toggleFlywheel(telemetry);
-
         manualControl2.controlIntakeShaft(telemetry);
         manualControl2.updateIntakeReverse();
 

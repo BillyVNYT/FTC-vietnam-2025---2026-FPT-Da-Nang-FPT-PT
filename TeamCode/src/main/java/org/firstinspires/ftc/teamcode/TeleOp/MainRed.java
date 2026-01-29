@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.utils.Shooter;
+
 
 //                       _oo0oo_
 //                      o8888888o
@@ -25,17 +27,19 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 //     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 @TeleOp
 public class MainRed extends LinearOpMode {
+    Shooter shooter;
     @Override
     public void runOpMode() throws InterruptedException {
         // 1. Khởi tạo robot
         MainRobot robot = new MainRobot(24, hardwareMap, gamepad2);
-
+        shooter = new Shooter(hardwareMap, false);
         waitForStart();
 
         robot.startThreads();
         robot.manageShootBallThread(telemetry);
         while (opModeIsActive()) {
             robot.opMode(telemetry);
+            shooter.updateLimelight(telemetry);
             telemetry.update();
         }
 

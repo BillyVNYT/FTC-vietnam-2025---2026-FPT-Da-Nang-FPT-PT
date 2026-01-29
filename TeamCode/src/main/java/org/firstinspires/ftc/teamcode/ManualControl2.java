@@ -50,7 +50,6 @@ public class ManualControl2 {
 
     public void controlIntakeShaft(Telemetry telemetry) throws InterruptedException {
         boolean intakeActive = intake.isActive();
-
         if(gamepad2.triangleWasPressed()) {
             if(intakeActive) intake.stop();
             else intake.start();

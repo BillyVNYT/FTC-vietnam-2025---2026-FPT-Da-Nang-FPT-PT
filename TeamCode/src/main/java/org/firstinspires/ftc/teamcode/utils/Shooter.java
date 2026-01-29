@@ -23,10 +23,10 @@ public class Shooter {
     private final ServoImplEx SLoaderUp1, SLoaderUp2;
 
     double servoAtLowZone = 0.45;
-    double P = 63.36;
-    double I = 0.53;
-    double D = 0.06;
-    double F = 0.01;
+    public double P = 1.6;
+    public double I = 0.0001;
+    public double D = 0.02;
+    public double F = 11.1859;
     double SLoaderOutHiddenPos = 0.03;
     double SLoaderOutVisiblePos = 0.182;
     boolean MTurnOuttakeReverse = false;
@@ -46,6 +46,7 @@ public class Shooter {
     double integral = 0;
     double lastError = 0;
     long lastTime = 0;
+    private double distance = 130;
 
     public Shooter(HardwareMap hardwareMap, boolean holdOuttake) {
         MShooter1 = hardwareMap.get(DcMotorEx.class, "m0");
@@ -118,16 +119,22 @@ public class Shooter {
         return arr;
     }
 
-
+    // Hàm này gọi liên tục trong vòng lặp while của OpMode để cập nhật distance
+    public void updateLimelight(Telemetry telemetry) {
+        ApriltagData data = limelight.getAprilTagData(telemetry);
+        if (data != null) {
+            this.distance = data.z;
+            telemetry.addData("Distance", this.distance);
+        }
+    }
     public void shoot(int count, SortBall spindexer, Telemetry telemetry, int overridedVelocity) throws InterruptedException {
         isBusy = true;
 
         // 1. Kiểm tra Null an toàn cho Limelight
         ApriltagData data = limelight.getAprilTagData(telemetry);
         double distance = (data != null) ? data.z : 130.0; // Khoảng cách mặc định nếu mất dấu
-
         // Tính toán góc và vận tốc
-        tprShot = (distance <= 100) ? 1000 : (distance <= 240) ? 1500 : 2300;
+        tprShot = (distance <= 100) ? 1000 : (distance <= 240) ? 2300 : 2500;
 
         if(overridedVelocity > 0) {
             tprShot = overridedVelocity;
@@ -171,7 +178,7 @@ public class Shooter {
     }
 
     public void toggleFlywheel(Telemetry telemetry) {
-        if(MShooter1.getVelocity() < 10) {
+        if(MShooter1.getVelocity() < 1000) {
             MShooter1.setVelocity(2000);
             MShooter2.setVelocity(2000);
             overwriteShoot = true; // Đồng bộ lại biến
@@ -272,7 +279,7 @@ public class Shooter {
         double b =  0.02004009;
         double c = 0.00006141738;
 
-        double offset = 0.275; // chỉnh cao lên
+        double offset = 0.282; // chỉnh cao lên
         telemetry.update();
 
         double pos = -0.635812 + 0.02004009 * dis - 0.00006141738 * Math.pow(dis, 2);

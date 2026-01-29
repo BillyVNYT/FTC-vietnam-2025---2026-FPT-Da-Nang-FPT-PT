@@ -83,7 +83,7 @@ public class SortBall {
     public void readyToShoot(boolean sort, Telemetry telemetry) {
         if (!sort) {
             controlSpindexer(OUTTAKE_SLOT_POS[0]);
-            shooter.setMotorVelocity(700, telemetry);
+            shooter.setMotorVelocity(shooter.tprShot, telemetry);
         } else {
             List<BallColor> outLoad = new ArrayList<>();
             outLoad.add(currentLoad.get(0));
