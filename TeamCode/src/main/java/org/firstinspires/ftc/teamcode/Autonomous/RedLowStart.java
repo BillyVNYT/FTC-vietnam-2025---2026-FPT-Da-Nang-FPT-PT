@@ -19,6 +19,8 @@ public class RedLowStart extends LinearOpMode{
             new PathPoses(Math.toRadians(90), RedLoadZoneToSemiLoadZonePose, GenericAuto.PathState.PICK_UP),
             new PathPoses(Math.toRadians(90), RedSemiLoadZoneToLoadZonePose, GenericAuto.PathState.PICK_UP),
             new PathPoses(Math.toRadians(90), RedLoadZoneReturnToLowZonePose, GenericAuto.PathState.SHOOT),
+            new PathPoses(Math.toRadians(90), RedLowZonePoseToPickUpLowPose, GenericAuto.PathState.PICK_UP),
+            new PathPoses(Math.toRadians(90), RedPickUpLowToLowZonePose,GenericAuto.PathState.SHOOT),
             new PathPoses(Math.toRadians(90), RedLowZoneToLeavePose, GenericAuto.PathState.LEAVE)
     };
     GenericAuto auto;
