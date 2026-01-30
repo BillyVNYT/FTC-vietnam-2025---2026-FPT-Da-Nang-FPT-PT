@@ -38,6 +38,7 @@ public class FullBlueTopStart extends LinearOpMode {
         telemetry.update();
 
         waitForStart();
+        auto.resetTimer();
 
         while (opModeIsActive() && !isStopRequested()) {
             auto.updateFollower(telemetry);

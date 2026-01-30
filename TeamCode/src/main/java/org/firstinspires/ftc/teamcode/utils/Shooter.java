@@ -21,7 +21,7 @@ public class Shooter {
     private final Servo SLoaderOut;
     private final ServoImplEx SLoaderUp1, SLoaderUp2;
 
-    double servoAtLowZone = 0.59;
+    double servoAtLowZone = 0.45;
     public double P = 1.6;
     public double I = 0.0001;
     public double D = 0.02;
@@ -139,7 +139,7 @@ public class Shooter {
 
         if(overridedVelocity > 0) {
             tprShot = overridedVelocity;
-//            SAngle.setPosition(servoAtLowZone);
+            SAngle.setPosition(servoAtLowZone);
         } else {
             double angle = calculateAngle(distance, spindexer.is_lastBall);
             SAngle.setPosition(angle);
