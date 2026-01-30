@@ -35,9 +35,6 @@ public class ManualControl {
             shooter.MShooter2.setPower(0);
             intake.stop();
         }
-        if(gamepad2.triangleWasPressed()&&!shooter.isBusy()){
-            shooter.shootAtLowZone(telemetry);
-        }
     }
 
     public void toggleIntake(){
