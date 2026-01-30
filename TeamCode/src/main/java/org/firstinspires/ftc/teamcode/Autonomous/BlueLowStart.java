@@ -22,6 +22,7 @@ public class BlueLowStart extends LinearOpMode{
         auto = new GenericAuto(telemetry, hardwareMap, StartBluePose, pathPoses,20);
         telemetry.addLine("Initialized, waiting for start");
         telemetry.update();
+        waitForStart();
         while (opModeIsActive() && !isStopRequested()) {
             auto.updateFollower(telemetry);
             telemetry.update();

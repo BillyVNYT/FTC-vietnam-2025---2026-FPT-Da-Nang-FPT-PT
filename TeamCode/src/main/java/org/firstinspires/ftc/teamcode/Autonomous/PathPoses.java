@@ -7,6 +7,7 @@ public class PathPoses {
     public double endHeading = -1;
     public final Pose[] poses;
     public final GenericAuto.PathState type;
+    private PathConstraints constraints;
 
 
     public PathPoses(double startHeading, double endHeading, Pose[] poses, GenericAuto.PathState type) {
@@ -23,6 +24,10 @@ public class PathPoses {
     }
 
     public PathPoses setPathConstraints(PathConstraints fastConstraints) {
+        return this;
+    }
+    public PathPoses setConstraints(PathConstraints constraints) {
+        this.constraints = constraints;
         return this;
     }
 }
