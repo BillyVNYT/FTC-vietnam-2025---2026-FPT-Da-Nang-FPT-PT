@@ -252,7 +252,7 @@ public class Shooter {
 
             limeLightZ = data.z;
             limelightId = data.id;
-            limelightX = data.x; // Tx
+            limelightX = data.x-7; // Tx
 
             long now = System.nanoTime();
 

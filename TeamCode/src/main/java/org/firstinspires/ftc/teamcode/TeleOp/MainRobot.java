@@ -23,8 +23,8 @@ public class MainRobot {
     private final AtomicBoolean isRunning = new AtomicBoolean(false);
 
     MainRobot(int goalId, HardwareMap hardwareMap, Gamepad gamepad2, Telemetry telemetry) {
-        driveTrain = new DriveTrain(hardwareMap);
-        manualControl2 = new ManualControl2(hardwareMap, gamepad2, telemetry);
+        driveTrain = new DriveTrain(hardwareMap, goalId == 24);
+        manualControl2 = new ManualControl2(hardwareMap, gamepad2, telemetry, goalId == 24);
         for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
@@ -40,24 +40,35 @@ public class MainRobot {
 
         // 1. Thread cho Drivetrain
         driveThread = new Thread(() -> {
-            while (isRunning.get() && !Thread.currentThread().isInterrupted()) {
-                driveTrain.drivetrainControlBasic(gamepad2);
+            try {
+                while (isRunning.get() && !Thread.currentThread().isInterrupted()) {
+                    driveTrain.drivetrainControlBasic(gamepad2);
+                    Thread.sleep(10);
+                }
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
         });
 
         // 2. Thread cho HoldShooter
         holdShooterThread = new Thread(() -> {
-            while (isRunning.get() && !Thread.currentThread().isInterrupted()) {
-                manualControl2.holdShooter(goalId);
+            try {
+                while (isRunning.get() && !Thread.currentThread().isInterrupted()) {
+                    manualControl2.holdShooter(goalId);
+                    Thread.sleep(10);
+                }
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
+
         });
 
         shooterThread = new Thread(() -> {
             try {
-                manualControl2.shootBall();
-                while (true) {
+                while (isRunning.get() && !Thread.currentThread().isInterrupted()) {
                     manualControl2.shootBall();
                     manualControl2.shootSingleBall();
+                    Thread.sleep(10);
                 }
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
@@ -95,7 +106,7 @@ public class MainRobot {
         manualControl2.updateShooterAngleServo();
         manualControl2.toggleFlywheel();
         manualControl2.controlIntakeShaft();
-//        manualControl2.printShooter();
+        manualControl2.printShooter();
 
         manualControl2.updateMTurnOuttakeAngle();
         manualControl2.holdShooter(goalId);

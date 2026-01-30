@@ -21,11 +21,11 @@ public class ManualControl2 {
     int overrideShooterVelocity = 2000;
     Telemetry telemetry;
 
-    public ManualControl2(HardwareMap hardwareMap, Gamepad gamepad, Telemetry telemetry) {
+    public ManualControl2(HardwareMap hardwareMap, Gamepad gamepad, Telemetry telemetry, boolean isRed) {
         shooter = new Shooter(hardwareMap, false, telemetry);
         intake = new Intake(hardwareMap);
         gamepad2 = gamepad;
-        spindexer = new SortBall(hardwareMap, shooter);
+        spindexer = new SortBall(hardwareMap, shooter, isRed);
         this.telemetry = telemetry;
     }
 
@@ -63,9 +63,9 @@ public class ManualControl2 {
     }
 
     public void updateShooterAngleServo(){
-        if(gamepad2.dpad_up){
+        if(gamepad2.right_bumper){
             shooter.SAngle.setPosition(shooter.SAngle.getPosition()+0.008);
-        } else if(gamepad2.dpad_down){
+        } else if(gamepad2.left_bumper){
             shooter.SAngle.setPosition(shooter.SAngle.getPosition()-0.008);
         }
         telemetry.addData("Pos", shooter.SAngle.getPosition());

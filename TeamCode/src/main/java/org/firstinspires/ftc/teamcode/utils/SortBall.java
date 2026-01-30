@@ -38,8 +38,9 @@ public class SortBall {
     int baseClearCS1, baseClearCS2;
     Shooter shooter;
     DistanceSensor dis1, dis2;
+    boolean isRed = false;
 
-    public SortBall(HardwareMap hardwareMap, Shooter shooter) {
+    public SortBall(HardwareMap hardwareMap, Shooter shooter, boolean isRed) {
         this.shooter = shooter;
 
         colorSensor1 = hardwareMap.get(ColorSensor.class, "cs");
@@ -64,6 +65,8 @@ public class SortBall {
         currentLoad.add(BallColor.EMPTY);
         baseClearCS1 = colorSensor1.getClear();
         baseClearCS2 = colorSensor2.getClear();
+
+        this.isRed = isRed;
     }
 
 
@@ -226,14 +229,16 @@ public class SortBall {
             shakeServo();
         }
 
-        if(gamepad.left_stick_y > 0 && spindexerReversed) {
+        boolean takingFront = isRed ? gamepad.dpadDownWasPressed() : gamepad.dpadUpWasPressed();
+        boolean takingBack = isRed ? gamepad.dpadUpWasPressed() : gamepad.dpadDownWasPressed();
+        if(takingFront && spindexerReversed) {
             // chuyển hướng đi tiến
             spindexerReversed = false;
             controlSpindexer(nextSlot);
             timeIntake.reset();
         }
 
-        if(gamepad.left_stick_y < 0 && !spindexerReversed){
+        if(takingBack && !spindexerReversed){
             // chuyển hướng đi lùi
             spindexerReversed = true;
             controlSpindexer(nextSlot2);
