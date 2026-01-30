@@ -9,14 +9,13 @@ public class RedPathPoses {
     public static Pose RedCp2LowZoneToLoadZone =new Pose(106.73684210526315, 10.947368421052621);
     public static Pose RedLoadZone = new Pose(132.54028436018956, 10.080568720379151);
     public static Pose RedSemiLoadZone = new Pose(118.03791469194312, 10.080568720379151);
-    public static Pose RedPickUpLow = new Pose(115.157894736842092, 44.894736842105274);
-    public static Pose RedLeavePose = new Pose(113.26315789473683, 10.42105263157894);
+    public static Pose RedPickUpLow = new Pose(115.157894736842092, 35.894736842105274);
+    public static Pose RedLeavePose = new Pose(113.26315789473683, 35.631578947368425);
     public static Pose[] RedStartToLowZonePose = {StartRedPose, RedLowZonePose};
     public static Pose[] RedLowZoneToLoadZonePose = {RedLowZonePose, RedCp1LowZoneToLoadZone, RedCp2LowZoneToLoadZone, RedLoadZone};
     public static Pose[] RedLoadZoneReturnToLowZonePose = {RedLoadZone, RedLowZonePose};
     public static Pose[] RedLoadZoneToSemiLoadZonePose = {RedLoadZone, RedSemiLoadZone};
     public static Pose[] RedSemiLoadZoneToLoadZonePose = {RedSemiLoadZone, RedLoadZone};
-    public static Pose[] RedLoadZoneToLowZonePose = {RedLoadZone,RedLowZonePose};
     public static Pose[] RedLowZonePoseToPickUpLowPose = {RedLowZonePose, RedPickUpLow};
     public static Pose[] RedPickUpLowToLowZonePose = {RedPickUpLow, RedLowZonePose};
     public static Pose[] RedLowZoneToLeavePose = {RedLowZonePose, RedLeavePose};
