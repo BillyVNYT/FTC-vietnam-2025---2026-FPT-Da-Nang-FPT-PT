@@ -13,14 +13,14 @@ public class TuningShooter extends LinearOpMode {
     LimelightHardware limelightHardware;
     @Override
     public void runOpMode() throws InterruptedException {
-        shooter = new Shooter(hardwareMap, false);
+        shooter = new Shooter(hardwareMap, false, telemetry);
         limelightHardware = new LimelightHardware(hardwareMap);
         waitForStart();
         while (opModeIsActive()){
             if(gamepad1.dpadRightWasPressed()) {
-                shooter.setMotorVelocity(1800, telemetry);
+                shooter.setMotorVelocity(1800);
             } else if(gamepad1.dpadLeftWasPressed()){
-                shooter.setMotorVelocity(0, telemetry);
+                shooter.setMotorVelocity(0);
             }
             if(gamepad1.dpad_up){
                 shooter.SAngle.setPosition(shooter.SAngle.getPosition()+0.0002);

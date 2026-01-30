@@ -73,14 +73,14 @@ public class LimelightHardware {
             for (FiducialResult fiducial : fiducials) {
                 double distance = 0;
                 int id = fiducial.getFiducialId();
-                if(id == 24|| id == 20){
+                if(id == 24 || id == 20) {
                     distance = 172.08*fiducial.getTargetPoseCameraSpace().getPosition().z - 16.816;
                 } else if (id >= 21 && id < 24 && motif == null) {
                     setMotif(id);
                 }
 
                 apriltagData = new ApriltagData(result.getTx(), result.getTy(),
-                        distance, result.getTa(), fiducial.getFiducialId());
+                        distance, result.getTa(), id);
                 return apriltagData;
             }
         }

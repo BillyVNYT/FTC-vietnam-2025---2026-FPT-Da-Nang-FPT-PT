@@ -27,22 +27,19 @@ import org.firstinspires.ftc.teamcode.utils.Shooter;
 //     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 @TeleOp
 public class MainRed extends LinearOpMode {
-    Shooter shooter;
     @Override
     public void runOpMode() throws InterruptedException {
-        // 1. Khởi tạo robot
-        MainRobot robot = new MainRobot(24, hardwareMap, gamepad2);
-        shooter = new Shooter(hardwareMap, false);
+        MainRobot robot = new MainRobot(24, hardwareMap, gamepad2, telemetry);
         waitForStart();
 
-        robot.startThreads();
-        robot.manageShootBallThread(telemetry);
-        while (opModeIsActive()) {
-            robot.opMode(telemetry);
-            shooter.updateLimelight(telemetry);
-            telemetry.update();
+        try {
+            robot.startThreads();
+            while (opModeIsActive()) {
+                robot.opMode(telemetry);
+                telemetry.update();
+            }
+        } finally {
+            robot.stopThreads();
         }
-
-        robot.stopThreads();
     }
 }

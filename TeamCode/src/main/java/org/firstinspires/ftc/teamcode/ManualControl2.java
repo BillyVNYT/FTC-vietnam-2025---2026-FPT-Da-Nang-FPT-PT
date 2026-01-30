@@ -17,70 +17,61 @@ public class ManualControl2 {
     SortBall spindexer;
     Gamepad gamepad2;
     Intake intake;
-    boolean readyToShot = false;
 
     int overrideShooterVelocity = 2000;
-    // Giả sử mày đã biết khoảng an toàn của motor
-    private final int MAX_POS = 1000;
-    private final int MIN_POS = 0;
-    public ManualControl2(HardwareMap hardwareMap, Gamepad gamepad) {
-//        lifter = new Lifter(hardwareMap);
-        shooter = new Shooter(hardwareMap, false);
+    Telemetry telemetry;
+
+    public ManualControl2(HardwareMap hardwareMap, Gamepad gamepad, Telemetry telemetry) {
+        shooter = new Shooter(hardwareMap, false, telemetry);
         intake = new Intake(hardwareMap);
         gamepad2 = gamepad;
         spindexer = new SortBall(hardwareMap, shooter);
+        this.telemetry = telemetry;
     }
 
-    public void controlTurnOutTake(Telemetry telemetry) {
-        if(gamepad2.dpad_left) {
-            shooter.updateOuttakeAngle(-0.5);
-        } else if(gamepad2.dpad_right) {
-            shooter.updateOuttakeAngle(0.5);
-        } else shooter.updateOuttakeAngle(0);
-
+    public void shootSingleBall() throws InterruptedException{
+        if(gamepad2.squareWasPressed() && !shooter.isBusy()){
+            spindexer.goToFirstBall();
+            sleep(200);
+            shooter.shoot(1, spindexer, 2200);
+        }
     }
-
-    public void shootBall(Telemetry telemetry) throws InterruptedException{
+    public void shootBall() throws InterruptedException{
         if(gamepad2.crossWasPressed() && !shooter.isBusy()){
             spindexer.readyToShoot(false, telemetry);
             sleep(200);
-            shooter.shoot(3, spindexer, telemetry, 0);
+            shooter.shoot(3, spindexer, 2200);
         }
     }
 
-    public void controlIntakeShaft(Telemetry telemetry) throws InterruptedException {
-        boolean intakeActive = intake.isActive();
+    public void controlIntakeShaft() throws InterruptedException {
         if(gamepad2.triangleWasPressed()) {
-            if(intakeActive) intake.stop();
-            else intake.start();
+            intake.toggle();
         }
 
-        if(intakeActive) {
+        if(intake.isActive()) {
+            spindexer.activateShakeServo();
             spindexer.loadBallsIn(telemetry, gamepad2);
             if (spindexer.isFull()) intake.stop();
+        } else {
+            spindexer.deactivateShakeServo();
         }
     }
-    public void updateReadyToShot(Telemetry telemetry){
-        if(gamepad2.squareWasPressed()){
-            if(!readyToShot) {
-                spindexer.readyToShoot(false, telemetry);
-                readyToShot = true;
-            } else {
-                shooter.setMotorVelocity(0, telemetry);
-                readyToShot = false;
-            }
-        }
+
+    public void stopThreadShakeServo() throws InterruptedException {
+        spindexer.deactivateShakeServo();
     }
-    public void updateShooterAngleServo(Telemetry telemetry){
+
+    public void updateShooterAngleServo(){
         if(gamepad2.dpad_up){
-            shooter.SAngle.setPosition(shooter.SAngle.getPosition()+0.0008);
+            shooter.SAngle.setPosition(shooter.SAngle.getPosition()+0.008);
         } else if(gamepad2.dpad_down){
-            shooter.SAngle.setPosition(shooter.SAngle.getPosition()-0.0008);
+            shooter.SAngle.setPosition(shooter.SAngle.getPosition()-0.008);
         }
         telemetry.addData("Pos", shooter.SAngle.getPosition());
     }
 
-    public void controlTpr(Telemetry telemetry) {
+    public void controlTpr() {
         if(gamepad2.rightBumperWasPressed()) {
             overrideShooterVelocity += 100;
         } else if (gamepad2.leftBumperWasPressed()) {
@@ -94,29 +85,26 @@ public class ManualControl2 {
         telemetry.addData("curVelocity M1", curVelocity[0]);
         telemetry.addData("error M1", error);
         telemetry.addLine("---------------------------");
-        telemetry.update();
+
     }
 
-    public void updateTuneFactor(Telemetry telemetry) {
+    public void updateTuneFactor() {
         String next = "p";
         if(gamepad2.squareWasPressed()) {
             next = shooter.goToNextPidf();
         }
         telemetry.addData("Tuning factor", next);
     }
-
-
     double[] steps = {0.001, 0.01, 0.1, 1};
     int stepIdx = 0;
-    public void updateTuneStep(Telemetry telemetry) {
+    public void updateTuneStep() {
         if(gamepad2.dpadRightWasPressed()) {
             stepIdx = (stepIdx + 1) % steps.length;
         }
-//        telemetry.addData("step", steps[stepIdx]);
     }
 
     double[] arr = {0, 0, 0, 0};
-    public void tuneP(Telemetry telemetry) {
+    public void tuneP() {
         if (gamepad2.right_trigger > 0.2) {
             arr = shooter.tunePidf(steps[stepIdx], telemetry);
 
@@ -133,12 +121,10 @@ public class ManualControl2 {
     public void updateIntakeReverse(){
         if(gamepad2.dpad_left){
             intake.reverse();
-        } else if(gamepad2.dpad_right){
-            intake.stop();
         }
     }
 
-    public void shootPurpleBall(Telemetry telemetry) throws InterruptedException {
+    public void shootPurpleBall() throws InterruptedException {
         if(!gamepad2.rightBumperWasPressed()) return;
 
         int purpleIdx = spindexer.getCurrentLoad().indexOf(SortBall.BallColor.PURPLE);
@@ -146,28 +132,36 @@ public class ManualControl2 {
             spindexer.spinTargetToShooter(SortBall.BallColor.PURPLE);
             sleep(200);
 
-            shooter.shoot(1, spindexer, telemetry, 0);
+            shooter.shoot(1, spindexer, 0);
         }
     }
 
-    public void shootGreenBall(Telemetry telemetry) throws InterruptedException {
+    public void shootGreenBall() throws InterruptedException {
         if(!gamepad2.leftBumperWasPressed()) return;
 
         int greenIdx = spindexer.getCurrentLoad().indexOf(SortBall.BallColor.GREEN);
         if (greenIdx > -1 && !shooter.isBusy()) {
             spindexer.spinTargetToShooter(SortBall.BallColor.GREEN);
 
-            shooter.shoot(1, spindexer, telemetry, 0);
+            shooter.shoot(1, spindexer, 0);
         }
     }
 
-    public void toggleFlywheel(Telemetry telemetry) {
+    public void toggleFlywheel() {
         if(gamepad2.circleWasPressed()){
-            shooter.toggleFlywheel(telemetry);
+            shooter.toggleFlywheel();
         }
     }
 
-    public void holdShooter(int goalId, Telemetry telemetry) {
-        shooter.HoldShooter(goalId, telemetry);
+    public void printShooter() {
+        shooter.printShooterData();
+    }
+
+    public void holdShooter(int goalId) {
+        shooter.holdShooter(goalId);
+    }
+
+    public void updateMTurnOuttakeAngle() {
+        shooter.updateOuttakeAngle();
     }
 }

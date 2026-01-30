@@ -19,7 +19,7 @@ public class ShooterTuner extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         // Khởi tạo shooter
-        shooter = new Shooter(hardwareMap, false);
+        shooter = new Shooter(hardwareMap, false, telemetry);
 
         telemetry.addLine("--- CHƯƠNG TRÌNH TUNE SHOOTER ---");
         telemetry.addLine("Dpad UP/DOWN: Chọn thông số (P, I, D, F, Target)");
@@ -61,9 +61,9 @@ public class ShooterTuner extends LinearOpMode {
             lastA = gamepad1.a;
 
             if (motorOn) {
-                shooter.setMotorVelocity((int)targetVelocity, telemetry);
+                shooter.setMotorVelocity((int)targetVelocity);
             } else {
-                shooter.setMotorVelocity(0, telemetry);
+                shooter.setMotorVelocity(0);
             }
 
             // 4. HIỂN THỊ LÊN MÀN HÌNH (Đây là thứ mày cần)

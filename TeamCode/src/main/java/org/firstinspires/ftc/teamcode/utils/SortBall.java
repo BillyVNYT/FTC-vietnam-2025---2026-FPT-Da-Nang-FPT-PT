@@ -20,10 +20,9 @@ public class SortBall {
         PURPLE,
         EMPTY
     }
-    public double[] INTAKE_SLOT_POS = {0.331, 0.1750, 0.0125};
-    public double[] INTAKE_SLOT_POS2 = {0.3994, 0.2628, 0.0983};
-//    public double[] OUTTAKE_SLOT_POS = {0.0865 , 0.2106, 0.333, 0.7072, 0.8339, 0.9528};
-    public double[] OUTTAKE_SLOT_POS = {0.3667 , 0.2011, 0.0429, 0.7072, 0.8339, 0.9528};
+    public double[] INTAKE_SLOT_POS = {0.9728, 0.8039, 0.6411};
+    public double[] INTAKE_SLOT_POS2 = {0.7228, 0.5644, 0.4028};
+    public double[] OUTTAKE_SLOT_POS = {0.8467, 0.6783, 0.5144, 0.3522, 0.1883, 0.0444};
 
     int bestSpin = 0;
     public boolean is_lastBall = false;
@@ -83,15 +82,19 @@ public class SortBall {
     public void readyToShoot(boolean sort, Telemetry telemetry) {
         if (!sort) {
             controlSpindexer(OUTTAKE_SLOT_POS[0]);
-            shooter.setMotorVelocity(shooter.tprShot, telemetry);
+            shooter.setMotorVelocity(shooter.tprShot);
         } else {
-            List<BallColor> outLoad = new ArrayList<>();
-            outLoad.add(currentLoad.get(0));
-            outLoad.add(currentLoad.get(2));
-            outLoad.add(currentLoad.get(1));
-
-            bestSpin = getBestSpin(outLoad, telemetry);
+            bestSpin = getBestSpin(currentLoad, telemetry);
             controlSpindexer(OUTTAKE_SLOT_POS[bestSpin]);
+        }
+    }
+
+    public void goToFirstBall() {
+        for (int i = 0; i < currentLoad.size(); i++) {
+            if (currentLoad.get(i) != BallColor.EMPTY) {
+                controlSpindexer(OUTTAKE_SLOT_POS[i]);
+                break;
+            }
         }
     }
 
@@ -128,14 +131,14 @@ public class SortBall {
     }
 
 
-    private void handleSensor(Telemetry telemetry, ColorSensor colorSensor1, ColorSensor colorSensor2, boolean reversed, DistanceSensor distance, int cValue) throws InterruptedException{
+    private boolean handleSensor(Telemetry telemetry, ColorSensor colorSensor1, ColorSensor colorSensor2, boolean reversed, DistanceSensor distance, int cValue) throws InterruptedException{
         telemetry.addData("distance", distance.getDistance(DistanceUnit.MM));
         if(distance.getDistance(DistanceUnit.MM) < 150 || distance.getDistance(DistanceUnit.MM) > 2000) {
             int firstEmptyIdx = getFirstEmptySlot();
 
             telemetry.addData("Empty slot", firstEmptyIdx);
 
-            if (firstEmptyIdx < 0) return;
+            if (firstEmptyIdx < 0) return false;
 
            BallColor detectedColor = detectLogic(colorSensor1, colorSensor2, cValue);
 
@@ -150,10 +153,47 @@ public class SortBall {
                 } else {
                     String currentBalls = currentLoad.toString();
                     telemetry.addData("ALL IN", currentBalls);
-                    telemetry.update();
                     readyToShoot(false, telemetry);
+                    shooter.toggleFlywheel();
                 }
+
+                return true;
             }
+            return false;
+        }
+        return false;
+    }
+
+    Thread shakeServoThread;
+    boolean shakeActive = false;
+
+    private void shakeServo() throws InterruptedException{
+        if(!shakeActive) {
+            if(shakeServoThread == null) return;
+
+            shakeServoThread.join();
+            shakeServoThread = null;
+        } else {
+            if(shakeServoThread != null) return;
+
+            shakeServoThread = new Thread(() -> {
+                boolean shakeLeft = true;
+                try {
+                    while (shakeActive) {
+                        double curPos = spindexer1.getPosition();
+
+                        controlSpindexer(shakeLeft ? curPos + 0.01 : curPos - 0.01);
+                        Thread.sleep(100);
+                        shakeLeft = !shakeLeft;
+                    }
+
+                    controlSpindexer(spindexer1.getPosition());
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+
+            });
+            shakeServoThread.start();
         }
     }
 
@@ -165,23 +205,35 @@ public class SortBall {
         }
     }
 
+    public void deactivateShakeServo() throws InterruptedException {
+        shakeActive = false;
+        shakeServo();
+    }
+
+    public void activateShakeServo() throws InterruptedException {
+        shakeActive = true;
+        shakeServo();
+    }
+
     public void loadBallsIn(Telemetry telemetry, Gamepad gamepad) throws InterruptedException {
+
         if(!spindexerReversed && timeIntake.seconds() > 0.5) {
             handleSensor(telemetry, colorSensor1, colorSensor2, false, dis1, 1800);
         }
 
         if(spindexerReversed && timeIntake.seconds() > 0.5) {
-           handleSensor(telemetry, colorSensor3, colorSensor4, true, dis2, 1800);
+            handleSensor(telemetry, colorSensor3, colorSensor4, true, dis2, 1800);
+            shakeServo();
         }
 
-        if(gamepad.left_stick_x < 0 && spindexerReversed) {
+        if(gamepad.left_stick_y > 0 && spindexerReversed) {
             // chuyển hướng đi tiến
             spindexerReversed = false;
             controlSpindexer(nextSlot);
             timeIntake.reset();
         }
 
-        if(gamepad.left_stick_x > 0 && !spindexerReversed){
+        if(gamepad.left_stick_y < 0 && !spindexerReversed){
             // chuyển hướng đi lùi
             spindexerReversed = true;
             controlSpindexer(nextSlot2);
@@ -246,7 +298,8 @@ public class SortBall {
 
     public void spinToShooter(int count, Telemetry telemetry) throws InterruptedException{
         releaseBall(count-1);
-        sleep(600);
+        sleep(1000);
+        if(count == 1) return;
 
         for(int i = 1; i < count + 1; i++) { // xoay them 1 vi tri de ban qua cuoi cung
             controlSpindexer(OUTTAKE_SLOT_POS[bestSpin + i]);
@@ -254,13 +307,12 @@ public class SortBall {
             if(i == count){
                 is_lastBall = true;
             }
-            sleep(600);
+            sleep(1000);
         }
 
         // spin to next empty slot
         int firstEmptyIdx = getFirstEmptySlot();
         telemetry.addData("firstEmptyIdx",firstEmptyIdx);
-        telemetry.update();
 
         nextSlot = INTAKE_SLOT_POS[firstEmptyIdx];
         nextSlot2 = INTAKE_SLOT_POS2[firstEmptyIdx];
