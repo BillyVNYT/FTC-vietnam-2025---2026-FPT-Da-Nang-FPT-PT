@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.utils;
 
 import static java.lang.Thread.sleep;
 
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -44,7 +45,8 @@ public class Shooter {
 
     volatile boolean isBusy = false;
 
-    int tprShot = 1;
+    public int tprShot = 1;
+    RevBlinkinLedDriver led;
     boolean overwriteShoot;
     double kP = 0.065;
     double kI = 0.0001;
@@ -55,6 +57,15 @@ public class Shooter {
     double integral = 0;
     double lastError = 0;
     long lastTime = 0;
+
+    public double TurnkP = 0.065;
+    public double TurnkI = 0.0001;
+    public double TurnkD = 0.015;
+
+    private double Turnintegral = 0;
+    private double TurnlastError = 0;
+    private long TurnlastTime = 0;
+    private static final double INTEGRAL_LIMIT = 500;
 
     public Shooter(HardwareMap hardwareMap) {
         MShooter1 = hardwareMap.get(DcMotorEx.class, "m0");
@@ -90,7 +101,7 @@ public class Shooter {
 
         // 1. Kiểm tra Null an toàn cho Limelight
         ApriltagData data = limelight.getAprilTagData(telemetry);
-        double distance = (data != null) ? data.z : 130.0; // Khoảng cách mặc định nếu mất dấu
+        double distance = (data != null) ? data.z : 100.0; // Khoảng cách mặc định nếu mất dấu
 
         // Tính toán góc và vận tốc
         tprShot = (distance <= 100) ? 1000 : (distance <= 240) ? 1500 : 2300;
@@ -277,5 +288,32 @@ public class Shooter {
 //    }
     public void updateServoAngle(double degree, Telemetry telemetry){
         SAngle.setPosition(0.03638079*degree - 0.8736323);
+    }
+    public double update(double target, double current) {
+        long now = System.nanoTime();
+        double dt = (now - TurnlastTime) / 1e9; // giây
+        TurnlastTime = now;
+
+        if (dt <= 0) dt = 1e-3;
+
+        double error = target - current;
+
+        // Integral
+        Turnintegral += error * dt;
+        Turnintegral = Math.max(-INTEGRAL_LIMIT, Math.min(INTEGRAL_LIMIT, integral));
+
+        // Derivative
+        double derivative = (error - TurnlastError) / dt;
+        TurnlastError = error;
+
+        return TurnkP * error + TurnkI * Turnintegral + TurnkD * derivative;
+    }
+    public void holdMotor(DcMotor motor) {
+        int currentPos = motor.getCurrentPosition();
+
+        double power = update(0, currentPos);
+        power = Math.max(-0.6, Math.min(0.6, power));
+
+        motor.setPower(power);
     }
 }

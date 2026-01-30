@@ -4,6 +4,7 @@ import static java.lang.Thread.sleep;
 
 import android.annotation.SuppressLint;
 
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -22,17 +23,17 @@ public class ShooterFPT2 {
     public final DcMotorEx MShooter1, MShooter2;
     public final DcMotorEx MTurnOuttake;
     public Servo SAngle;
+    public RevBlinkinLedDriver led;
     double SAngleLowest = 0.8492, SBackKickOff = 0, SBackKickOn = 0.9;
     double SGate1Close = 0.03, SGate1Open = 0.182, SGate2Close = 0.03, SGate2Open = 0.182;
-    public double P = 18, I = 0.2, D = 0.05, F = 0.5;
+    public double P = 18, I = 0.3, D = 0.075, F = 0.5;
     boolean MTurnOuttakeReverse = false;
     volatile boolean isBusy = false;
     int tprShot = 1;
     boolean overwriteShoot;
     int FLYWHEEL_VELOCITY_GAIN_DURATION = 200;
     int THREE_BALLS_SHOOTING_DURATION = 1000;
-    int MIN_TPR = 1450
-            ;
+    int MIN_TPR = 1400;
 //    private final DistanceSensor DSensor;
     private final IntakeFPT2 intake;
     boolean isFull = false;
@@ -40,7 +41,15 @@ public class ShooterFPT2 {
     double lastError = 0;
     double integralSum = 0;
     long lastTime = System.nanoTime();
-    int maxTick = 670, minTick = -621;
+    int maxTick = 234, minTick = -234;
+    public double TurnkP = 0.065;
+    public double TurnkI = 0.0001;
+    public double TurnkD = 0.015;
+
+    private double Turnintegral = 0;
+    private double TurnlastError = 0;
+    private long TurnlastTime = 0;
+    private static final double INTEGRAL_LIMIT = 500;
 
     public ShooterFPT2(HardwareMap hardwareMap, IntakeFPT2 intake) {
         MShooter1 = hardwareMap.get(DcMotorEx.class, "m6");
@@ -59,7 +68,9 @@ public class ShooterFPT2 {
         MShooter1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
         MShooter2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
 
-        SAngle = hardwareMap.get(Servo.class, "s4");
+        led = hardwareMap.get(RevBlinkinLedDriver.class, "s9");
+
+        SAngle = hardwareMap.get(Servo.class, "s3");
 //        SAngle.setDirection(Servo.Direction.REVERSE);
 //        SAngle.setPosition(SAngleLowest);
 //
@@ -92,7 +103,7 @@ public class ShooterFPT2 {
 
     @SuppressLint("SuspiciousIndentation")
     public void shoot(Telemetry telemetry) throws InterruptedException {
-        double distance = 150;
+        double distance = 100;
         if (limelight.getAprilTagData(telemetry) != null)
             distance = limelight.getAprilTagData(telemetry).z;
             telemetry.addData("distance", distance);
@@ -100,14 +111,19 @@ public class ShooterFPT2 {
                 tprShot = MIN_TPR;
                 SAngle.setPosition(calculateAngle(distance, 0.15));
             } else if (distance <= 240) {
-                SAngle.setPosition(calculateAngle(distance, 0.08));
-                tprShot = 1675;
+                SAngle.setPosition(calculateAngle(distance, 0.1));
+                tprShot = 1600;
             } else {
-                tprShot = 2700;
-                SAngle.setPosition(calculateAngle(distance,0.05));
+                tprShot = 2800;
+                SAngle.setPosition(calculateAngle(distance,-0.05));
             }
             telemetry.addData("error", tprShot-MShooter1.getVelocity());
             setMotorVelocity(tprShot);
+            if(Math.abs(tprShot-MShooter1.getVelocity()) < 70){
+                led.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
+            } else {
+                led.setPattern(RevBlinkinLedDriver.BlinkinPattern.RAINBOW_RAINBOW_PALETTE);
+            }
         }
 
     //    private void resetShooterServos() {
@@ -194,5 +210,29 @@ public class ShooterFPT2 {
             MTurnOuttake.setPower(0);
         }
         telemetry.addData("encoder", MTurnOuttake.getCurrentPosition());
+    }
+    public double update(double target, double current) {
+        long now = System.nanoTime();
+        double dt = (now - TurnlastTime) / 1e9; // giây
+        TurnlastTime = now;
+
+        if (dt <= 0) dt = 1e-3;
+
+        double error = target - current;
+
+        // Integral
+        Turnintegral += error * dt;
+        Turnintegral = Math.max(-INTEGRAL_LIMIT, Math.min(INTEGRAL_LIMIT, Turnintegral));
+
+        // Derivative
+        double derivative = (error - TurnlastError) / dt;
+        TurnlastError = error;
+
+        return TurnkP * error + TurnkI * Turnintegral + TurnkD * derivative;
+    }
+    public void holdMotor(DcMotor motor) {
+        motor.setTargetPosition(0);
+        motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motor.setPower(0.05);
     }
 }

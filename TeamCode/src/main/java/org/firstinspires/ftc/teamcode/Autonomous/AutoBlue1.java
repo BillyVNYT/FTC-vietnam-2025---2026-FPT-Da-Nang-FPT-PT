@@ -34,13 +34,13 @@ import org.firstinspires.ftc.teamcode.utils.ShooterFPT2;
 //     =====`-.____`.___ \_____/___.-`___.-'=====
 //                       `=---='
 //     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-@Autonomous(name="AutoRed1", group = "Auto")
-public class AutoRed1 extends LinearOpMode {
+@Autonomous(name="AutoBlue1", group = "Auto")
+public class AutoBlue1 extends LinearOpMode {
     public IntakeFPT2 intake;
     public ShooterFPT2 shooter;
     @Override
     public void runOpMode() throws InterruptedException {
-        Pose2d beginPose = new Pose2d(-54, 44, Math.toRadians(90));
+        Pose2d beginPose = new Pose2d(-54, -44, Math.toRadians(270));
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
         intake = new IntakeFPT2(hardwareMap);
         shooter = new ShooterFPT2(hardwareMap, intake);
@@ -58,34 +58,34 @@ public class AutoRed1 extends LinearOpMode {
         if(isStopRequested()) return;
         shooter.setMotorVelocity(1600);
         Actions.runBlocking(drive.actionBuilder(beginPose)
-                        .strafeToLinearHeading(new Vector2d(-15, 15), Math.toRadians(135))
-                        .afterTime(0, ShootBall())
-                        .waitSeconds(1.5)
-                        .afterTime(0, CloseShootBall())
-                        .splineToLinearHeading(new Pose2d(14, 18, Math.toRadians(90)), Math.toRadians(90))
-                        .splineToConstantHeading(new Vector2d(14, 59), Math.toRadians(80), new TranslationalVelConstraint(30))
-                        .afterTime(0, StopIntake())
-                        .splineToConstantHeading(new Vector2d(12, 45), Math.toRadians(90), new TranslationalVelConstraint(20))
-                        .splineToConstantHeading(new Vector2d(5, 52), Math.toRadians(90))
-                        .waitSeconds(0.5)
-                        .splineToLinearHeading(new Pose2d(-15, 15, Math.toRadians(135)), Math.toRadians(180))
-                        .afterTime(0.5, ShootBall())
-                        .waitSeconds(1.5)
-                        .afterTime(0, CloseShootBall())
-                        .splineToLinearHeading(new Pose2d(-13, 35, Math.toRadians(90)), Math.toRadians(90))
-                        .splineToConstantHeading(new Vector2d(-13, 55), Math.toRadians(90), new TranslationalVelConstraint(30))
-                        .afterTime(2, StopIntake())
-                        .splineToLinearHeading(new Pose2d(-15, 15, Math.toRadians(135)), Math.toRadians(90))
-                        .afterTime(0, ShootBall())
-                        .waitSeconds(1.5)
-                        .afterTime(0, CloseShootBall())
-                        .splineToLinearHeading(new Pose2d(36,32, Math.toRadians(90)),Math.toRadians(90))
-                        .splineToConstantHeading(new Vector2d(36, 62), Math.toRadians(90), new TranslationalVelConstraint(30))
-                        .afterTime(0.5, StopIntake())
-                        .splineToLinearHeading(new Pose2d(-15, 15, Math.toRadians(135)), Math.toRadians(90))
-                        .afterTime(0, ShootBall())
-                        .waitSeconds(1.5)
-                        .afterTime(0, CloseShootBall())
+                .strafeToLinearHeading(new Vector2d(-15, -15), Math.toRadians(-135))
+                .afterTime(0, ShootBall())
+                .waitSeconds(1.5)
+                .afterTime(0, CloseShootBall())
+                .splineToLinearHeading(new Pose2d(14, -18, Math.toRadians(-90)), Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(14, -59), Math.toRadians(-80), new TranslationalVelConstraint(30))
+                .afterTime(0, StopIntake())
+                .splineToConstantHeading(new Vector2d(12, -45), Math.toRadians(-90), new TranslationalVelConstraint(20))
+                .splineToConstantHeading(new Vector2d(5, -52), Math.toRadians(-90))
+                .waitSeconds(0.5)
+                .splineToLinearHeading(new Pose2d(-15, -15, Math.toRadians(-135)), Math.toRadians(-180))
+                .afterTime(0.5, ShootBall())
+                .waitSeconds(1.5)
+                .afterTime(0, CloseShootBall())
+                .splineToLinearHeading(new Pose2d(-13, -35, Math.toRadians(-90)), Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(-13, -55), Math.toRadians(-90), new TranslationalVelConstraint(30))
+                .afterTime(2, StopIntake())
+                .splineToLinearHeading(new Pose2d(-15, -15, Math.toRadians(-135)), Math.toRadians(-90))
+                .afterTime(0, ShootBall())
+                .waitSeconds(1.5)
+                .afterTime(0, CloseShootBall())
+                .splineToLinearHeading(new Pose2d(36, -32, Math.toRadians(-90)), Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(36, -62), Math.toRadians(-90), new TranslationalVelConstraint(30))
+                .afterTime(0.5, StopIntake())
+                .splineToLinearHeading(new Pose2d(-15, -15, Math.toRadians(-135)), Math.toRadians(-90))
+                .afterTime(0, ShootBall())
+                .waitSeconds(1.5)
+                .afterTime(0, CloseShootBall())
 //                        .splineToLinearHeading(new Pose2d(9, 60, Math.toRadians(135)), Math.toRadians(90))
 //                        .strafeTo(new Vector2d(9, 58))
 //                        .splineToLinearHeading(new Pose2d(-13, 13, Math.toRadians(135)), Math.toRadians(270))

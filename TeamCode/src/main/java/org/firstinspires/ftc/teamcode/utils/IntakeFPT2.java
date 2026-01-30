@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import java.security.Provider;
 
 public class IntakeFPT2 {
-    private DcMotor intake;
+    public DcMotor intake;
     private Servo Spush;
     private Servo SHoldball1;
     private Servo SHoldball2;
@@ -55,8 +55,8 @@ public class IntakeFPT2 {
     public void checkHoldBall(){
         if(HoldBall){
             Spush.setPosition(0.2);
-            SHoldball1.setPosition(0.08);
-            SHoldball2.setPosition(0.08);
+            SHoldball1.setPosition(0.085);
+            SHoldball2.setPosition(0.085);
         } else {
             Spush.setPosition(0);
             SHoldball1.setPosition(0);

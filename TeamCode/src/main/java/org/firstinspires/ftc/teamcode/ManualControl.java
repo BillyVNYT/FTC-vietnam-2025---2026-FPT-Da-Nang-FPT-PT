@@ -20,6 +20,8 @@ public class ManualControl {
     Gamepad gamepad2;
     Motif motif;
     Lifter lifter;
+    int maxTick = 234;
+    int minTick = -234;
 
     public ManualControl(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2) {
         intake = new IntakeFPT2(hardwareMap);
@@ -36,7 +38,7 @@ public class ManualControl {
         } else if(gamepad2.right_trigger > 0.5) {
             shooter.setMotorVelocity(2000);
         } else {
-            shooter.setMotorVelocity(1000);
+            shooter.setMotorVelocity(1300);
         }
         if(gamepad1.right_bumper){
             intake.shoot = true;
@@ -65,12 +67,22 @@ public class ManualControl {
     }
 
     public void holdShooter(int goalId, Telemetry telemetry, boolean Reverse) {
-        if(gamepad2.dpad_right){
-            shooter.MTurnOuttake.setPower(0.5);
+        if(shooter.MTurnOuttake.getCurrentPosition() > minTick && shooter.MTurnOuttake.getCurrentPosition() < maxTick) {
+            if (gamepad2.dpad_right) {
+                shooter.MTurnOuttake.setPower(0.25);
+            } else if (gamepad2.dpad_left) {
+                shooter.MTurnOuttake.setPower(-0.25);
+            } else {
+                shooter.holdShooter(goalId, telemetry, Reverse);
+            }
+        } else if(shooter.MTurnOuttake.getCurrentPosition() > minTick) {
+            if(gamepad2.dpad_right){
+                shooter.MTurnOuttake.setPower(0.25);
+            }
         } else if(gamepad2.dpad_left){
-            shooter.MTurnOuttake.setPower(-0.5);
+            shooter.MTurnOuttake.setPower(-0.25);
         } else {
-            shooter.holdShooter(goalId, telemetry, Reverse);
+            shooter.MTurnOuttake.setPower(0);
         }
     }
 
