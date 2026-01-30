@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
 
-import static org.firstinspires.ftc.teamcode.Autonomous.NewRedPathPoses.*;
+import static org.firstinspires.ftc.teamcode.Autonomous.RedPathPoses.*;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -9,14 +9,15 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 @Autonomous
 @Configurable // Panels
-public class NewFullRedLowStart extends LinearOpMode{
+public class RedLowStart extends LinearOpMode{
+
     PathPoses[] pathPoses = {
             new PathPoses(Math.toRadians(90), RedStartToLowZonePose, GenericAuto.PathState.START),
             new PathPoses(Math.toRadians(90), RedLowZoneToLoadZonePose, GenericAuto.PathState.PICK_UP),
-            new PathPoses(Math.toRadians(90), RedLoadZoneToSemiLoadZonePose, GenericAuto.PathState.OPEN_GATE),
-            new PathPoses(Math.toRadians(90), RedSemiLoadZoneToLoadZonePose, GenericAuto.PathState.OPEN_GATE),
-            new PathPoses(Math.toRadians(90), RedLoadZoneToSemiLoadZonePose, GenericAuto.PathState.OPEN_GATE),
-            new PathPoses(Math.toRadians(90), RedSemiLoadZoneToLoadZonePose, GenericAuto.PathState.OPEN_GATE),
+            new PathPoses(Math.toRadians(90), RedLoadZoneToSemiLoadZonePose, GenericAuto.PathState.PICK_UP),
+            new PathPoses(Math.toRadians(90), RedSemiLoadZoneToLoadZonePose, GenericAuto.PathState.PICK_UP),
+            new PathPoses(Math.toRadians(90), RedLoadZoneToSemiLoadZonePose, GenericAuto.PathState.PICK_UP),
+            new PathPoses(Math.toRadians(90), RedSemiLoadZoneToLoadZonePose, GenericAuto.PathState.PICK_UP),
             new PathPoses(Math.toRadians(90), RedLoadZoneReturnToLowZonePose, GenericAuto.PathState.SHOOT),
             new PathPoses(Math.toRadians(90), RedLowZonePoseToPickUpLowPose, GenericAuto.PathState.PICK_UP),
             new PathPoses(Math.toRadians(90), RedPickUpLowToLowZonePose,GenericAuto.PathState.SHOOT),

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 import com.pedropathing.geometry.Pose;
+import com.pedropathing.paths.PathConstraints;
 
 public class PathPoses {
     public final double startHeading;
@@ -19,5 +20,9 @@ public class PathPoses {
         this.startHeading = startHeading;
         this.poses = poses;
         this.type = type;
+    }
+
+    public PathPoses setPathConstraints(PathConstraints fastConstraints) {
+        return this;
     }
 }

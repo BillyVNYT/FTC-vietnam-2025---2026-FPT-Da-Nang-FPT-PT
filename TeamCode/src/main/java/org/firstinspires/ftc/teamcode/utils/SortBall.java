@@ -20,16 +20,16 @@ public class SortBall {
         PURPLE,
         EMPTY
     }
-    public double[] INTAKE_SLOT_POS = {0.2467, 0.1194, 0};
-    public double[] INTAKE_SLOT_POS2 = {0.0711, 0.1772, 0.3006};
-    public double[] OUTTAKE_SLOT_POS = {0.0865 , 0.2106, 0.333, 0.4544, 0.7072, 0.8339, 0.9528};
+    public double[] INTAKE_SLOT_POS = {0.9728, 0.8039, 0.6411};
+    public double[] INTAKE_SLOT_POS2 = {0.7228, 0.5644, 0.4028};
+    public double[] OUTTAKE_SLOT_POS = {0.8467, 0.6783, 0.5144, 0.3522, 0.1883, 0.0444};
+
     int bestSpin = 0;
     public boolean is_lastBall = false;
 
     private final List<BallColor> currentLoad = new ArrayList<>();
     List<BallColor> obeliskData;
     ColorSensor colorSensor1, colorSensor2, colorSensor3, colorSensor4;
-//    ColorSensor colorSensor3, colorSensor4;
     Servo spindexer1, spindexer2;
     boolean spindexerReversed = false;
 
@@ -38,8 +38,9 @@ public class SortBall {
     int baseClearCS1, baseClearCS2;
     Shooter shooter;
     DistanceSensor dis1, dis2;
+    boolean isRed = false;
 
-    public SortBall(HardwareMap hardwareMap, Shooter shooter) {
+    public SortBall(HardwareMap hardwareMap, Shooter shooter, boolean isRed) {
         this.shooter = shooter;
 
         colorSensor1 = hardwareMap.get(ColorSensor.class, "cs");
@@ -52,7 +53,9 @@ public class SortBall {
 
         spindexer1 = hardwareMap.get(Servo.class, "s0");
         spindexer2 = hardwareMap.get(Servo.class, "s1");
+
         spindexer2.setDirection(Servo.Direction.REVERSE);
+        spindexer1.setDirection(Servo.Direction.REVERSE);
 
         spindexer1.setPosition(INTAKE_SLOT_POS[0]);
         spindexer2.setPosition(INTAKE_SLOT_POS[0]);
@@ -62,6 +65,8 @@ public class SortBall {
         currentLoad.add(BallColor.EMPTY);
         baseClearCS1 = colorSensor1.getClear();
         baseClearCS2 = colorSensor2.getClear();
+
+        this.isRed = isRed;
     }
 
 
@@ -80,15 +85,19 @@ public class SortBall {
     public void readyToShoot(boolean sort, Telemetry telemetry) {
         if (!sort) {
             controlSpindexer(OUTTAKE_SLOT_POS[0]);
-            shooter.setMotorVelocity(700, telemetry);
+            shooter.setMotorVelocity(shooter.tprShot);
         } else {
-            List<BallColor> outLoad = new ArrayList<>(currentLoad);
-            outLoad.add(currentLoad.get(0));
-            outLoad.add(currentLoad.get(2));
-            outLoad.add(currentLoad.get(1));
+            bestSpin = getBestSpin(currentLoad, telemetry);
+            controlSpindexer(OUTTAKE_SLOT_POS[bestSpin]);
+        }
+    }
 
-            bestSpin = getBestSpin(outLoad, telemetry);
-            controlSpindexer(bestSpin);
+    public void goToFirstBall() {
+        for (int i = 0; i < currentLoad.size(); i++) {
+            if (currentLoad.get(i) != BallColor.EMPTY) {
+                controlSpindexer(OUTTAKE_SLOT_POS[i]);
+                break;
+            }
         }
     }
 
@@ -101,38 +110,43 @@ public class SortBall {
         return -1;
     }
 
-    private void handleSensor(Telemetry telemetry, BallColor color1, BallColor color2, boolean reversed, DistanceSensor distance) throws InterruptedException{
+    private SortBall.BallColor detectLogic(ColorSensor sensor1, ColorSensor sensor2, int cValue) {
+        int c1 = sensor1.getClear() - baseClearCS1;
+        int c2 = sensor2.getClear() - baseClearCS2;
+
+        ColorSensor activeSensor = (c1 > c2) ? sensor1 : sensor2;
+        int activeC = Math.max(c1, c2);
+
+        if (activeSensor.getClear() < cValue) {
+            return SortBall.BallColor.EMPTY;
+        }
+
+        double rRatio = (double) activeSensor.getRed() / activeC;
+        double gRatio = (double) activeSensor.getGreen() / activeC;
+
+        double diff = gRatio - rRatio;
+
+        if (diff > 0.15) {
+            return SortBall.BallColor.GREEN;
+        } else {
+            return SortBall.BallColor.PURPLE;
+        }
+    }
+
+
+    private boolean handleSensor(Telemetry telemetry, ColorSensor colorSensor1, ColorSensor colorSensor2, boolean reversed, DistanceSensor distance, int cValue) throws InterruptedException{
         telemetry.addData("distance", distance.getDistance(DistanceUnit.MM));
         if(distance.getDistance(DistanceUnit.MM) < 150 || distance.getDistance(DistanceUnit.MM) > 2000) {
             int firstEmptyIdx = getFirstEmptySlot();
 
             telemetry.addData("Empty slot", firstEmptyIdx);
 
-            if (firstEmptyIdx < 0) return;
+            if (firstEmptyIdx < 0) return false;
 
-            boolean cs1Detected = !color1.equals(BallColor.EMPTY);
-            boolean cs2Detected = !color2.equals(BallColor.EMPTY);
-            int delta1 = colorSensor1.getClear() - baseClearCS1;
-            int delta2 = colorSensor2.getClear() - baseClearCS2;
-            BallColor color = cs1Detected ? color1 : color2;
-            BallColor chosenColor = BallColor.EMPTY;
+           BallColor detectedColor = detectLogic(colorSensor1, colorSensor2, cValue);
 
-            if (cs1Detected && !cs2Detected) {
-                chosenColor = color1;
-            } else if (cs2Detected && !cs1Detected) {
-                chosenColor = color2;
-            } else if (cs1Detected && cs2Detected) {
-                if (delta1 > delta2 && delta1 > 1500) {
-                    chosenColor = color1;
-                } else if (delta2 > delta1 && delta2 > 1500) {
-                    chosenColor = color2;
-                }
-            }
-            telemetry.addData("Chosen color", chosenColor);
-
-
-            if (chosenColor != BallColor.EMPTY) {
-                currentLoad.set(firstEmptyIdx, chosenColor);
+            if (detectedColor != BallColor.EMPTY) {
+                currentLoad.set(firstEmptyIdx, detectedColor);
 
                 if (firstEmptyIdx < 2) {
                     nextSlot = INTAKE_SLOT_POS[firstEmptyIdx + 1];
@@ -142,48 +156,89 @@ public class SortBall {
                 } else {
                     String currentBalls = currentLoad.toString();
                     telemetry.addData("ALL IN", currentBalls);
-                    telemetry.update();
                     readyToShoot(false, telemetry);
+                    shooter.toggleFlywheel();
                 }
+
+                return true;
             }
+            return false;
+        }
+        return false;
+    }
+
+    Thread shakeServoThread;
+    boolean shakeActive = false;
+
+    private void shakeServo() throws InterruptedException{
+        if(!shakeActive) {
+            if(shakeServoThread == null) return;
+
+            shakeServoThread.join();
+            shakeServoThread = null;
+        } else {
+            if(shakeServoThread != null) return;
+
+            shakeServoThread = new Thread(() -> {
+                boolean shakeLeft = true;
+                try {
+                    while (shakeActive) {
+                        double curPos = spindexer1.getPosition();
+
+                        controlSpindexer(shakeLeft ? curPos + 0.01 : curPos - 0.01);
+                        Thread.sleep(100);
+                        shakeLeft = !shakeLeft;
+                    }
+
+                    controlSpindexer(spindexer1.getPosition());
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+
+            });
+            shakeServoThread.start();
         }
     }
 
     public void autoLoadBallsIn(Telemetry telemetry, boolean reversed) throws InterruptedException {
         if (!reversed) {
-            BallColor colorFront1 = colorSensor1.detectBallColor(2000, telemetry);
-            BallColor colorFront2 = colorSensor2.detectBallColor(2000, telemetry);
-            handleSensor(telemetry, colorFront1, colorFront2, true, dis1);
+            handleSensor(telemetry, colorSensor1, colorSensor2, false, dis1, 1800);
         } else {
-            BallColor colorFront1 = colorSensor3.detectBallColor(2000, telemetry);
-            BallColor colorFront2 = colorSensor4.detectBallColor(2000, telemetry);
-            handleSensor(telemetry, colorFront1, colorFront2, false, dis2);
+            handleSensor(telemetry, colorSensor3, colorSensor4, true, dis2, 1800);
         }
+    }
 
+    public void deactivateShakeServo() throws InterruptedException {
+        shakeActive = false;
+        shakeServo();
+    }
+
+    public void activateShakeServo() throws InterruptedException {
+        shakeActive = true;
+        shakeServo();
     }
 
     public void loadBallsIn(Telemetry telemetry, Gamepad gamepad) throws InterruptedException {
-        if(!spindexerReversed && timeIntake.seconds() > 0.5) {
-            BallColor colorFront1 = colorSensor1.detectBallColor(2000, telemetry);
-            BallColor colorFront2 = colorSensor2.detectBallColor(2000, telemetry);
 
-            handleSensor(telemetry, colorFront1, colorFront2, false, dis1);
+        if(!spindexerReversed && timeIntake.seconds() > 0.5) {
+            handleSensor(telemetry, colorSensor1, colorSensor2, false, dis1, 1800);
         }
 
         if(spindexerReversed && timeIntake.seconds() > 0.5) {
-            BallColor colorTail3 = colorSensor3.detectBallColor(2000, telemetry);
-            BallColor colorTail4 = colorSensor4.detectBallColor(2000, telemetry);
-            handleSensor(telemetry, colorTail3, colorTail4, true, dis2);
+            handleSensor(telemetry, colorSensor3, colorSensor4, true, dis2, 1800);
+            shakeServo();
         }
 
-        if(gamepad.left_stick_x < 0 && spindexerReversed) {
+        boolean takingFront = isRed ? gamepad.dpadDownWasPressed() : gamepad.dpadUpWasPressed();
+        boolean takingBack = isRed ? gamepad.dpadUpWasPressed() : gamepad.dpadDownWasPressed();
+        if(takingFront && spindexerReversed) {
             // chuyển hướng đi tiến
             spindexerReversed = false;
             controlSpindexer(nextSlot);
             timeIntake.reset();
         }
 
-        if(gamepad.left_stick_x > 0 && !spindexerReversed){
+        if(takingBack && !spindexerReversed){
             // chuyển hướng đi lùi
             spindexerReversed = true;
             controlSpindexer(nextSlot2);
@@ -248,7 +303,8 @@ public class SortBall {
 
     public void spinToShooter(int count, Telemetry telemetry) throws InterruptedException{
         releaseBall(count-1);
-        sleep(600);
+        sleep(1000);
+        if(count == 1) return;
 
         for(int i = 1; i < count + 1; i++) { // xoay them 1 vi tri de ban qua cuoi cung
             controlSpindexer(OUTTAKE_SLOT_POS[bestSpin + i]);
@@ -256,13 +312,12 @@ public class SortBall {
             if(i == count){
                 is_lastBall = true;
             }
-            sleep(600);
+            sleep(1000);
         }
 
         // spin to next empty slot
         int firstEmptyIdx = getFirstEmptySlot();
         telemetry.addData("firstEmptyIdx",firstEmptyIdx);
-        telemetry.update();
 
         nextSlot = INTAKE_SLOT_POS[firstEmptyIdx];
         nextSlot2 = INTAKE_SLOT_POS2[firstEmptyIdx];

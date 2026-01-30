@@ -8,6 +8,7 @@ public class Intake {
     private DcMotor intake;
 
     boolean active = false;
+    boolean reverseStatus = false;
 
     public Intake(HardwareMap hardwareMap){
         intake = hardwareMap.get(DcMotor.class, "m5");
@@ -22,13 +23,21 @@ public class Intake {
         active = true;
     }
 
+    public void toggle() {
+        if (active) stop();
+        else start();
+    }
+
     public void stop(){
         intake.setPower(0);
         active = false;
     }
+
     public void reverse(){
-        intake.setPower(-1);
-        active = true;
+        if (active) {
+            intake.setPower(reverseStatus ? 1 : -1);
+            reverseStatus = !reverseStatus;
+        }
     }
 
 }

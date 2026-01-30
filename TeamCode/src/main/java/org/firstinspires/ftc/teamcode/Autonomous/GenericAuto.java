@@ -13,11 +13,12 @@ import com.pedropathing.paths.PathBuilder;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.utils.Intake;
-import org.firstinspires.ftc.teamcode.utils.Motif;
+import org.firstinspires.ftc.teamcode.utils.LimelightHardware;
 import org.firstinspires.ftc.teamcode.utils.Shooter;
 import org.firstinspires.ftc.teamcode.utils.SortBall;
 
@@ -38,7 +39,7 @@ public class GenericAuto {
     public Follower follower;
     public Shooter shooter;
     private final SortBall spindexer;
-    private final Motif motif;
+    private final LimelightHardware limelight;
     private final Intake intake;
     private final List<PathChain> paths = new ArrayList<>();
     private final List<PathState> states = new ArrayList<>();;
@@ -48,6 +49,10 @@ public class GenericAuto {
     int goalId;
 
     boolean spindexerReversed;
+    private ElapsedTime autoTimer;
+    private static final double AUTO_DURATION = 30.0;
+    private static final double SORT_TIME_THRESHOLD = 10.0;
+
 
     public GenericAuto(Telemetry telemetry, HardwareMap hardwareMap, Pose startPose, PathPoses[] pathPoses, int goalId) {
         panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
@@ -56,9 +61,9 @@ public class GenericAuto {
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startPose);
         intake = new Intake(hardwareMap);
-        shooter = new Shooter(hardwareMap, true);
-        motif = new Motif(hardwareMap);
-        spindexer = new SortBall(hardwareMap, shooter);
+        shooter = new Shooter(hardwareMap, true, telemetry);
+        limelight = new LimelightHardware(hardwareMap);
+        spindexer = new SortBall(hardwareMap, shooter, goalId == 24);
         this.goalId = goalId;
         spindexerReversed = goalId == 24;
 
@@ -70,12 +75,17 @@ public class GenericAuto {
         } else currentState = PathState.LEAVE;
 
         panelsTelemetry.update(telemetry);
+        this.autoTimer = new ElapsedTime();
 
         for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
     }
-    
+
+    public void resetTimer(){
+        autoTimer.reset();
+    }
+
     private void buildPaths(Follower follower, PathPoses[] pathPoses) {
         for (PathPoses pathSegment : pathPoses) {
             Curve curve;
@@ -95,7 +105,6 @@ public class GenericAuto {
             states.add(pathSegment.type);
         }
     }
-
     private void autonomousPathUpdate(Telemetry telemetry) throws InterruptedException {
 
         switch (currentState) {
@@ -105,13 +114,19 @@ public class GenericAuto {
                 }
 
                 if (!shotTriggered) {
-                    shooter.shoot(3, spindexer, telemetry, 1900);
+                    shooter.shoot(3, spindexer, 2200);
                     shotTriggered = true;
                     break;
                 }
 
                  if (!shooter.isBusy()) {
                     shotTriggered = false;
+//
+//                    if(limelight.getMotif() != null && AUTO_DURATION - autoTimer.seconds() <= 15) {
+//                        currentState = PathState.SCAN;
+//                        break;
+//                    }
+
                     intake.start();
                     double spindexerInitPos = spindexerReversed ? spindexer.INTAKE_SLOT_POS2[0] : spindexer.INTAKE_SLOT_POS[0];
                     spindexer.controlSpindexer(spindexerInitPos);
@@ -125,37 +140,36 @@ public class GenericAuto {
                     break;
                 }
 
-                spindexer.readyToShoot(false, telemetry);
-                intake.stop();
-                goToNextPath();
+                PathState nextState = goToNextPath();
+
+                if (nextState != PathState.PICK_UP) {
+//                    boolean shouldSort = AUTO_DURATION - autoTimer.seconds() <= SORT_TIME_THRESHOLD;
+                    spindexer.readyToShoot(false, telemetry);
+                    intake.stop();
+                }
+                break;
+
+            case SCAN:
+                if(limelight.getMotif() != null) {
+                    shooter.updateMTurnOuttakePos(0);
+                    limelight.getAprilTagData(telemetry);
+                } else {
+                    shooter.updateMTurnOuttakePos(169);
+                    goToNextPath();
+                }
                 break;
 
             case START:
-                shooter.toggleFlywheel(telemetry);
+                shooter.toggleFlywheel();
                 spindexer.readyToShoot(false, telemetry);
                 PathChain currentPath = paths.get(curPathIdx);
 
                 follower.followPath(currentPath);
-//                currentState = PathState.SCAN;
                 currentState = PathState.SHOOT;
-                break;
-
-            case SCAN:
-                if (follower.isBusy()) break;
-
-                if (motif.getMotif() == null) {
-                    motif.setMotif(telemetry);
-                } else {
-                    shooter.updateOuttakeAngle(-0.5);
-                    sleep(200);
-                    shooter.updateOuttakeAngle(0);
-                    currentState = PathState.SHOOT;
-                }
                 break;
 
             case OPEN_GATE:
                 if(follower.isBusy()) break;
-
                 goToNextPath();
                 break;
 
@@ -165,14 +179,15 @@ public class GenericAuto {
         }
     }
 
-    private void goToNextPath() {
+    private PathState goToNextPath() {
         curPathIdx++;
-        if (curPathIdx >= paths.size()) return;
+        if (curPathIdx >= paths.size()) return PathState.LEAVE;
 
         currentState = states.get(curPathIdx);
         PathChain currentPath = paths.get(curPathIdx);
         boolean isPickingUp = currentState == PathState.PICK_UP;
         follower.followPath(currentPath, isPickingUp ? 0.55 : 1, true);
+        return currentState;
     }
 
     public void updateFollower(Telemetry telemetry) throws InterruptedException{

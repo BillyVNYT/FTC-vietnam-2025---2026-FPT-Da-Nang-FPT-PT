@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 public class DriveTrain {
@@ -15,11 +16,12 @@ public class DriveTrain {
     DcMotor LeftFrontDrive;
     DcMotor LeftBackDrive;
     IMU imu;
-    public DriveTrain(HardwareMap hardwareMap){
-        RightFrontDrive = hardwareMap.get(DcMotor.class, "m4");
+    boolean isRed;
+    public DriveTrain(HardwareMap hardwareMap, boolean isRed){
+        RightFrontDrive = hardwareMap.get(DcMotor.class, "m2");
         RightBackDrive = hardwareMap.get(DcMotor.class, "m3");
-        LeftFrontDrive = hardwareMap.get(DcMotor.class, "m1");
-        LeftBackDrive = hardwareMap.get(DcMotor.class, "m2");
+        LeftFrontDrive = hardwareMap.get(DcMotor.class, "m6");
+        LeftBackDrive = hardwareMap.get(DcMotor.class, "m7");
 
         LeftFrontDrive.setDirection(DcMotorSimple.Direction.REVERSE);
         RightFrontDrive.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -30,12 +32,24 @@ public class DriveTrain {
                 RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
                 RevHubOrientationOnRobot.UsbFacingDirection.UP));
         imu.initialize(parameters);
+        this.isRed = isRed;
+    }
+
+    double rx = 0, y, x;
+    public void logDriveTrain(Telemetry telemetry) {
+        telemetry.addData("rx", rx);
+        telemetry.addData("y", y);
+        telemetry.addData("x", x);
     }
 
     public void drivetrainControlBasic(Gamepad gamepad1){
-        double y = gamepad1.left_stick_y + gamepad1.right_stick_y;
-        double x = gamepad1.left_stick_x;
-        double rx = gamepad1.right_stick_x;
+        y = -gamepad1.left_stick_x;
+        if(isRed) y = gamepad1.left_stick_x;
+
+        x = gamepad1.left_stick_y;
+        if(isRed) x = -gamepad1.left_stick_x;
+
+        rx = gamepad1.right_stick_x;
 
         LeftFrontDrive.setPower(y + x - rx);
         LeftBackDrive.setPower(y - x + rx);

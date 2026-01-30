@@ -11,7 +11,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 
 public class Shooter {
@@ -22,42 +21,32 @@ public class Shooter {
     private final Servo SLoaderOut;
     private final ServoImplEx SLoaderUp1, SLoaderUp2;
 
-    double servoAtLowZone = 0.3667;
-    double P = 63.36;
-    double I = 0.58;
-    double D = 0.06;
-    double F = 0.01;
-    double[][] hoodTable = {
-            {93.0,  0.6922},
-            {111.0, 0.8344},
-            {121.0, 0.9089},
-            {133.0, 0.9267},
-            {141.0, 0.9606},
-            {154.0, 1.0},
-            {161.0, 1.0}
-    };
-    double[] servoPositions = {0.8492, 0.6389, 0};
+    double servoAtLowZone = 0.45;
+    public double P = 1.6;
+    public double I = 0.0001;
+    public double D = 0.02;
+    public double F = 11.1859;
     double SLoaderOutHiddenPos = 0.03;
     double SLoaderOutVisiblePos = 0.182;
-    boolean MTurnOuttakeReverse = false;
-    int maxTurnShooter = 1200;
-    int minTurnShooter = 0;
+    int maxTurnOuttakePos = 424;
+    int minTurnOuttakePos = -424;
 
     volatile boolean isBusy = false;
 
     int tprShot = 1;
-    boolean overwriteShoot;
-    double kP = 0.065;
-    double kI = 0.0001;
-    double kD = 0.015;
-    double kF = 0;
+    boolean overwriteShoot = false;
+    double kP = 0.015;
+    double kI = 0.0000125;
+    double kD = 0.000025;
 
     // PID state
     double integral = 0;
     double lastError = 0;
     long lastTime = 0;
 
-    public Shooter(HardwareMap hardwareMap, boolean holdOuttake) {
+    Telemetry telemetry;
+
+    public Shooter(HardwareMap hardwareMap, boolean holdOuttake, Telemetry telemetry) {
         MShooter1 = hardwareMap.get(DcMotorEx.class, "m0");
         MShooter2 = hardwareMap.get(DcMotorEx.class, "m1");
         MShooter1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -82,6 +71,7 @@ public class Shooter {
 
         SAngle = hardwareMap.get(Servo.class, "s3");
         SAngle.setDirection(Servo.Direction.REVERSE);
+        SAngle.setPosition(servoAtLowZone);
 
         SLoaderUp1 = hardwareMap.get(ServoImplEx.class, "s10");
         SLoaderUp2 = hardwareMap.get(ServoImplEx.class, "s11");
@@ -91,6 +81,8 @@ public class Shooter {
 
         limelight = new LimelightHardware(hardwareMap);
         limelight.changePipeline(0);
+
+        this.telemetry = telemetry;
     }
 
     String[] pidf = {"p", "i", "d", "f"};
@@ -99,6 +91,11 @@ public class Shooter {
         curTuneIdx = (curTuneIdx + 1) % pidf.length;
         return pidf[curTuneIdx];
     }
+
+    public void updateMTurnOuttakePos(int pos) {
+        MTurnOuttake.setTargetPosition(pos);
+    }
+
     public double[] tunePidf(double nextI, Telemetry telemetry) {
         if(curTuneIdx == 0) {
             P += nextI;
@@ -128,25 +125,28 @@ public class Shooter {
         return arr;
     }
 
-
-    public void shoot(int count, SortBall spindexer, Telemetry telemetry, int overridedVelocity) throws InterruptedException {
+    public void shoot(int count, SortBall spindexer, int overridedVelocity) throws InterruptedException {
         isBusy = true;
+        overwriteShoot = false;
 
         // 1. Kiểm tra Null an toàn cho Limelight
         ApriltagData data = limelight.getAprilTagData(telemetry);
         double distance = (data != null) ? data.z : 130.0; // Khoảng cách mặc định nếu mất dấu
+        telemetry.addData("distance", distance);
 
-        // Tính toán góc và vận tốc
-        tprShot = (distance <= 100) ? 1000 : (distance <= 240) ? 1500 : 2300;
+        tprShot = (distance <= 100) ? 1000 : (distance <= 240) ? 1900 : 2400;
+        telemetry.addData("tprShot", tprShot);
 
         if(overridedVelocity > 0) {
             tprShot = overridedVelocity;
             SAngle.setPosition(servoAtLowZone);
         } else {
-            SAngle.setPosition(calculateAngle(distance, spindexer.is_lastBall, telemetry));
+            double angle = calculateAngle(distance, spindexer.is_lastBall);
+            SAngle.setPosition(angle);
+            telemetry.addData("angle", angle);
         }
 
-        setMotorVelocity(tprShot, telemetry);
+        setMotorVelocity(tprShot);
 
         Thread.sleep(FLYWHEEL_VELOCITY_GAIN_DURATION);
 
@@ -156,43 +156,53 @@ public class Shooter {
         // 2. Thread phụ an toàn hơn
         Thread servoToggler = new Thread(() -> {
             try {
+                boolean toggleStatus = true;
                 while (isBusy && !Thread.currentThread().isInterrupted()) {
-                    SLoaderUp1.setPosition(0.0);
-                    SLoaderUp2.setPosition(0.0);
-                    Thread.sleep(100); // Cho Servo có thời gian di chuyển
-                    SLoaderUp1.setPosition(0.1);
-                    SLoaderUp2.setPosition(0.1);
+                    if (toggleStatus) {
+                        SLoaderUp1.setPosition(0.1);
+                        SLoaderUp2.setPosition(0.1);
+                    }
+                    else {
+                        SLoaderUp1.setPosition(0.0);
+                        SLoaderUp2.setPosition(0.0);
+                    }
+                    toggleStatus = !toggleStatus;
                     Thread.sleep(100);
                 }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
+
+            } catch (InterruptedException e) {}
+
+            SLoaderUp1.setPosition(0.0);
+            SLoaderUp2.setPosition(0.0);
         });
 
         servoToggler.start();
         spindexer.spinToShooter(count, telemetry);
 
-        // 3. Kết thúc thread đúng cách
+//        // 3. Kết thúc thread đúng cách
         isBusy = false;
-        servoToggler.join(500); // Chờ thread phụ kết thúc hẳn
+        servoToggler.join(); // Chờ thread phụ kết thúc hẳn
+        servoToggler = null;
 
-        setMotorVelocity(0, telemetry);
+        setMotorVelocity(0);
         SLoaderOut.setPosition(SLoaderOutHiddenPos);
     }
 
-    public void toggleFlywheel(Telemetry telemetry) {
-        int maxShooterVelocity = 2200;
-        if(!overwriteShoot) {
-            MShooter1.setVelocity(maxShooterVelocity);
-            MShooter2.setVelocity(maxShooterVelocity);
+    public void toggleFlywheel() {
+        if(MShooter1.getVelocity() < 1000) {
+            MShooter1.setVelocity(2000);
+            MShooter2.setVelocity(2000);
+            overwriteShoot = true; // Đồng bộ lại biến
+            telemetry.addLine("Flywheel: ON");
         } else {
             MShooter1.setVelocity(0);
             MShooter2.setVelocity(0);
+            overwriteShoot = false; // Đồng bộ lại biến
+            telemetry.addLine("Flywheel: OFF");
         }
-        overwriteShoot = !overwriteShoot;
     }
 
-    public void setMotorVelocity(int velocity, Telemetry telemetry){
+    public void setMotorVelocity(int velocity){
         MShooter1.setVelocity(velocity);
         MShooter2.setVelocity(velocity);
 
@@ -203,99 +213,104 @@ public class Shooter {
         telemetry.addData("curVelocity", curVelocity);
         telemetry.addData("error", error);
         telemetry.addLine("---------------------------");
-//        telemetry.update();
     }
 
     public boolean isBusy(){
         return isBusy;
     }
 
-    public void updateOuttakeAngle(double rx){
-        MTurnOuttake.setPower(rx);
+    public void updateOuttakeAngle(){
+        MTurnOuttake.setPower(MTurnOuttakePower);
     }
-    public boolean HoldShooter(int id, Telemetry telemetry, boolean reverseMotor) {
 
-        MTurnOuttake.setDirection(
-                reverseMotor ? DcMotorSimple.Direction.REVERSE
-                        : DcMotorSimple.Direction.FORWARD
-        );
+    double limelightX, limeLightZ, limelightId, MTurnOuttakePower=0;
 
+    public void printShooterData() {
+        telemetry.addData("shooter tx error", limelightX);
+        telemetry.addData("z", limeLightZ);
+        telemetry.addData("id", limelightId);
+        telemetry.addData("output", MTurnOuttakePower);
+    }
+
+    public void setMTurnOuttakePower(double MTurnOuttakePower) {
+        this.MTurnOuttakePower = MTurnOuttakePower;
+    }
+
+    private void resetHoldShooterParam() {
+        integral = 0;
+        lastError = 0;
+        lastTime = 0;
+    }
+
+    public void holdShooter(int id) {
         ApriltagData data = limelight.getAprilTagData(telemetry);
-        boolean locked = false;
-
-        telemetry.addData("MotorCurrent", MTurnOuttake.getCurrent(CurrentUnit.AMPS));
 
         if (data != null) {
-            double error = data.x; // Tx
+            if (data.id != id) {
+                return;
+            }
+
+            limeLightZ = data.z;
+            limelightId = data.id;
+            limelightX = data.x-7; // Tx
+
             long now = System.nanoTime();
+
+            int turnOuttakePos = MTurnOuttake.getTargetPosition();
 
             double dt = (lastTime == 0) ? 0 : (now - lastTime) / 1e9;
             lastTime = now;
 
-            // Deadband để tránh rung
-            if (Math.abs(error) < 0.5) {
+            if (Math.abs(limelightX) < 0.5) {
                 integral = 0;
-                MTurnOuttake.setPower(0);
-                locked = true;
+                MTurnOuttakePower = 0;
             } else {
-
                 // Integral
-                integral += error * dt;
-                integral = Math.max(-20, Math.min(20, integral)); // anti-windup
+                integral += limelightX * dt;
+                integral = Math.max(-10, Math.min(10, integral)); // anti-windup
 
                 // Derivative
-                double derivative = (dt > 0) ? (error - lastError) / dt : 0;
-                lastError = error;
+                double derivative = (dt > 0) ? (limelightX - lastError) / dt : 0;
+                lastError = limelightX;
 
                 // PIDF output
-                double output =
-                        kP * error +
+                double tempPower =
+                        kP * limelightX +
                                 kI * integral +
-                                kD * derivative +
-                                kF * Math.signum(error);
+                                kD * derivative;
+
+                if(turnOuttakePos >= maxTurnOuttakePos && tempPower > 0) {
+                    tempPower = 0;
+                    resetHoldShooterParam();
+                }
+                else if(turnOuttakePos <= minTurnOuttakePos && tempPower < 0){
+                    tempPower = 0;
+                    resetHoldShooterParam();
+                }
 
                 // Giới hạn công suất
-                output = Math.max(-0.6, Math.min(0.6, output));
-
-                MTurnOuttake.setPower(
-                        MTurnOuttakeReverse ? -output : output
-                );
+                MTurnOuttakePower = Math.max(-0.6, Math.min(0.6, tempPower));
             }
 
-            telemetry.addData("Tx", error);
-            telemetry.addData("distance", data.z);
-            telemetry.addData("PID Out", lastError);
-
-            telemetry.addData("curTargetVelocity", 2600);
-            telemetry.addData("error", error);
-            telemetry.addLine("---------------------------");
-            telemetry.addData("distance", data.z);
-            telemetry.update();
-
-            return locked;
         } else {
             // Mất tag → giữ nguyên hoặc dừng
-            integral = 0;
-            lastError = 0;
-            MTurnOuttake.setPower(0);
-            telemetry.addLine("No AprilTag detected");
-            return false;
+            resetHoldShooterParam();
+            MTurnOuttakePower = 0;
         }
-
     }
-    public double calculateAngle(double dis, boolean is_lastBall, Telemetry telemetry){
+    public double calculateAngle(double dis, boolean is_lastBall){
         double a =  -0.635812;
         double b =  0.02004009;
         double c = 0.00006141738;
 
-        double offset = 0.275; // chỉnh cao lên
-        telemetry.update();
+        double offset = 0.28;
 
         double pos = -0.635812 + 0.02004009 * dis - 0.00006141738 * Math.pow(dis, 2);
 
         return Math.max(0.0, Math.min(1.0, pos))-offset;
     }
-//    double angleFormula(double distance, int tpr, Telemetry telemetry) {
+
+//    double angleFormula(double distance, int tpr) {
 //        double velocity = (double) tpr / 28 * 2 * Math.PI * 0.04;
 //        telemetry.addData("velocity", velocity);
 //        double d = distance/100;
@@ -307,10 +322,10 @@ public class Shooter {
 //        telemetry.addData("angle", angle);
 //        double servoPos = 0.04*servoAngle-1.4;
 //        telemetry.addData("servoPos", servoPos);
-//        telemetry.update();
 //        return servoPos;
 //    }
-    public void updateServoAngle(double degree, Telemetry telemetry){
+
+    public void updateServoAngle(double degree){
         SAngle.setPosition(0.03638079*degree - 0.8736323);
     }
 }

@@ -4,10 +4,8 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.utils.Intake;
 import org.firstinspires.ftc.teamcode.utils.IntakeFPT2;
 import org.firstinspires.ftc.teamcode.utils.Lifter;
-import org.firstinspires.ftc.teamcode.utils.Motif;
 import org.firstinspires.ftc.teamcode.utils.ShooterFPT2;
 
 public class ManualControl {
@@ -16,14 +14,12 @@ public class ManualControl {
     IntakeFPT2 intake;
     Lifter lifter;
     Gamepad gamepad2;
-    Motif motif;
 
     public ManualControl(HardwareMap hardwareMap, Gamepad gamepad) {
 //        lifter = new Lifter(hardwareMap);
         intake = new IntakeFPT2(hardwareMap);
         shooter = new ShooterFPT2(hardwareMap, intake);
         gamepad2 = gamepad;
-//        motif = new Motif(hardwareMap);
     }
 
     public void shootBall(Telemetry telemetry) throws InterruptedException{

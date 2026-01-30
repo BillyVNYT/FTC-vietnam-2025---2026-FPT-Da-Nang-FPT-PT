@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 //                       _oo0oo_
@@ -22,15 +23,33 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 //     =====`-.____`.___ \_____/___.-`___.-'=====
 //                       `=---='
 //     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 @TeleOp
-public class MainBlue extends LinearOpMode {
+public class MainBlue extends OpMode {
+    MainRobot robot;
+
     @Override
-    public void runOpMode() throws InterruptedException {
-        MainRobot robot = new MainRobot(20, hardwareMap, gamepad2);
-        waitForStart();
-        robot.manageShootBallThread(telemetry);
-        while (opModeIsActive()){
+    public void init() {
+        robot = new MainRobot(20, hardwareMap, gamepad2, telemetry);
+    }
+
+    @Override
+    public void start() {
+        robot.startThreads();
+    }
+
+    @Override
+    public void loop() {
+        try {
             robot.opMode(telemetry);
-        }
+            telemetry.update();
+        } catch (InterruptedException e) {}
+
+    }
+
+    @Override
+    public void stop() {
+        robot.stopThreads();
     }
 }
+
