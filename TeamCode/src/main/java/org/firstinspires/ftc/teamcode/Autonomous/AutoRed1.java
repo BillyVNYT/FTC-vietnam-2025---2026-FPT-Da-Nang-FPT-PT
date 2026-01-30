@@ -44,7 +44,7 @@ public class AutoRed1 extends LinearOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
         intake = new IntakeFPT2(hardwareMap);
         shooter = new ShooterFPT2(hardwareMap, intake);
-        shooter.SAngle.setPosition(0.6775);
+        shooter.SAngle.setPosition(0.55);
         intake.HoldBall = true;
         intake.checkHoldBall();
         shooter.led.setPattern(RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_OCEAN_PALETTE);
@@ -56,33 +56,34 @@ public class AutoRed1 extends LinearOpMode {
         runOther.start();
         waitForStart();
         if(isStopRequested()) return;
-        shooter.setMotorVelocity(1600);
+        shooter.setMotorVelocity(1450);
         Actions.runBlocking(drive.actionBuilder(beginPose)
-                        .strafeToLinearHeading(new Vector2d(-15, 15), Math.toRadians(135))
+                        .strafeToLinearHeading(new Vector2d(-23, 23), Math.toRadians(135))
                         .afterTime(0, ShootBall())
                         .waitSeconds(1.5)
-                        .afterTime(0, CloseShootBall())
+                        .afterTime(0, CloseShootBall2())
                         .splineToLinearHeading(new Pose2d(14, 18, Math.toRadians(90)), Math.toRadians(90))
                         .splineToConstantHeading(new Vector2d(14, 59), Math.toRadians(80), new TranslationalVelConstraint(30))
                         .afterTime(0, StopIntake())
                         .splineToConstantHeading(new Vector2d(12, 45), Math.toRadians(90), new TranslationalVelConstraint(20))
-                        .splineToConstantHeading(new Vector2d(5, 52), Math.toRadians(90))
-                        .waitSeconds(0.5)
+                        .splineToConstantHeading(new Vector2d(5, 55), Math.toRadians(90))
+                        .waitSeconds(1)
                         .splineToLinearHeading(new Pose2d(-15, 15, Math.toRadians(135)), Math.toRadians(180))
+                        .waitSeconds(0.5)
                         .afterTime(0.5, ShootBall())
                         .waitSeconds(1.5)
                         .afterTime(0, CloseShootBall())
                         .splineToLinearHeading(new Pose2d(-13, 35, Math.toRadians(90)), Math.toRadians(90))
                         .splineToConstantHeading(new Vector2d(-13, 55), Math.toRadians(90), new TranslationalVelConstraint(30))
                         .afterTime(2, StopIntake())
-                        .splineToLinearHeading(new Pose2d(-15, 15, Math.toRadians(135)), Math.toRadians(90))
+                        .splineToLinearHeading(new Pose2d(-23, 23, Math.toRadians(135)), Math.toRadians(90))
                         .afterTime(0, ShootBall())
                         .waitSeconds(1.5)
                         .afterTime(0, CloseShootBall())
-                        .splineToLinearHeading(new Pose2d(36,32, Math.toRadians(90)),Math.toRadians(90))
-                        .splineToConstantHeading(new Vector2d(36, 62), Math.toRadians(90), new TranslationalVelConstraint(30))
+                        .splineToLinearHeading(new Pose2d(38,32, Math.toRadians(90)),Math.toRadians(90))
+                        .splineToConstantHeading(new Vector2d(38, 65), Math.toRadians(90), new TranslationalVelConstraint(30))
                         .afterTime(0.5, StopIntake())
-                        .splineToLinearHeading(new Pose2d(-15, 15, Math.toRadians(135)), Math.toRadians(90))
+                        .splineToLinearHeading(new Pose2d(-23, 23, Math.toRadians(135)), Math.toRadians(180))
                         .afterTime(0, ShootBall())
                         .waitSeconds(1.5)
                         .afterTime(0, CloseShootBall())
@@ -94,7 +95,7 @@ public class AutoRed1 extends LinearOpMode {
     public class shootBall implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            shooter.SAngle.setPosition(0.6675);
+            shooter.SAngle.setPosition(0.525);
             intake.HoldBall = false;
             intake.checkHoldBall();
             intake.isActive();
@@ -108,7 +109,7 @@ public class AutoRed1 extends LinearOpMode {
     public class closeShootBall implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            shooter.setMotorVelocity(1650);
+            shooter.setMotorVelocity(1500);
             intake.HoldBall = true;
             intake.checkHoldBall();
             intake.intake.setPower(1);
@@ -128,5 +129,18 @@ public class AutoRed1 extends LinearOpMode {
     }
     public Action StopIntake(){
         return new stopIntake();
+    }
+    public class closeShootBall2 implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            shooter.setMotorVelocity(1650);
+            intake.HoldBall = true;
+            intake.checkHoldBall();
+            intake.intake.setPower(1);
+            return false;
+        }
+    }
+    public Action CloseShootBall2(){
+        return new closeShootBall();
     }
 }

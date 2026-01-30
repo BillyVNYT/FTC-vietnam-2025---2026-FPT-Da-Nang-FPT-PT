@@ -26,7 +26,7 @@ public class ShooterFPT2 {
     public RevBlinkinLedDriver led;
     double SAngleLowest = 0.8492, SBackKickOff = 0, SBackKickOn = 0.9;
     double SGate1Close = 0.03, SGate1Open = 0.182, SGate2Close = 0.03, SGate2Open = 0.182;
-    public double P = 18, I = 0.3, D = 0.075, F = 0.5;
+    public double P = 18, I = 0.5, D = 0.075, F = 0.5;
     boolean MTurnOuttakeReverse = false;
     volatile boolean isBusy = false;
     int tprShot = 1;
