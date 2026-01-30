@@ -5,7 +5,7 @@ import com.pedropathing.geometry.Pose;
 public class NewBluePathPoses {
     public static Pose StartBluePose = new Pose(58.10526315789475, 7.368421052631579, Math.toRadians(90));
 
-    public static Pose BlueLowZonePose = new Pose(61.89473684210526, 7.368421052631579);
+    public static Pose BlueLowZonePose = new Pose(58, 10.263157894736842);
     public static Pose BlueCp1LowZoneToLoadZone =new Pose(63.36842105263157,10.842105263157883);
     public static Pose BlueCp2LowZoneToLoadZone =new Pose(23.157894736842106, 10.947368421052621);
     public static Pose BlueLoadZone = new Pose(6.105263157894737, 10.080568720379151);
@@ -23,9 +23,9 @@ public class NewBluePathPoses {
     public static Pose[] BlueSemiLoadZoneToLoadZonePose = {BlueSemiLoadZone, BlueLoadZone};
 
     public static Pose[] BlueLowZonePoseToPickUpLow = {BlueLowZonePose, BlueCp1LowZoneToLoadZone, BluePickUpLow};
-    public static Pose[] BluePickUpLowToLowZonePose = {BluePickUpLow, BlueLowZonePose   };
+    public static Pose[] BluePickUpLowToLowZonePose = {BluePickUpLow, BlueLowZonePose};
 
-    public static Pose[] BlueLowZoneToLeavePose = {BlueLowZonePose, BlueLowZonePose};
+    public static Pose[] BlueLowZoneToLeavePose = {BlueLowZonePose, BlueLeavePose};
 
 
 }
