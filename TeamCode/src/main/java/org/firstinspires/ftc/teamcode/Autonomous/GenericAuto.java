@@ -61,7 +61,7 @@ public class GenericAuto {
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startPose);
         intake = new Intake(hardwareMap);
-        shooter = new Shooter(hardwareMap, true, telemetry);
+        shooter = new Shooter(hardwareMap, true, telemetry, goalId == 24);
         limelight = new LimelightHardware(hardwareMap);
         spindexer = new SortBall(hardwareMap, shooter, goalId == 24);
         this.goalId = goalId;
