@@ -46,7 +46,7 @@ public class Shooter {
 
     Telemetry telemetry;
 
-    public Shooter(HardwareMap hardwareMap, boolean holdOuttake, Telemetry telemetry) {
+    public Shooter(HardwareMap hardwareMap, boolean holdOuttake, Telemetry telemetry, boolean isRed) {
         MShooter1 = hardwareMap.get(DcMotorEx.class, "m0");
         MShooter2 = hardwareMap.get(DcMotorEx.class, "m1");
         MShooter1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -60,7 +60,7 @@ public class Shooter {
         if(holdOuttake) {
             MTurnOuttake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             MTurnOuttake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            MTurnOuttake.setTargetPosition(169);
+            MTurnOuttake.setTargetPosition(isRed ? 169 : -169);
             MTurnOuttake.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             MTurnOuttake.setPower(1);
         }

@@ -22,7 +22,7 @@ public class ManualControl2 {
     Telemetry telemetry;
 
     public ManualControl2(HardwareMap hardwareMap, Gamepad gamepad, Telemetry telemetry, boolean isRed) {
-        shooter = new Shooter(hardwareMap, false, telemetry);
+        shooter = new Shooter(hardwareMap, false, telemetry, isRed);
         intake = new Intake(hardwareMap);
         gamepad2 = gamepad;
         spindexer = new SortBall(hardwareMap, shooter, isRed);

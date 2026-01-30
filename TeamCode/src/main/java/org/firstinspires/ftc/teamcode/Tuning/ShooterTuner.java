@@ -19,7 +19,7 @@ public class ShooterTuner extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         // Khởi tạo shooter
-        shooter = new Shooter(hardwareMap, false, telemetry);
+        shooter = new Shooter(hardwareMap, false, telemetry, false);
 
         telemetry.addLine("--- CHƯƠNG TRÌNH TUNE SHOOTER ---");
         telemetry.addLine("Dpad UP/DOWN: Chọn thông số (P, I, D, F, Target)");
