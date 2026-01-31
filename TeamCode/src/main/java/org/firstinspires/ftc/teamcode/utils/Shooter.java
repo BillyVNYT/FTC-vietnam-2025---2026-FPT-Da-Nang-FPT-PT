@@ -19,7 +19,7 @@ public class Shooter {
     private final Servo SLoaderOut;
     private final ServoImplEx SLoaderUp1, SLoaderUp2;
 
-    double servoAtLowZone = 0.45;
+    double servoAtLowZone = 0.8044;
     public double P = 1.6;
     public double I = 0.0001;
     public double D = 0.02;
@@ -59,7 +59,7 @@ public class Shooter {
         if(holdOuttake) {
             MTurnOuttake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             MTurnOuttake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            MTurnOuttake.setTargetPosition(isRed ? 169 : -169);
+            MTurnOuttake.setTargetPosition(isRed ? 160 : -160);
             MTurnOuttake.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             MTurnOuttake.setPower(1);
         }
@@ -116,6 +116,12 @@ public class Shooter {
         double[] arr = {P, I, D, F};
         return arr;
 
+    }
+
+    public void resetOuttakePos() {
+        MTurnOuttake.setTargetPosition(0);
+        MTurnOuttake.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        MTurnOuttake.setPower(1);
     }
 
     int FLYWHEEL_VELOCITY_GAIN_DURATION = 500;

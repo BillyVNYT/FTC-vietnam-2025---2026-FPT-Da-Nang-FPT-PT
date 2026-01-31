@@ -18,9 +18,9 @@ public class RedLowStart extends LinearOpMode{
             new PathPoses(Math.toRadians(90), RedLowZoneToLoadZonePose, GenericAuto.PathState.PICK_UP),
             new PathPoses(Math.toRadians(90), RedLoadZoneToSemiLoadZonePose, GenericAuto.PathState.PICK_UP),
             new PathPoses(Math.toRadians(90), RedSemiLoadZoneToLoadZoneLeft, GenericAuto.PathState.PICK_UP),
-            new PathPoses(Math.toRadians(90), RedLoadZoneLeftToSemiLoadZonePose, GenericAuto.PathState.PICK_UP),
-            new PathPoses(Math.toRadians(90), RedSemiLoadZoneToLoadZoneRight, GenericAuto.PathState.PICK_UP),
-            new PathPoses(Math.toRadians(90), RedLoadZoneRightToLowZonePose, GenericAuto.PathState.SHOOT),
+//            new PathPoses(Math.toRadians(90), RedLoadZoneLeftToSemiLoadZonePose, GenericAuto.PathState.PICK_UP),
+//            new PathPoses(Math.toRadians(90), RedSemiLoadZoneToLoadZoneRight, GenericAuto.PathState.PICK_UP),
+            new PathPoses(Math.toRadians(90), RedLoadZoneLeftToLowZonePose, GenericAuto.PathState.SHOOT),
             new PathPoses(Math.toRadians(90), RedLowZonePoseToPickUpLowPose, GenericAuto.PathState.PICK_UP).setConstraints(slow),
             new PathPoses(Math.toRadians(90), RedPickUpLowToLowZonePose,GenericAuto.PathState.SHOOT),
             new PathPoses(Math.toRadians(90), RedLowZoneToLeavePose, GenericAuto.PathState.LEAVE)

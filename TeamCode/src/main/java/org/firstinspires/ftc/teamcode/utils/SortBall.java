@@ -136,7 +136,7 @@ public class SortBall {
 
     private boolean handleSensor(Telemetry telemetry, ColorSensor colorSensor1, ColorSensor colorSensor2, boolean reversed, DistanceSensor distance, int cValue) throws InterruptedException{
         telemetry.addData("distance", distance.getDistance(DistanceUnit.MM));
-        if(distance.getDistance(DistanceUnit.MM) < 150 || distance.getDistance(DistanceUnit.MM) > 2000) {
+        if(distance.getDistance(DistanceUnit.MM) < 280 || distance.getDistance(DistanceUnit.MM) > 2000) {
             int firstEmptyIdx = getFirstEmptySlot();
 
             telemetry.addData("Empty slot", firstEmptyIdx);

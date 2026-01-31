@@ -114,7 +114,7 @@ public class GenericAuto {
                 }
 
                 if (!shotTriggered) {
-                    shooter.shoot(3, spindexer, 2400, true);
+                    shooter.shoot(3, spindexer, 2200, true);
                     shotTriggered = true;
                     break;
                 }
@@ -161,6 +161,7 @@ public class GenericAuto {
 
             case START:
                 shooter.toggleFlywheel();
+                sleep(500);
                 spindexer.readyToShoot(false, telemetry);
                 PathChain currentPath = paths.get(curPathIdx);
 
@@ -174,6 +175,7 @@ public class GenericAuto {
                 break;
 
             case LEAVE:
+                shooter.resetOuttakePos();
                 panelsTelemetry.addData("done", "leave");
                 break;
         }
@@ -186,7 +188,7 @@ public class GenericAuto {
         currentState = states.get(curPathIdx);
         PathChain currentPath = paths.get(curPathIdx);
         boolean isPickingUp = currentState == PathState.PICK_UP;
-        follower.followPath(currentPath, isPickingUp ? 0.55 : 1, true);
+        follower.followPath(currentPath, isPickingUp ? 0.8 : 1, true);
         return currentState;
     }
 
