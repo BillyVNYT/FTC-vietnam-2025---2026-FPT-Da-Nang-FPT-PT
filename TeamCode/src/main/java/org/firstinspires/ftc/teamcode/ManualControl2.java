@@ -43,11 +43,6 @@ public class ManualControl2 {
             sleep(200);
             shooter.shoot(3, spindexer, 2200, false);
         }
-//        if(gamepad2.leftBumperWasPressed() && !shooter.isBusy()){
-//            spindexer.readyToShoot(false, telemetry);
-//            sleep(200);
-//            shooter.LowzoneShoot(3,spindexer,telemetry);
-//        }
     }
 
     public void controlIntakeShaft() throws InterruptedException {

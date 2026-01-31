@@ -188,7 +188,7 @@ public class GenericAuto {
         currentState = states.get(curPathIdx);
         PathChain currentPath = paths.get(curPathIdx);
         boolean isPickingUp = currentState == PathState.PICK_UP;
-        follower.followPath(currentPath, isPickingUp ? 0.8 : 1, true);
+        follower.followPath(currentPath, isPickingUp ? 0.65 : 1, true);
         return currentState;
     }
 
