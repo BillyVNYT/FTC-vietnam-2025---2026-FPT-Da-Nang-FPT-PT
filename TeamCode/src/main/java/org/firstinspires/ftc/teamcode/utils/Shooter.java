@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.utils;
 
-import static java.lang.Thread.sleep;
-
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -45,6 +43,7 @@ public class Shooter {
     long lastTime = 0;
 
     Telemetry telemetry;
+    boolean isRed;
 
     public Shooter(HardwareMap hardwareMap, boolean holdOuttake, Telemetry telemetry, boolean isRed) {
         MShooter1 = hardwareMap.get(DcMotorEx.class, "m0");
@@ -83,6 +82,7 @@ public class Shooter {
         limelight.changePipeline(0);
 
         this.telemetry = telemetry;
+        this.isRed = isRed;
     }
 
     String[] pidf = {"p", "i", "d", "f"};
@@ -125,7 +125,7 @@ public class Shooter {
         return arr;
     }
 
-    public void shoot(int count, SortBall spindexer, int overridedVelocity) throws InterruptedException {
+    public void shoot(int count, SortBall spindexer, int overridedVelocity, boolean fixedAngle) throws InterruptedException {
         isBusy = true;
         overwriteShoot = false;
 
@@ -139,7 +139,7 @@ public class Shooter {
 
         if(overridedVelocity > 0) {
             tprShot = overridedVelocity;
-            SAngle.setPosition(servoAtLowZone);
+            if(fixedAngle) SAngle.setPosition(servoAtLowZone);
         } else {
             double angle = calculateAngle(distance, spindexer.is_lastBall);
             SAngle.setPosition(angle);
@@ -252,7 +252,7 @@ public class Shooter {
 
             limeLightZ = data.z;
             limelightId = data.id;
-            limelightX = data.x-7; // Tx
+            limelightX = data.x-(isRed ? 3 : 7); // Tx
 
             long now = System.nanoTime();
 

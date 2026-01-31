@@ -114,7 +114,7 @@ public class GenericAuto {
                 }
 
                 if (!shotTriggered) {
-                    shooter.shoot(3, spindexer, 2200);
+                    shooter.shoot(3, spindexer, 2400, true);
                     shotTriggered = true;
                     break;
                 }

@@ -29,18 +29,19 @@ public class ManualControl2 {
         this.telemetry = telemetry;
     }
 
-    public void shootSingleBall() throws InterruptedException{
+    public void shootSorted() throws InterruptedException{
         if(gamepad2.squareWasPressed() && !shooter.isBusy()){
-            spindexer.goToFirstBall();
+            spindexer.readyToShoot(true, telemetry);
             sleep(200);
-            shooter.shoot(1, spindexer, 2200);
+            shooter.shoot(3, spindexer, 2200, false);
         }
     }
+
     public void shootBall() throws InterruptedException{
         if(gamepad2.crossWasPressed() && !shooter.isBusy()){
             spindexer.readyToShoot(false, telemetry);
             sleep(200);
-            shooter.shoot(3, spindexer, 2200);
+            shooter.shoot(3, spindexer, 2200, false);
         }
 //        if(gamepad2.leftBumperWasPressed() && !shooter.isBusy()){
 //            spindexer.readyToShoot(false, telemetry);
@@ -137,7 +138,7 @@ public class ManualControl2 {
             spindexer.spinTargetToShooter(SortBall.BallColor.PURPLE);
             sleep(200);
 
-            shooter.shoot(1, spindexer, 0);
+            shooter.shoot(1, spindexer, 0, false);
         }
     }
 
@@ -148,7 +149,7 @@ public class ManualControl2 {
         if (greenIdx > -1 && !shooter.isBusy()) {
             spindexer.spinTargetToShooter(SortBall.BallColor.GREEN);
 
-            shooter.shoot(1, spindexer, 0);
+            shooter.shoot(1, spindexer, 0, false);
         }
     }
 

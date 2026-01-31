@@ -12,7 +12,7 @@ public class BluePathPoses {
     public static Pose BlueLoadZoneLeft = new Pose(6.105263157894737, 7.368421052631579);
     public static Pose BlueSemiLoadZone = new Pose(20.03791469194312, 10.080568720379151);
     public static Pose BluePickUpLow = new Pose(18.157894736842092,35.894736842105274);
-    public static Pose BlueLeavePose = new Pose(58, 20.631578947368425);
+    public static Pose BlueLeavePose = new Pose(58, 35.631578947368425);
 
     public static Pose[] BlueStartToLowZonePose = {StartBluePose, BlueLowZonePose};
     public static Pose[] BlueLowZoneToLoadZonePose = {BlueLowZonePose, BlueCp1LowZoneToLoadZone, BlueCp2LowZoneToLoadZone, BlueLoadZone};

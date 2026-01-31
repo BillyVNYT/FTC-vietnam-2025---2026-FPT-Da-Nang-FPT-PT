@@ -185,7 +185,7 @@ public class SortBall {
                     while (shakeActive) {
                         double curPos = spindexer1.getPosition();
 
-                        controlSpindexer(shakeLeft ? curPos + 0.01 : curPos - 0.01);
+                        controlSpindexer(shakeLeft ? curPos + 0.02 : curPos - 0.02);
                         Thread.sleep(100);
                         shakeLeft = !shakeLeft;
                     }
@@ -226,7 +226,6 @@ public class SortBall {
 
         if(spindexerReversed && timeIntake.seconds() > 0.5) {
             handleSensor(telemetry, colorSensor3, colorSensor4, true, dis2, 1800);
-            shakeServo();
         }
 
         boolean takingFront = isRed ? gamepad.dpadDownWasPressed() : gamepad.dpadUpWasPressed();

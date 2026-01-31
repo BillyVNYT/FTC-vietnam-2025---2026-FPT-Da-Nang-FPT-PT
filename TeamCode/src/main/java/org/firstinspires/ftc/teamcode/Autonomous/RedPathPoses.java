@@ -10,7 +10,7 @@ public class RedPathPoses {
     public static Pose RedLoadZoneLeft = new Pose(132.54028436018956, 13.080568720379151);
     public static Pose RedLoadZoneRight = new Pose(132.54028436018956, 7.368421052631579);
     public static Pose RedPickUpLow = new Pose(115.157894736842092, 44.894736842105274);
-    public static Pose RedLeavePose = new Pose(81.89473684210526, 20.42105263157894);
+    public static Pose RedLeavePose = new Pose(81.89473684210526, 35.42105263157894);
     public static Pose[] RedStartToLowZonePose = {StartRedPose, RedLowZonePose};
     public static Pose[] RedLowZoneToLoadZonePose = {RedLowZonePose, RedLoadZone};
     public static Pose[] RedLoadZoneToSemiLoadZonePose = {RedLoadZone, RedSemiLoadZone};
