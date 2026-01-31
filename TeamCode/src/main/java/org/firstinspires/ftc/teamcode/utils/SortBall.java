@@ -136,7 +136,7 @@ public class SortBall {
 
     private boolean handleSensor(Telemetry telemetry, ColorSensor colorSensor1, ColorSensor colorSensor2, boolean reversed, DistanceSensor distance, int cValue) throws InterruptedException{
         telemetry.addData("distance", distance.getDistance(DistanceUnit.MM));
-        if(distance.getDistance(DistanceUnit.MM) < 150 || distance.getDistance(DistanceUnit.MM) > 2000) {
+        if(distance.getDistance(DistanceUnit.MM) < 280 || distance.getDistance(DistanceUnit.MM) > 2000) {
             int firstEmptyIdx = getFirstEmptySlot();
 
             telemetry.addData("Empty slot", firstEmptyIdx);
@@ -185,7 +185,7 @@ public class SortBall {
                     while (shakeActive) {
                         double curPos = spindexer1.getPosition();
 
-                        controlSpindexer(shakeLeft ? curPos + 0.01 : curPos - 0.01);
+                        controlSpindexer(shakeLeft ? curPos + 0.02 : curPos - 0.02);
                         Thread.sleep(100);
                         shakeLeft = !shakeLeft;
                     }
@@ -226,7 +226,6 @@ public class SortBall {
 
         if(spindexerReversed && timeIntake.seconds() > 0.5) {
             handleSensor(telemetry, colorSensor3, colorSensor4, true, dis2, 1800);
-            shakeServo();
         }
 
         boolean takingFront = isRed ? gamepad.dpadDownWasPressed() : gamepad.dpadUpWasPressed();

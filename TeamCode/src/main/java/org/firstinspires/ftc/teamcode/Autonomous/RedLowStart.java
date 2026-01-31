@@ -4,22 +4,24 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 import static org.firstinspires.ftc.teamcode.Autonomous.RedPathPoses.*;
 
 import com.bylazar.configurables.annotations.Configurable;
+import com.pedropathing.paths.PathConstraints;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 @Autonomous
 @Configurable // Panels
 public class RedLowStart extends LinearOpMode{
-
+    PathConstraints fast = new PathConstraints(60, 60, 45, 45); // Tốc độ cao
+    PathConstraints slow = new PathConstraints(20, 20, 20, 20);
     PathPoses[] pathPoses = {
             new PathPoses(Math.toRadians(90), RedStartToLowZonePose, GenericAuto.PathState.START),
             new PathPoses(Math.toRadians(90), RedLowZoneToLoadZonePose, GenericAuto.PathState.PICK_UP),
             new PathPoses(Math.toRadians(90), RedLoadZoneToSemiLoadZonePose, GenericAuto.PathState.PICK_UP),
-            new PathPoses(Math.toRadians(90), RedSemiLoadZoneToLoadZonePose, GenericAuto.PathState.PICK_UP),
-            new PathPoses(Math.toRadians(90), RedLoadZoneToSemiLoadZonePose, GenericAuto.PathState.PICK_UP),
-            new PathPoses(Math.toRadians(90), RedSemiLoadZoneToLoadZonePose, GenericAuto.PathState.PICK_UP),
-            new PathPoses(Math.toRadians(90), RedLoadZoneReturnToLowZonePose, GenericAuto.PathState.SHOOT),
-            new PathPoses(Math.toRadians(90), RedLowZonePoseToPickUpLowPose, GenericAuto.PathState.PICK_UP),
+            new PathPoses(Math.toRadians(90), Math.toRadians(110), RedSemiLoadZoneToLoadZoneLeft, GenericAuto.PathState.PICK_UP),
+//            new PathPoses(Math.toRadians(90), RedLoadZoneLeftToSemiLoadZonePose, GenericAuto.PathState.PICK_UP),
+//            new PathPoses(Math.toRadians(90), RedSemiLoadZoneToLoadZoneRight, GenericAuto.PathState.PICK_UP),
+            new PathPoses(Math.toRadians(110), Math.toRadians(90), RedLoadZoneLeftToLowZonePose, GenericAuto.PathState.SHOOT),
+            new PathPoses(Math.toRadians(90), RedLowZonePoseToPickUpLowPose, GenericAuto.PathState.PICK_UP).setConstraints(slow),
             new PathPoses(Math.toRadians(90), RedPickUpLowToLowZonePose,GenericAuto.PathState.SHOOT),
             new PathPoses(Math.toRadians(90), RedLowZoneToLeavePose, GenericAuto.PathState.LEAVE)
     };

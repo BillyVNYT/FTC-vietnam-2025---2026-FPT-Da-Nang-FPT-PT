@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.utils;
 
-import static java.lang.Thread.sleep;
-
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -21,7 +19,7 @@ public class Shooter {
     private final Servo SLoaderOut;
     private final ServoImplEx SLoaderUp1, SLoaderUp2;
 
-    double servoAtLowZone = 0.45;
+    double servoAtLowZone = 0.8044;
     public double P = 1.6;
     public double I = 0.0001;
     public double D = 0.02;
@@ -45,8 +43,9 @@ public class Shooter {
     long lastTime = 0;
 
     Telemetry telemetry;
+    boolean isRed;
 
-    public Shooter(HardwareMap hardwareMap, boolean holdOuttake, Telemetry telemetry) {
+    public Shooter(HardwareMap hardwareMap, boolean holdOuttake, Telemetry telemetry, boolean isRed) {
         MShooter1 = hardwareMap.get(DcMotorEx.class, "m0");
         MShooter2 = hardwareMap.get(DcMotorEx.class, "m1");
         MShooter1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -60,7 +59,7 @@ public class Shooter {
         if(holdOuttake) {
             MTurnOuttake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             MTurnOuttake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            MTurnOuttake.setTargetPosition(169);
+            MTurnOuttake.setTargetPosition(isRed ? 160 : -160);
             MTurnOuttake.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             MTurnOuttake.setPower(1);
         }
@@ -83,6 +82,7 @@ public class Shooter {
         limelight.changePipeline(0);
 
         this.telemetry = telemetry;
+        this.isRed = isRed;
     }
 
     String[] pidf = {"p", "i", "d", "f"};
@@ -118,6 +118,12 @@ public class Shooter {
 
     }
 
+    public void resetOuttakePos() {
+        MTurnOuttake.setTargetPosition(0);
+        MTurnOuttake.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        MTurnOuttake.setPower(1);
+    }
+
     int FLYWHEEL_VELOCITY_GAIN_DURATION = 500;
 
     public double[] getVelocity() {
@@ -125,7 +131,7 @@ public class Shooter {
         return arr;
     }
 
-    public void shoot(int count, SortBall spindexer, int overridedVelocity) throws InterruptedException {
+    public void shoot(int count, SortBall spindexer, int overridedVelocity, boolean fixedAngle) throws InterruptedException {
         isBusy = true;
         overwriteShoot = false;
 
@@ -139,7 +145,7 @@ public class Shooter {
 
         if(overridedVelocity > 0) {
             tprShot = overridedVelocity;
-            SAngle.setPosition(servoAtLowZone);
+            if(fixedAngle) SAngle.setPosition(servoAtLowZone);
         } else {
             double angle = calculateAngle(distance, spindexer.is_lastBall);
             SAngle.setPosition(angle);
@@ -252,7 +258,7 @@ public class Shooter {
 
             limeLightZ = data.z;
             limelightId = data.id;
-            limelightX = data.x-7; // Tx
+            limelightX = data.x-(isRed ? 3 : 7); // Tx
 
             long now = System.nanoTime();
 

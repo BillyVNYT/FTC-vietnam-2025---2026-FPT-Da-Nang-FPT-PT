@@ -47,7 +47,7 @@ public class DriveTrain {
         if(isRed) y = gamepad1.left_stick_x;
 
         x = gamepad1.left_stick_y;
-        if(isRed) x = -gamepad1.left_stick_x;
+        if(isRed) x = -gamepad1.left_stick_y;
 
         rx = gamepad1.right_stick_x;
 

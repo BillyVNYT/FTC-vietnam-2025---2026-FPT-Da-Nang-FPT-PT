@@ -13,7 +13,7 @@ public class TuningShooter extends LinearOpMode {
     LimelightHardware limelightHardware;
     @Override
     public void runOpMode() throws InterruptedException {
-        shooter = new Shooter(hardwareMap, false, telemetry);
+        shooter = new Shooter(hardwareMap, false, telemetry, false);
         limelightHardware = new LimelightHardware(hardwareMap);
         waitForStart();
         while (opModeIsActive()){

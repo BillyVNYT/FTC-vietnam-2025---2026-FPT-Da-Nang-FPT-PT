@@ -67,7 +67,7 @@ public class MainRobot {
             try {
                 while (isRunning.get() && !Thread.currentThread().isInterrupted()) {
                     manualControl2.shootBall();
-                    manualControl2.shootSingleBall();
+//                    manualControl2.shootSorted();
                     Thread.sleep(10);
                 }
             } catch (InterruptedException e) {
