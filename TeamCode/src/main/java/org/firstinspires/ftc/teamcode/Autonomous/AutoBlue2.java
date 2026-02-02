@@ -34,17 +34,17 @@ import org.firstinspires.ftc.teamcode.utils.ShooterFPT2;
 //     =====`-.____`.___ \_____/___.-`___.-'=====
 //                       `=---='
 //     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-@Autonomous(name="AutoBlue1", group = "Auto")
-public class AutoBlue1 extends LinearOpMode {
+@Autonomous(name="AutoBlue2", group = "Auto")
+public class AutoBlue2 extends LinearOpMode {
     public IntakeFPT2 intake;
     public ShooterFPT2 shooter;
     @Override
     public void runOpMode() throws InterruptedException {
-        Pose2d beginPose = new Pose2d(-54, -44, Math.toRadians(270));
+        Pose2d beginPose = new Pose2d(-54, 44, Math.toRadians(90));
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
         intake = new IntakeFPT2(hardwareMap);
         shooter = new ShooterFPT2(hardwareMap, intake);
-        shooter.SAngle.setPosition(0.675);
+        shooter.SAngle.setPosition(0.55);
         intake.HoldBall = true;
         intake.checkHoldBall();
         shooter.led.setPattern(RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_OCEAN_PALETTE);
@@ -56,90 +56,88 @@ public class AutoBlue1 extends LinearOpMode {
         runOther.start();
         waitForStart();
         if(isStopRequested()) return;
-        shooter.setMotorVelocity(1650);
+        shooter.setMotorVelocity(1550);
         Actions.runBlocking(drive.actionBuilder(beginPose)
-                .strafeToLinearHeading(new Vector2d(-23, -23), Math.toRadians(-135))
+                .strafeToLinearHeading(
+                        new Vector2d(23, 23),
+                        Math.PI - Math.toRadians(135)
+                )
                 .afterTime(0, ShootBall())
                 .waitSeconds(1.5)
                 .afterTime(0, CloseShootBall2())
 
                 .splineToLinearHeading(
-                        new Pose2d(10, -18, Math.toRadians(-90)),
-                        Math.toRadians(-90)
+                        new Pose2d(-10, 18, Math.PI - Math.toRadians(90)),
+                        Math.PI - Math.toRadians(90)
                 )
 
                 .splineToConstantHeading(
-                        new Vector2d(10, -59),
-                        Math.toRadians(-80),
+                        new Vector2d(-10, 63),
+                        Math.PI - Math.toRadians(80),
                         new TranslationalVelConstraint(30)
                 )
-
                 .afterTime(0, StopIntake())
 
                 .splineToConstantHeading(
-                        new Vector2d(8, -45),
-                        Math.toRadians(-90),
+                        new Vector2d(-8, 45),
+                        Math.PI - Math.toRadians(90),
                         new TranslationalVelConstraint(20)
                 )
 
                 .splineToConstantHeading(
-                        new Vector2d(5, -55),
-                        Math.toRadians(-90)
+                        new Vector2d(-5, 58),
+                        Math.PI - Math.toRadians(90)
                 )
-
                 .waitSeconds(1)
 
                 .splineToLinearHeading(
-                        new Pose2d(-15, -15, Math.toRadians(-135)),
-                        Math.toRadians(-180)
+                        new Pose2d(15, 15, Math.PI - Math.toRadians(135)),
+                        Math.PI - Math.toRadians(180)
                 )
                 .afterTime(0, ShootBall())
                 .waitSeconds(1.5)
                 .afterTime(0, CloseShootBall())
 
                 .splineToLinearHeading(
-                        new Pose2d(-13, -35, Math.toRadians(-90)),
-                        Math.toRadians(-90)
+                        new Pose2d(13, 35, Math.PI - Math.toRadians(90)),
+                        Math.PI - Math.toRadians(90)
                 )
 
                 .splineToConstantHeading(
-                        new Vector2d(-13, -55),
-                        Math.toRadians(-90),
+                        new Vector2d(13, 55),
+                        Math.PI - Math.toRadians(90),
                         new TranslationalVelConstraint(30)
                 )
-
                 .afterTime(2, StopIntake())
 
                 .splineToLinearHeading(
-                        new Pose2d(-23, -23, Math.toRadians(-135)),
-                        Math.toRadians(-90)
+                        new Pose2d(23, 23, Math.PI - Math.toRadians(135)),
+                        Math.PI - Math.toRadians(90)
                 )
-
                 .afterTime(0, ShootBall())
                 .waitSeconds(1.5)
                 .afterTime(0, CloseShootBall())
 
                 .splineToLinearHeading(
-                        new Pose2d(38, -32, Math.toRadians(-90)),
-                        Math.toRadians(-90)
+                        new Pose2d(-38, 32, Math.PI - Math.toRadians(90)),
+                        Math.PI - Math.toRadians(90)
                 )
 
                 .splineToConstantHeading(
-                        new Vector2d(38, -65),
-                        Math.toRadians(-90),
+                        new Vector2d(-38, 65),
+                        Math.PI - Math.toRadians(90),
                         new TranslationalVelConstraint(30)
                 )
-
                 .afterTime(0.5, StopIntake())
 
                 .splineToLinearHeading(
-                        new Pose2d(-23, -23, Math.toRadians(-135)),
-                        Math.toRadians(-180)
+                        new Pose2d(23, 23, Math.PI - Math.toRadians(135)),
+                        Math.PI - Math.toRadians(180)
                 )
-
                 .afterTime(0, ShootBall())
                 .waitSeconds(1.5)
                 .afterTime(0, CloseShootBall())
+
 //                        .splineToLinearHeading(new Pose2d(9, 60, Math.toRadians(135)), Math.toRadians(90))
 //                        .strafeTo(new Vector2d(9, 58))
 //                        .splineToLinearHeading(new Pose2d(-13, 13, Math.toRadians(135)), Math.toRadians(270))
@@ -148,7 +146,7 @@ public class AutoBlue1 extends LinearOpMode {
     public class shootBall implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            shooter.SAngle.setPosition(0.665);
+            shooter.SAngle.setPosition(0.525);
             intake.HoldBall = false;
             intake.checkHoldBall();
             intake.isActive();
@@ -162,7 +160,7 @@ public class AutoBlue1 extends LinearOpMode {
     public class closeShootBall implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            shooter.setMotorVelocity(1650);
+            shooter.setMotorVelocity(1550);
             intake.HoldBall = true;
             intake.checkHoldBall();
             intake.intake.setPower(1);

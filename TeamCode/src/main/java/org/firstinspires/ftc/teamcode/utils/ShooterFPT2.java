@@ -26,10 +26,10 @@ public class ShooterFPT2 {
     public RevBlinkinLedDriver led;
     double SAngleLowest = 0.8492, SBackKickOff = 0, SBackKickOn = 0.9;
     double SGate1Close = 0.03, SGate1Open = 0.182, SGate2Close = 0.03, SGate2Open = 0.182;
-    public double P = 18, I = 0.5, D = 0.075, F = 0.5;
+    public double P = 22, I = 0.75, D = 0.25, F = 1.6;
     boolean MTurnOuttakeReverse = false;
     volatile boolean isBusy = false;
-    int tprShot = 1;
+    public int tprShot = 1;
     boolean overwriteShoot;
     int FLYWHEEL_VELOCITY_GAIN_DURATION = 200;
     int THREE_BALLS_SHOOTING_DURATION = 1000;
@@ -108,18 +108,18 @@ public class ShooterFPT2 {
             distance = limelight.getAprilTagData(telemetry).z;
             telemetry.addData("distance", distance);
             if (distance <= 115) {
-                tprShot = MIN_TPR;
+                tprShot = (int) (1400 + (distance-115)*0.9);
                 SAngle.setPosition(calculateAngle(distance, 0.15));
             } else if (distance <= 240) {
-                SAngle.setPosition(calculateAngle(distance, 0.1));
-                tprShot = 1600;
+                SAngle.setPosition(calculateAngle(distance, 0.15));
+                tprShot = (int) (1500 + (distance-115)*0.9);
             } else {
                 tprShot = 2800;
                 SAngle.setPosition(calculateAngle(distance,-0.05));
             }
             telemetry.addData("error", tprShot-MShooter1.getVelocity());
             setMotorVelocity(tprShot);
-            if(Math.abs(tprShot-MShooter1.getVelocity()) < 70){
+            if(tprShot-MShooter1.getVelocity() < 30){
                 led.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
             } else {
                 led.setPattern(RevBlinkinLedDriver.BlinkinPattern.RAINBOW_RAINBOW_PALETTE);
@@ -176,7 +176,7 @@ public class ShooterFPT2 {
         if(data != null && MTurnOuttake.getCurrentPosition() > minTick && MTurnOuttake.getCurrentPosition() < maxTick){
             if(data.id == id) {
                 MTurnOuttake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                double Tx = data.x+9;
+                double Tx = data.x+11;
                 long now = System.nanoTime();
                 double dt = (now - lastTime) / 1e9;
                 if (dt <= 0) dt = 0.02;
@@ -185,7 +185,7 @@ public class ShooterFPT2 {
                 integralSum = Math.max(-5, Math.min(5, integralSum));
                 double derivative = (Tx - lastError) / dt;
                 double output = 0.000015 * Tx
-                        + 0.0000125 * integralSum
+                        + 0.0000175 * integralSum
                         + 0.000025 * derivative;
                 lastError = Tx;
                 output += Math.copySign(0.07, output);
@@ -233,6 +233,6 @@ public class ShooterFPT2 {
     public void holdMotor(DcMotor motor) {
         motor.setTargetPosition(0);
         motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        motor.setPower(0.05);
+        motor.setPower(0.75);
     }
 }
