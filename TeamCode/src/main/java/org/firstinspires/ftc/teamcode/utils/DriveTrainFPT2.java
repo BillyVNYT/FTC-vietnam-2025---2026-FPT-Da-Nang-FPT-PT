@@ -36,9 +36,17 @@ public class DriveTrainFPT2 {
         double y = (gamepad1.left_stick_y + gamepad1.right_stick_y)+(gamepad2.left_stick_y + gamepad2.right_stick_y);
         double x = gamepad1.left_stick_x + gamepad2.left_stick_x;
         double rx = gamepad1.right_stick_x + gamepad2.right_stick_x;
-
-        LeftFrontDrive.setPower(y + x - rx);
-        LeftBackDrive.setPower(y - x - rx);
+        if(Math.abs(y) > 0.5){
+            y = y/Math.abs(y)-0.5;
+        }
+        if(Math.abs(x) > 0.5){
+            x = x/Math.abs(x)-0.5;
+        }
+        if(Math.abs(rx) > 0.5){
+            rx = rx/Math.abs(rx)-0.5;
+        }
+        LeftFrontDrive.setPower(y - x - rx);
+        LeftBackDrive.setPower(y + x - rx);
         RightFrontDrive.setPower(y - x + rx);
         RightBackDrive.setPower(y + x + rx);
     }

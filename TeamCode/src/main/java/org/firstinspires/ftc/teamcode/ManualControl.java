@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.utils.Intake;
@@ -20,9 +21,8 @@ public class ManualControl {
     Gamepad gamepad2;
     Motif motif;
     Lifter lifter;
-    int maxTick = 234;
-    int minTick = -234;
-
+    int maxTick = 670;
+    int minTick = -670;
     public ManualControl(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2) {
         intake = new IntakeFPT2(hardwareMap);
         shooter = new ShooterFPT2(hardwareMap, intake);
@@ -32,15 +32,10 @@ public class ManualControl {
         this.gamepad1 = gamepad1;
     }
 
-    public void shootBall(Telemetry telemetry) throws InterruptedException{
-        if(gamepad2.right_bumper){
-            shooter.shoot(telemetry);
-        } else if(gamepad2.right_trigger > 0.5) {
-            shooter.setMotorVelocity(2000);
-        } else {
-            shooter.setMotorVelocity(1300);
-        }
+    public void shootBall(Telemetry telemetry) throws InterruptedException {
         if(gamepad1.right_bumper){
+            shooter.shoot(telemetry);
+            Thread.sleep(1000);
             intake.shoot = true;
             intake.HoldBall = false;
             intake.checkHoldBall();
@@ -86,15 +81,15 @@ public class ManualControl {
         }
     }
 
-//    public void TurnShooterControl() {
-//        if(gamepad2.dpad_right){
-//            shooter.MTurnOuttake.setPower(0.75);
-//        } else if(gamepad2.dpad_left){
-//            shooter.MTurnOuttake.setPower(-0.75);
-//        } else {
-//            shooter.MTurnOuttake.setPower(0);
-//        }
-//    }
+    public void TurnShooterControl() {
+        if(gamepad1.dpad_right){
+            shooter.MTurnOuttake.setPower(0.45);
+        } else if(gamepad1.dpad_left){
+            shooter.MTurnOuttake.setPower(-0.45);
+        } else {
+            shooter.MTurnOuttake.setPower(0);
+        }
+    }
     public void lift() {
         if(gamepad1.dpadUpWasPressed()){
             lifter.lower();

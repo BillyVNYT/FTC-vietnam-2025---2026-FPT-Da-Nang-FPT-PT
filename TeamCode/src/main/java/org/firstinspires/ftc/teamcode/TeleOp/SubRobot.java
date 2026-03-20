@@ -23,7 +23,9 @@ public class SubRobot {
         for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
-
+        if(goalId == 0){
+            ArcoMode = true;
+        }
         this.goalId = goalId;
         this.gamepad2 = gamepad2;
         this.gamepad1 = gamepad1;
@@ -46,12 +48,13 @@ public class SubRobot {
         driveTrain.drivetrainControlBasic(gamepad1, gamepad2);
         manualControl.shootBall(telemetry);
         manualControl.lift();
+        manualControl.toggleIntake();
         if(gamepad2.shareWasPressed()){
             ArcoMode = !ArcoMode;
         }
         if(ArcoMode){
-//            manualControl.TurnShooterControl();
-            manualControl.updateShooterAngleServo(telemetry);
+            manualControl.TurnShooterControl();
+//            manualControl.updateShooterAngleServo(telemetry);
         } else {
             manualControl.toggleIntake();
             manualControl.holdShooter(goalId, telemetry, true);
